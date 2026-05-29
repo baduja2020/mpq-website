@@ -924,3 +924,21 @@ footer span{
   margin-bottom:10px;
   font-weight:800;
 }
+.search-meta{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-top:7px;
+  color:var(--muted);
+  font-size:13px;
+}
+
+.search-meta span{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+}
+
+.search-meta i{
+  color:var(--primary);
+}
