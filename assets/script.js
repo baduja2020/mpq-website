@@ -2,9 +2,17 @@ const API_URL = "https://script.google.com/macros/s/AKfycbzh51ITXyvrDz7VkzZhWV5G
 
 let hasilPencarian = [];
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", function () 
+document.addEventListener("click", function(e){
+if(e.target.id === "modalOverlay"){
+modalOverlay.style.display = "none";}
+if(e.target.closest("#closeModal")){
+modalOverlay.style.display = "none";}
+});{
   const button = document.getElementById("searchButton");
   const input = document.getElementById("searchInput");
+  const modalOverlay = document.getElementById("modalOverlay");
+const modalContent = document.getElementById("modalContent");
 
   if (button) button.addEventListener("click", cekSantri);
 
@@ -63,70 +71,72 @@ function tampilkanDaftar() {
   `;
 }
 
-function showDetail(index) {
-  const result = document.getElementById("result");
+function showDetail(index){
+
   const s = hasilPencarian[index];
 
-  if (!s) return;
+  modalContent.innerHTML = `
+    <h3 class="modal-title">
+      ${s.nama || "-"}
+    </h3>
 
-  result.innerHTML = `
-    <button class="back-button" onclick="tampilkanDaftar()">
-      <i class="ri-arrow-left-line"></i> Kembali
-    </button>
+    <div class="detail-grid">
 
-    <div class="detail-card">
-      <h3>${s.nama || "-"}</h3>
+      <div class="detail-item">
+        <span>Kode</span>
+        <strong>${s.kode || "-"}</strong>
+      </div>
+
+      <div class="detail-item">
+        <span>Kelas</span>
+        <strong>${s.kelas || "-"}</strong>
+      </div>
+
+      <div class="detail-item">
+        <span>Kamar</span>
+        <strong>${s.kamar || "-"}</strong>
+      </div>
+
+      <div class="detail-item">
+        <span>ADNA</span>
+        <strong>${s.adna || "-"}</strong>
+      </div>
+
+      <div class="detail-item">
+        <span>Muallim</span>
+        <strong>${s.muallim || "-"}</strong>
+      </div>
+
+      <div class="detail-item">
+        <span>Ruang</span>
+        <strong>${s.ruang || "-"}</strong>
+      </div>
+
+    </div>
+
+    <div class="status-area">
 
       <div class="detail-grid">
+
         <div class="detail-item">
-          <span><i class="ri-id-card-line"></i> Kode</span>
-          <strong>${s.kode || "-"}</strong>
+          <span>Status Santri</span>
+          <strong>${s.statusSantri || "-"}</strong>
         </div>
 
         <div class="detail-item">
-          <span><i class="ri-home-4-line"></i> Kamar</span>
-          <strong>${s.kamar || "-"}</strong>
+          <span>Status Rekom</span>
+          <strong>${s.statusRekom || "-"}</strong>
         </div>
 
         <div class="detail-item">
-          <span><i class="ri-school-line"></i> Kelas</span>
-          <strong>${s.kelas || "-"}</strong>
+          <span>Status Selesai</span>
+          <strong>${s.statusSelesai || "-"}</strong>
         </div>
 
-        <div class="detail-item">
-          <span><i class="ri-bookmark-line"></i> ADNA</span>
-          <strong>${s.adna || "-"}</strong>
-        </div>
-
-        <div class="detail-item">
-          <span><i class="ri-user-star-line"></i> Muallim</span>
-          <strong>${s.muallim || "-"}</strong>
-        </div>
-
-        <div class="detail-item">
-          <span><i class="ri-building-2-line"></i> Ruang</span>
-          <strong>${s.ruang || "-"}</strong>
-        </div>
       </div>
 
-      <div class="status-area">
-        <div class="detail-grid">
-          <div class="detail-item">
-            <span><i class="ri-user-line"></i> Status Santri</span>
-            <strong>${s.statusSantri || "-"}</strong>
-          </div>
-
-          <div class="detail-item">
-            <span><i class="ri-flag-line"></i> Status Rekom</span>
-            <strong>${s.statusRekom || "-"}</strong>
-          </div>
-
-          <div class="detail-item">
-            <span><i class="ri-checkbox-circle-line"></i> Status Selesai</span>
-            <strong>${s.statusSelesai || "-"}</strong>
-          </div>
-        </div>
-      </div>
     </div>
   `;
+
+  modalOverlay.style.display = "flex";
 }
