@@ -200,6 +200,9 @@ async function loadStats() {
   const statMuallim = document.getElementById("statMuallim");
   const statRuang = document.getElementById("statRuang");
   const statRekom = document.getElementById("statRekom");
+  const statPindah = document.getElementById("statPindah");
+const statBoyong = document.getElementById("statBoyong");
+const statNonaktif = document.getElementById("statNonaktif");
 
   if (!statSantri) return;
 
@@ -213,6 +216,9 @@ async function loadStats() {
     statMuallim.textContent = data.totalMuallim;
     statRuang.textContent = data.totalRuang;
     statRekom.textContent = data.rekomAktif;
+    if (statPindah) statPindah.textContent = data.santriPindah;
+if (statBoyong) statBoyong.textContent = data.santriBoyong;
+if (statNonaktif) statNonaktif.textContent = data.santriNonaktif;
   } catch (error) {
     console.log("Gagal load statistik");
   }
