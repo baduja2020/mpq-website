@@ -191,24 +191,37 @@ footer {
   padding: 20px;
 }
 
-/* Tampilan HP */
-@media screen and (max-width:768px){
-
-  .navbar{
-    padding:10px 15px;
+/* Navbar mobile */
+@media screen and (max-width: 768px) {
+  .navbar {
+    padding: 10px 16px;
+    flex-direction: column;
+    gap: 10px;
   }
 
-  .logo-container img{
-    width:40px;
-    height:auto;
+  .brand {
+    justify-content: center;
   }
 
-  .logo-container h1{
-    font-size:20px;
+  .brand img {
+    width: 38px;
+    height: 38px;
   }
 
+  .brand span {
+    font-size: 18px;
+  }
+
+  .navbar nav {
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .navbar nav a {
+    font-size: 13px;
+  }
 }
-
   nav {
     flex-wrap: wrap;
     justify-content: center;
