@@ -79,6 +79,7 @@ function tampilkanDaftar() {
 }
 
 function showDetail(index) {
+  const result = document.getElementById("result");
   const s = hasilPencarian[index];
 
   const modalOverlay = document.getElementById("modalOverlay");
@@ -125,17 +126,17 @@ function showDetail(index) {
       <div class="detail-grid">
         <div class="detail-item">
           <span><i class="ri-user-line"></i> Status Santri</span>
-          <strong>${s.statusSantri || "-"}</strong>
+          ${badgeStatus(s.statusSantri)}
         </div>
 
         <div class="detail-item">
           <span><i class="ri-flag-line"></i> Status Rekom</span>
-          <strong>${s.statusRekom || "-"}</strong>
+          ${badgeStatus(s.statusRekom)}
         </div>
 
         <div class="detail-item">
           <span><i class="ri-checkbox-circle-line"></i> Status Selesai</span>
-          <strong>${s.statusSelesai || "-"}</strong>
+          ${badgeStatus(s.statusSelesai)}
         </div>
       </div>
     </div>
@@ -143,7 +144,6 @@ function showDetail(index) {
 
   modalOverlay.style.display = "flex";
 }
-
 function closeDetailModal() {
   const modalOverlay = document.getElementById("modalOverlay");
   if (modalOverlay) {
