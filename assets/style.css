@@ -942,3 +942,34 @@ footer span{
 .search-meta i{
   color:var(--primary);
 }
+.stat-grid{
+  max-width:1080px;
+  margin:0 auto;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:18px;
+}
+
+.announcement-grid{
+  max-width:1080px;
+  margin:0 auto;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:22px;
+}
+
+@media(max-width:768px){
+  .stat-grid{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .announcement-grid{
+    grid-template-columns:1fr;
+  }
+}
+
+@media(max-width:420px){
+  .stat-grid{
+    grid-template-columns:1fr;
+  }
+}
