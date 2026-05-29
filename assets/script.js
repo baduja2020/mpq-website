@@ -67,12 +67,23 @@ function tampilkanDaftar() {
   const result = document.getElementById("result");
 
   result.innerHTML = `
-    <div class="search-header">Ditemukan ${hasilPencarian.length} santri</div>
+    <div class="search-header">
+      Ditemukan ${hasilPencarian.length} santri
+    </div>
 
     ${hasilPencarian.map((s, index) => `
       <div class="search-card" onclick="showDetail(${index})">
         <div class="search-name">${s.nama || "-"}</div>
-        <div class="search-info">${s.kelas || "-"} • ${s.adna || "-"} • ${s.kamar || "-"}</div>
+
+        <div class="search-meta">
+          <span><i class="ri-id-card-line"></i> ${s.kode || "-"}</span>
+          <span><i class="ri-school-line"></i> ${s.kelas || "-"}</span>
+        </div>
+
+        <div class="search-meta">
+          <span><i class="ri-bookmark-line"></i> ${s.adna || "-"}</span>
+          <span><i class="ri-home-4-line"></i> ${s.kamar || "-"}</span>
+        </div>
       </div>
     `).join("")}
   `;
