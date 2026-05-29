@@ -165,6 +165,7 @@ function showDetail(index) {
   `;
 
   modalOverlay.style.display = "flex";
+  document.body.style.overflow = "hidden";
 }
 function badgeStatus(value) {
   const text = String(value || "-").trim().toUpperCase();
@@ -209,12 +210,15 @@ function badgeStatus(value) {
   return `<strong class="status-badge ${color}">${text}</strong>`;
 }
 
-
 function closeDetailModal() {
   const modalOverlay = document.getElementById("modalOverlay");
+
   if (modalOverlay) {
     modalOverlay.style.display = "none";
   }
+
+  document.body.style.overflow = "";
+}
 }
 async function loadStats() {
   const statSantri = document.getElementById("statSantri");
