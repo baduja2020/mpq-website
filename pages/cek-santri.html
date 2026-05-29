@@ -1,1 +1,51 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cek Santri MPQ</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
 
+<header class="navbar">
+  <div class="brand">
+    <img src="../assets/logo-mpq.png" alt="Logo MPQ">
+    <span>MPQ Al Falah</span>
+  </div>
+
+  <nav>
+    <a href="../index.html">Beranda</a>
+    <a href="kurikulum.html">Kurikulum</a>
+    <a href="tatib.html">Tata Tertib</a>
+    <a href="cek-santri.html">Cek Santri</a>
+  </nav>
+</header>
+
+<main class="page">
+  <div class="content-card">
+    <h2>🔍 Cek Data Santri</h2>
+
+    <p>
+      Fitur ini disiapkan untuk pencarian data santri MPQ.
+      Untuk sementara, pengecekan lengkap dapat dilakukan melalui WA Bot MPQ.
+    </p>
+
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Ketik nama santri...">
+      <button onclick="cekSantri()">Cari</button>
+    </div>
+
+    <div id="result" class="result" style="display:none;"></div>
+
+    <a class="btn" target="_blank" href="https://wa.me/62NOMORBOT">
+      🤖 Buka WA Bot MPQ
+    </a>
+  </div>
+</main>
+
+<footer>© 2026 MPQ Al Falah</footer>
+
+<script src="../assets/script.js"></script>
+</body>
+</html>
