@@ -1,55 +1,78 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cek Santri MPQ</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Cek Data Santri</title>
+
+<link rel="icon" href="../assets/favicon.png">
+<link rel="stylesheet" href="../assets/style.css">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
-  <link rel="icon" href="../assets/favicon.png">
-  <link rel="stylesheet" href="../assets/style.css">
 </head>
+
 <body>
 
 <header class="navbar">
-  <div class="brand">
-    <img src="../assets/logo-mpq.png" alt="Logo MPQ">
-    <span>MPQ Al Falah</span>
-  </div>
+  <a href="../index.html" class="brand">
+    <img src="../assets/logo-mpq.png">
+    <div>
+      <strong>MPQ Al Falah</strong>
+      <span>Ploso Mojo Kediri</span>
+    </div>
+  </a>
 
   <nav>
     <a href="../index.html">Beranda</a>
     <a href="kurikulum.html">Kurikulum</a>
     <a href="tatib.html">Tata Tertib</a>
-    <a href="cek-santri.html">Cek Santri</a>
+    <a class="active" href="cek-santri.html">Cek Santri</a>
   </nav>
 </header>
 
 <main class="page">
-  <div class="content-card">
-  <h2 class="page-title">
-  <i class="ri-user-search-line"></i>
-  Cek Data Santri
+
+<div class="content-card">
+
+<h2 class="page-title">
+<i class="ri-user-search-line"></i>
+Cek Data Santri
 </h2>
 
-    <p>
-      Masukkan nama, kode, kelas, kamar, atau ADNA santri.
-    </p>
+<p>
+Cari data santri berdasarkan nama, kode santri, kelas, kamar, atau ADNA.
+</p>
 
-    <div class="search-box">
-      <input type="text" id="searchInput" placeholder="Contoh: ahmad / S004 / 3 IBT">
-      <button id="searchButton">Cari</button>
-    </div>
+<div class="search-box">
 
-    <div id="result" class="result" style="display:none;"></div>
+<input
+type="text"
+id="searchInput"
+placeholder="Masukkan nama atau kode santri"
+/>
 
-    <a class="btn" target="_blank" href="https://wa.me/62NOMORBOT">
-       Buka WA Bot MPQ
-    </a>
-  </div>
+<button id="searchButton">
+<i class="ri-search-line"></i>
+Cari
+</button>
+
+</div>
+
+<div id="result" class="result"></div>
+
+</div>
+
 </main>
 
-<footer>© 2026 MPQ Al Falah</footer>
+<footer>
+<strong>MPQ Al Falah</strong>
+<span>Portal Informasi Santri</span>
+<small>© 2026 MPQ Al Falah</small>
+</footer>
 
 <script src="../assets/script.js"></script>
+
 </body>
 </html>
