@@ -192,16 +192,22 @@ footer {
 }
 
 /* Navbar mobile */
-@media screen and (max-width: 768px) {
-  .navbar {
-    padding: 10px 16px;
-    flex-direction: column;
-    gap: 10px;
+@media screen and (max-width:768px){
+
+  .navbar{
+    display:flex;
+    flex-direction:row;
+    justify-content:space-between;
+    align-items:center;
   }
 
-  .brand {
-    justify-content: center;
+  .brand{
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
   }
+
+}
 
   .brand img {
     width: 38px;
