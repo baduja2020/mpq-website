@@ -174,3 +174,50 @@ async function loadStats() {
 }
 
 document.addEventListener("DOMContentLoaded", loadStats);
+async function loadPengumuman() {
+  const container = document.getElementById("pengumumanList");
+
+  if (!container) return;
+
+  try {
+    const response = await fetch(`${API_URL}?mode=pengumuman`);
+    const json = await response.json();
+
+    if (!json.success || !json.data || json.data.length === 0) {
+      container.innerHTML = `
+        <div class="empty-state">Belum ada pengumuman aktif.</div>
+      `;
+      return;
+    }
+
+    container.innerHTML = json.data.map(item => `
+      <article class="announcement-card">
+        <i class="ri-megaphone-line"></i>
+        <small>${formatTanggal(item.tanggal)}</small>
+        <h3>${item.judul}</h3>
+        <p>${item.isi}</p>
+      </article>
+    `).join("");
+
+  } catch (error) {
+    container.innerHTML = `
+      <div class="empty-state">Gagal memuat pengumuman.</div>
+    `;
+  }
+}
+
+function formatTanggal(value) {
+  if (!value) return "-";
+
+  const date = new Date(value);
+
+  if (isNaN(date)) return value;
+
+  return date.toLocaleDateString("id-ID", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric"
+  });
+}
+
+document.addEventListener("DOMContentLoaded", loadPengumuman);
