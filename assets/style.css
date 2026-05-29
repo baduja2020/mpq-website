@@ -256,3 +256,20 @@ footer {
     flex-direction: column;
   }
 }
+.santri-card{
+  padding:16px;
+  margin:14px 0;
+  border-radius:14px;
+  background:#101821;
+  border:1px solid rgba(0,255,136,.25);
+}
+
+.santri-card h3{
+  color:#00ff88;
+  margin-bottom:10px;
+}
+
+.santri-card p{
+  margin:6px 0;
+  color:#d7e5dc;
+}
