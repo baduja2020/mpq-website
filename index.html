@@ -1,90 +1,46 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MPQ Al Falah</title>
-
-<style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
-body{
-  background:#070b0f;
-  color:#00ff88;
-  text-shadow:0 0 15px rgba(0,255,136,.6);
-  min-height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  padding:24px;
-}
-.container{width:100%;max-width:520px;text-align:center}
-.logo{
-  width:350px;
-  margin-bottom:25px;
-  filter:drop-shadow(0 0 20px rgba(0,255,136,.65));
-}
-h1{
-  font-size:32px;
-  line-height:1.2;
-  color:#00ff88;
-  margin-bottom:10px;
-  text-shadow:0 0 16px rgba(0,255,136,.65);
-}
-.btn{
-  display:block;
-  padding:16px;
-  margin:13px 0;
-  border-radius:13px;
-  text-decoration:none;
-  color:white;
-  background:#162230;
-  border:1px solid rgba(0,255,136,.25);
-  font-weight:700;
-}
-.btn:hover{background:#00ff88;color:#000}
-.footer{margin-top:24px;color:#8b949e;font-size:12px}
-@media (max-width: 480px){
-  h1{
-    font-size:24px;
-    line-height:1.25;
-  }
-  .subtitle{
-    font-size:13px;
-  }
-  .logo{
-    width:250px;
-  }
-}  
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MPQ Al Falah</title>
+  <link rel="stylesheet" href="assets/style.css" />
 </head>
-
 <body>
-<div class="container">
 
-<img src="assets/logo-mpq.png" class="logo" alt="Logo MPQ">
+<header class="navbar">
+  <div class="brand">
+    <img src="assets/logo-mpq.png" alt="Logo MPQ">
+    <span>MPQ Al Falah</span>
+  </div>
 
-<h1>
-  MUASSASAH PENDIDIKAN<br>
-  AL-QUR'AN
-</h1>
-<div class="subtitle">PP Al Falah Ploso Mojo Kediri</div>
+  <nav>
+    <a href="index.html">Beranda</a>
+    <a href="pages/kurikulum.html">Kurikulum</a>
+    <a href="pages/tatib.html">Tata Tertib</a>
+    <a href="pages/cek-santri.html">Cek Santri</a>
+  </nav>
+</header>
 
-<div class="card">
-  <a class="btn" target="_blank" href="https://drive.google.com/file/d/1fp9x7yFgrBDq54t5D7yCtx7OJcNiBxHW/view?usp=drive_link">
-    📖 Kurikulum MPQ
-  </a>
+<main class="hero">
+  <img src="assets/logo-mpq.png" class="hero-logo" alt="Logo MPQ">
 
-  <a class="btn" target="_blank" href="https://drive.google.com/file/d/1oQl255awvx_SkwzP02sHFIGbvr44RMLv/view?usp=drive_link">
-    📜 Tata Tertib MPQ
-  </a>
+  <h1>MUASSASAH PENDIDIKAN<br>AL-QUR'AN</h1>
+  <p class="subtitle">PP Al Falah Ploso Mojo Kediri</p>
+  <p class="desc">Portal Informasi dan Layanan Digital MPQ</p>
 
-  <a class="btn" target="_blank" href="https://wa.me/6285126031867">
-    🤖 WA Bot MPQ
-  </a>
-</div>
+  <div class="menu-card">
+    <a href="pages/kurikulum.html" class="btn">📖 Kurikulum MPQ</a>
+    <a href="pages/tatib.html" class="btn">📜 Tata Tertib MPQ</a>
+    <a href="pages/cek-santri.html" class="btn">🔍 Cek Data Santri</a>
+    <a href="https://wa.me/62NOMORBOT" target="_blank" class="btn">🤖 WA Bot MPQ</a>
+  </div>
+</main>
 
-<div class="footer">© 2026 MPQ Al Falah</div>
+<footer>
+  © 2026 MPQ Al Falah
+</footer>
 
-</div>
+<script src="assets/script.js"></script>
 </body>
 </html>
