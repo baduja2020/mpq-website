@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MPQ Al Falah</title>
+  <style>
+    body{
+      margin:0;
+      background:#0f1117;
+      color:white;
+      font-family:Arial,sans-serif;
+      text-align:center;
+    }
+
+    .container{
+      max-width:700px;
+      margin:auto;
+      padding:40px 20px;
+    }
+
+    h1{
+      color:#3ddc84;
+    }
+
+    .btn{
+      display:block;
+      margin:15px 0;
+      padding:15px;
+      border-radius:10px;
+      background:#1a1f2b;
+      color:white;
+      text-decoration:none;
+      border:1px solid #3ddc84;
+    }
+
+    .btn:hover{
+      background:#3ddc84;
+      color:black;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+<h1>📖 MUASSASAH PENDIDIKAN AL-QUR'AN</h1>
+
+<h2>PP Al Falah Ploso Mojo Kediri</h2>
+
+<p>
+Portal Layanan MPQ
+</p>
+
+<a class="btn" href="#">📚 Tata Tertib</a>
+
+<a class="btn" href="#">📝 Pendaftaran</a>
+
+<a class="btn" href="#">📅 Kalender Akademik</a>
+
+<a class="btn" href="#">🎓 Pengajian</a>
+
+<a class="btn" href="https://wa.me/">🤖 WA Bot MPQ</a>
+
+</div>
+
+</body>
+</html>
