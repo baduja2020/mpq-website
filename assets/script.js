@@ -79,7 +79,6 @@ function tampilkanDaftar() {
 }
 
 function showDetail(index) {
-  const result = document.getElementById("result");
   const s = hasilPencarian[index];
 
   const modalOverlay = document.getElementById("modalOverlay");
@@ -90,39 +89,51 @@ function showDetail(index) {
   modalContent.innerHTML = `
     <h3 class="modal-title">${s.nama || "-"}</h3>
 
-    <div class="detail-grid">
-      <div class="detail-item">
-        <span><i class="ri-id-card-line"></i> Kode</span>
-        <strong>${s.kode || "-"}</strong>
-      </div>
+    <div class="detail-section">
+      <h4>Informasi Santri</h4>
 
-      <div class="detail-item">
-        <span><i class="ri-home-4-line"></i> Kamar</span>
-        <strong>${s.kamar || "-"}</strong>
-      </div>
+      <div class="detail-grid">
+        <div class="detail-item">
+          <span><i class="ri-id-card-line"></i> Kode</span>
+          <strong>${s.kode || "-"}</strong>
+        </div>
 
-      <div class="detail-item">
-        <span><i class="ri-school-line"></i> Kelas</span>
-        <strong>${s.kelas || "-"}</strong>
-      </div>
+        <div class="detail-item">
+          <span><i class="ri-home-4-line"></i> Kamar</span>
+          <strong>${s.kamar || "-"}</strong>
+        </div>
 
-      <div class="detail-item">
-        <span><i class="ri-bookmark-line"></i> ADNA</span>
-        <strong>${s.adna || "-"}</strong>
-      </div>
+        <div class="detail-item">
+          <span><i class="ri-school-line"></i> Kelas</span>
+          <strong>${s.kelas || "-"}</strong>
+        </div>
 
-      <div class="detail-item">
-        <span><i class="ri-user-star-line"></i> Muallim</span>
-        <strong>${s.muallim || "-"}</strong>
-      </div>
-
-      <div class="detail-item">
-        <span><i class="ri-building-2-line"></i> Ruang</span>
-        <strong>${s.ruang || "-"}</strong>
+        <div class="detail-item">
+          <span><i class="ri-bookmark-line"></i> ADNA</span>
+          <strong>${s.adna || "-"}</strong>
+        </div>
       </div>
     </div>
 
-    <div class="status-area">
+    <div class="detail-section">
+      <h4>Pembimbing</h4>
+
+      <div class="detail-grid">
+        <div class="detail-item">
+          <span><i class="ri-user-star-line"></i> Muallim</span>
+          <strong>${s.muallim || "-"}</strong>
+        </div>
+
+        <div class="detail-item">
+          <span><i class="ri-building-2-line"></i> Ruang</span>
+          <strong>${s.ruang || "-"}</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="detail-section">
+      <h4>Status MPQ</h4>
+
       <div class="detail-grid">
         <div class="detail-item">
           <span><i class="ri-user-line"></i> Status Santri</span>
