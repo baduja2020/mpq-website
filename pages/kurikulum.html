@@ -1,132 +1,79 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbzh51ITXyvrDz7VkzZhWV5GB4IHrV-usd38wRa49VQuEXhABwgsoNW0m9WA2ztsotS0/exec";
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-let hasilPencarian = [];
+<title>Kurikulum MPQ</title>
 
-document.addEventListener("DOMContentLoaded", function () {
-  const button = document.getElementById("searchButton");
-  const input = document.getElementById("searchInput");
+<link rel="icon" href="../assets/favicon.png">
+<link rel="stylesheet" href="../assets/style.css">
 
-  if (button) button.addEventListener("click", cekSantri);
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
+</head>
 
-  if (input) {
-    input.addEventListener("keydown", function (event) {
-      if (event.key === "Enter") cekSantri();
-    });
-  }
-});
+<body>
 
-async function cekSantri() {
-  const input = document.getElementById("searchInput");
-  const result = document.getElementById("result");
-
-  if (!input || !result) return;
-
-  const keyword = input.value.trim();
-  result.style.display = "block";
-
-  if (!keyword) {
-    result.innerHTML = `<div class="empty-state">Masukkan kata pencarian terlebih dahulu.</div>`;
-    return;
-  }
-
-  result.innerHTML = `<div class="loading"><i class="ri-search-line"></i> Mencari data...</div>`;
-
-  try {
-    const response = await fetch(`${API_URL}?q=${encodeURIComponent(keyword)}`);
-    const json = await response.json();
-
-    if (!json.success || !json.data || json.data.length === 0) {
-      result.innerHTML = `<div class="empty-state">Data santri tidak ditemukan.</div>`;
-      return;
-    }
-
-    hasilPencarian = json.data;
-    tampilkanDaftar();
-
-  } catch (error) {
-    result.innerHTML = `<div class="empty-state">Gagal mengambil data. Silakan coba kembali.</div>`;
-  }
-}
-
-function tampilkanDaftar() {
-  const result = document.getElementById("result");
-
-  result.innerHTML = `
-    <div class="search-header">Ditemukan ${hasilPencarian.length} santri</div>
-
-    ${hasilPencarian.map((s, index) => `
-      <div class="search-card" onclick="showDetail(${index})">
-        <div class="search-name">${s.nama || "-"}</div>
-        <div class="search-info">${s.kelas || "-"} • ${s.adna || "-"} • ${s.kamar || "-"}</div>
-      </div>
-    `).join("")}
-  `;
-}
-
-function showDetail(index) {
-  const result = document.getElementById("result");
-  const s = hasilPencarian[index];
-
-  if (!s) return;
-
-  result.innerHTML = `
-    <button class="back-button" onclick="tampilkanDaftar()">
-      <i class="ri-arrow-left-line"></i> Kembali
-    </button>
-
-    <div class="detail-card">
-      <h3>${s.nama || "-"}</h3>
-
-      <div class="detail-grid">
-        <div class="detail-item">
-          <span><i class="ri-id-card-line"></i> Kode</span>
-          <strong>${s.kode || "-"}</strong>
-        </div>
-
-        <div class="detail-item">
-          <span><i class="ri-home-4-line"></i> Kamar</span>
-          <strong>${s.kamar || "-"}</strong>
-        </div>
-
-        <div class="detail-item">
-          <span><i class="ri-school-line"></i> Kelas</span>
-          <strong>${s.kelas || "-"}</strong>
-        </div>
-
-        <div class="detail-item">
-          <span><i class="ri-bookmark-line"></i> ADNA</span>
-          <strong>${s.adna || "-"}</strong>
-        </div>
-
-        <div class="detail-item">
-          <span><i class="ri-user-star-line"></i> Muallim</span>
-          <strong>${s.muallim || "-"}</strong>
-        </div>
-
-        <div class="detail-item">
-          <span><i class="ri-building-2-line"></i> Ruang</span>
-          <strong>${s.ruang || "-"}</strong>
-        </div>
-      </div>
-
-      <div class="status-area">
-        <div class="detail-grid">
-          <div class="detail-item">
-            <span><i class="ri-user-line"></i> Status Santri</span>
-            <strong>${s.statusSantri || "-"}</strong>
-          </div>
-
-          <div class="detail-item">
-            <span><i class="ri-flag-line"></i> Status Rekom</span>
-            <strong>${s.statusRekom || "-"}</strong>
-          </div>
-
-          <div class="detail-item">
-            <span><i class="ri-checkbox-circle-line"></i> Status Selesai</span>
-            <strong>${s.statusSelesai || "-"}</strong>
-          </div>
-        </div>
-      </div>
+<header class="navbar">
+  <a href="../index.html" class="brand">
+    <img src="../assets/logo-mpq.png">
+    <div>
+      <strong>MPQ Al Falah</strong>
+      <span>Ploso Mojo Kediri</span>
     </div>
-  `;
-}
+  </a>
+
+  <nav>
+    <a href="../index.html">Beranda</a>
+    <a class="active" href="kurikulum.html">Kurikulum</a>
+    <a href="tatib.html">Tata Tertib</a>
+    <a href="cek-santri.html">Cek Santri</a>
+  </nav>
+</header>
+
+<main class="page">
+
+<div class="content-card">
+
+<h2 class="page-title">
+<i class="ri-book-open-line"></i>
+Kurikulum MPQ
+</h2>
+
+<p>
+Halaman ini berisi dokumen kurikulum resmi MPQ Al Falah yang digunakan sebagai pedoman pembelajaran santri.
+</p>
+
+<div class="info-box">
+<h3>Informasi Kurikulum</h3>
+
+<ul>
+<li>Target pembelajaran santri</li>
+<li>Pembagian jenjang dan ADNA</li>
+<li>Standar evaluasi</li>
+<li>Ketentuan kenaikan tingkat</li>
+</ul>
+</div>
+
+<a
+class="btn"
+target="_blank"
+href="https://drive.google.com/file/d/1fp9x7yFgrBDq54t5D7yCtx7OJcNiBxHW/view"
+>
+<i class="ri-download-cloud-2-line"></i>
+Buka Dokumen Kurikulum
+</a>
+
+</div>
+
+</main>
+
+<footer>
+<strong>MPQ Al Falah</strong>
+<span>Portal Informasi Santri</span>
+<small>© 2026 MPQ Al Falah</small>
+</footer>
+
+</body>
+</html>
