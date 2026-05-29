@@ -6,15 +6,11 @@ document.addEventListener("DOMContentLoaded", function () {
   const button = document.getElementById("searchButton");
   const input = document.getElementById("searchInput");
 
-  if (button) {
-    button.addEventListener("click", cekSantri);
-  }
+  if (button) button.addEventListener("click", cekSantri);
 
   if (input) {
     input.addEventListener("keydown", function (event) {
-      if (event.key === "Enter") {
-        cekSantri();
-      }
+      if (event.key === "Enter") cekSantri();
     });
   }
 });
@@ -26,22 +22,21 @@ async function cekSantri() {
   if (!input || !result) return;
 
   const keyword = input.value.trim();
-
   result.style.display = "block";
 
   if (!keyword) {
-    result.innerHTML = `<div class="empty-state">Ketik nama santri terlebih dahulu.</div>`;
+    result.innerHTML = `<div class="empty-state">Masukkan kata pencarian terlebih dahulu.</div>`;
     return;
   }
 
-  result.innerHTML = `<div class="loading">🔍 Mencari data...</div>`;
+  result.innerHTML = `<div class="loading"><i class="ri-search-line"></i> Mencari data...</div>`;
 
   try {
     const response = await fetch(`${API_URL}?q=${encodeURIComponent(keyword)}`);
     const json = await response.json();
 
     if (!json.success || !json.data || json.data.length === 0) {
-      result.innerHTML = `<div class="empty-state">❌ Data santri tidak ditemukan.</div>`;
+      result.innerHTML = `<div class="empty-state">Data santri tidak ditemukan.</div>`;
       return;
     }
 
@@ -49,7 +44,7 @@ async function cekSantri() {
     tampilkanDaftar();
 
   } catch (error) {
-    result.innerHTML = `<div class="empty-state">❌ Gagal mengambil data.</div>`;
+    result.innerHTML = `<div class="empty-state">Gagal mengambil data. Silakan coba kembali.</div>`;
   }
 }
 
@@ -57,16 +52,12 @@ function tampilkanDaftar() {
   const result = document.getElementById("result");
 
   result.innerHTML = `
-    <div class="search-header">
-      Ditemukan ${hasilPencarian.length} santri
-    </div>
+    <div class="search-header">Ditemukan ${hasilPencarian.length} santri</div>
 
     ${hasilPencarian.map((s, index) => `
       <div class="search-card" onclick="showDetail(${index})">
         <div class="search-name">${s.nama || "-"}</div>
-        <div class="search-info">
-          ${s.kelas || "-"} • ${s.adna || "-"} • ${s.kamar || "-"}
-        </div>
+        <div class="search-info">${s.kelas || "-"} • ${s.adna || "-"} • ${s.kamar || "-"}</div>
       </div>
     `).join("")}
   `;
@@ -79,7 +70,9 @@ function showDetail(index) {
   if (!s) return;
 
   result.innerHTML = `
-    <button class="back-button" onclick="tampilkanDaftar()">← Kembali</button>
+    <button class="back-button" onclick="tampilkanDaftar()">
+      <i class="ri-arrow-left-line"></i> Kembali
+    </button>
 
     <div class="detail-card">
       <h3>${s.nama || "-"}</h3>
@@ -134,9 +127,6 @@ function showDetail(index) {
           </div>
         </div>
       </div>
-    </div>
-  `;
-}
     </div>
   `;
 }
