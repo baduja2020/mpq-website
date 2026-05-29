@@ -144,6 +144,50 @@ function showDetail(index) {
 
   modalOverlay.style.display = "flex";
 }
+function badgeStatus(value) {
+  const text = String(value || "-").trim().toUpperCase();
+
+  let color = "badge-gray";
+
+  if (
+    text === "AKTIF" ||
+    text === "SELESAI"
+  ) {
+    color = "badge-green";
+  }
+
+  if (
+    text.includes("R1") ||
+    text.includes("R2") ||
+    text.includes("R3") ||
+    text.includes("R4") ||
+    text.includes("PENERTIBAN")
+  ) {
+    color = "badge-yellow";
+  }
+
+  if (
+    text === "BELUM" ||
+    text.includes("PERLU") ||
+    text.includes("RALAT")
+  ) {
+    color = "badge-red";
+  }
+
+  if (
+    text === "PINDAH" ||
+    text === "BOYONG" ||
+    text === "NONAKTIF" ||
+    text === "TIDAK REKOM" ||
+    text === "-"
+  ) {
+    color = "badge-gray";
+  }
+
+  return `<strong class="status-badge ${color}">${text}</strong>`;
+}
+
+
 function closeDetailModal() {
   const modalOverlay = document.getElementById("modalOverlay");
   if (modalOverlay) {
