@@ -563,40 +563,6 @@ footer span{
   .search-box button{
     width:100%;
   }
-
-  .detail-grid{
-    grid-template-columns:1fr;
-  }
-}
-
-.modal-overlay{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.55);
-  backdrop-filter:blur(6px);
-
-  display:none;
-  justify-content:center;
-  align-items:center;
-
-  padding:20px;
-  z-index:999;
-}
-
-.modal-card{
-  width:100%;
-  max-width:650px;
-
-  background:white;
-  border-radius:24px;
-
-  padding:28px;
-
-  position:relative;
-
-  animation:modalShow .25s ease;
-}
-
 @keyframes modalShow{
   from{
     opacity:0;
@@ -607,34 +573,6 @@ footer span{
     opacity:1;
     transform:translateY(0);
   }
-}
-
-.modal-close{
-  position:absolute;
-  top:15px;
-  right:15px;
-
-  border:none;
-  background:#f3f4f6;
-
-  width:40px;
-  height:40px;
-
-  border-radius:50%;
-
-  cursor:pointer;
-}
-
-.modal-close i{
-  font-size:20px;
-}
-
-.modal-title{
-  color:var(--primary);
-  font-size:24px;
-  font-weight:700;
-  margin-bottom:20px;
-}
 /* MODAL DETAIL SANTRI */
 .modal-overlay{
   position:fixed;
