@@ -215,7 +215,7 @@ footer {
   .navbar nav {
     gap: 12px;
     flex-wrap: wrap;
-    justify-content: center;
+    justify-content: flex-start;
   }
 
   .navbar nav a {
