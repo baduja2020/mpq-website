@@ -3,6 +3,33 @@ const API_URL = "https://script.google.com/macros/s/AKfycbzh51ITXyvrDz7VkzZhWV5G
 let hasilPencarian = [];
 
 document.addEventListener("DOMContentLoaded", function () {
+  setupSearch();
+  setupModal();
+  setupMenu();
+  loadStats();
+  loadPengumuman();
+});
+
+/* MENU */
+function setupMenu() {
+  const menuToggle = document.getElementById("menuToggle");
+  const mainNav = document.getElementById("mainNav");
+
+  if (!menuToggle || !mainNav) return;
+
+  menuToggle.addEventListener("click", function () {
+    mainNav.classList.toggle("show");
+  });
+
+  mainNav.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", function () {
+      mainNav.classList.remove("show");
+    });
+  });
+}
+
+/* SEARCH */
+function setupSearch() {
   const button = document.getElementById("searchButton");
   const input = document.getElementById("searchInput");
 
@@ -13,22 +40,7 @@ document.addEventListener("DOMContentLoaded", function () {
       if (event.key === "Enter") cekSantri();
     });
   }
-
-  const closeModal = document.getElementById("closeModal");
-  const modalOverlay = document.getElementById("modalOverlay");
-
-  if (closeModal) {
-    closeModal.addEventListener("click", closeDetailModal);
-  }
-
-  if (modalOverlay) {
-    modalOverlay.addEventListener("click", function (e) {
-      if (e.target.id === "modalOverlay") {
-        closeDetailModal();
-      }
-    });
-  }
-});
+}
 
 async function cekSantri() {
   const input = document.getElementById("searchInput");
@@ -57,7 +69,6 @@ async function cekSantri() {
 
     hasilPencarian = json.data;
     tampilkanDaftar();
-
   } catch (error) {
     result.innerHTML = `<div class="empty-state">Gagal mengambil data. Silakan coba kembali.</div>`;
   }
@@ -67,9 +78,7 @@ function tampilkanDaftar() {
   const result = document.getElementById("result");
 
   result.innerHTML = `
-    <div class="search-header">
-      Ditemukan ${hasilPencarian.length} santri
-    </div>
+    <div class="search-header">Ditemukan ${hasilPencarian.length} santri</div>
 
     ${hasilPencarian.map((s, index) => `
       <div class="search-card" onclick="showDetail(${index})">
@@ -89,9 +98,22 @@ function tampilkanDaftar() {
   `;
 }
 
+/* MODAL */
+function setupModal() {
+  const closeModal = document.getElementById("closeModal");
+  const modalOverlay = document.getElementById("modalOverlay");
+
+  if (closeModal) closeModal.addEventListener("click", closeDetailModal);
+
+  if (modalOverlay) {
+    modalOverlay.addEventListener("click", function (e) {
+      if (e.target.id === "modalOverlay") closeDetailModal();
+    });
+  }
+}
+
 function showDetail(index) {
   const s = hasilPencarian[index];
-
   const modalOverlay = document.getElementById("modalOverlay");
   const modalContent = document.getElementById("modalContent");
 
@@ -104,25 +126,10 @@ function showDetail(index) {
       <h4>Informasi Santri</h4>
 
       <div class="detail-grid">
-        <div class="detail-item">
-          <span><i class="ri-id-card-line"></i> Kode</span>
-          <strong>${s.kode || "-"}</strong>
-        </div>
-
-        <div class="detail-item">
-          <span><i class="ri-home-4-line"></i> Kamar</span>
-          <strong>${s.kamar || "-"}</strong>
-        </div>
-
-        <div class="detail-item">
-          <span><i class="ri-school-line"></i> Kelas</span>
-          <strong>${s.kelas || "-"}</strong>
-        </div>
-
-        <div class="detail-item">
-          <span><i class="ri-bookmark-line"></i> ADNA</span>
-          <strong>${s.adna || "-"}</strong>
-        </div>
+        <div class="detail-item"><span><i class="ri-id-card-line"></i> Kode</span><strong>${s.kode || "-"}</strong></div>
+        <div class="detail-item"><span><i class="ri-home-4-line"></i> Kamar</span><strong>${s.kamar || "-"}</strong></div>
+        <div class="detail-item"><span><i class="ri-school-line"></i> Kelas</span><strong>${s.kelas || "-"}</strong></div>
+        <div class="detail-item"><span><i class="ri-bookmark-line"></i> ADNA</span><strong>${s.adna || "-"}</strong></div>
       </div>
     </div>
 
@@ -130,15 +137,8 @@ function showDetail(index) {
       <h4>Pembimbing</h4>
 
       <div class="detail-grid">
-        <div class="detail-item">
-          <span><i class="ri-user-star-line"></i> Muallim</span>
-          <strong>${s.muallim || "-"}</strong>
-        </div>
-
-        <div class="detail-item">
-          <span><i class="ri-building-2-line"></i> Ruang</span>
-          <strong>${s.ruang || "-"}</strong>
-        </div>
+        <div class="detail-item"><span><i class="ri-user-star-line"></i> Muallim</span><strong>${s.muallim || "-"}</strong></div>
+        <div class="detail-item"><span><i class="ri-building-2-line"></i> Ruang</span><strong>${s.ruang || "-"}</strong></div>
       </div>
     </div>
 
@@ -146,20 +146,9 @@ function showDetail(index) {
       <h4>Status MPQ</h4>
 
       <div class="detail-grid">
-        <div class="detail-item">
-          <span><i class="ri-user-line"></i> Status Santri</span>
-          ${badgeStatus(s.statusSantri)}
-        </div>
-
-        <div class="detail-item">
-          <span><i class="ri-flag-line"></i> Status Rekom</span>
-          ${badgeStatus(s.statusRekom)}
-        </div>
-
-        <div class="detail-item">
-          <span><i class="ri-checkbox-circle-line"></i> Status Selesai</span>
-          ${badgeStatus(s.statusSelesai)}
-        </div>
+        <div class="detail-item"><span><i class="ri-user-line"></i> Status Santri</span>${badgeStatus(s.statusSantri)}</div>
+        <div class="detail-item"><span><i class="ri-flag-line"></i> Status Rekom</span>${badgeStatus(s.statusRekom)}</div>
+        <div class="detail-item"><span><i class="ri-checkbox-circle-line"></i> Status Selesai</span>${badgeStatus(s.statusSelesai)}</div>
       </div>
     </div>
   `;
@@ -167,17 +156,20 @@ function showDetail(index) {
   modalOverlay.style.display = "flex";
   document.body.style.overflow = "hidden";
 }
+
+function closeDetailModal() {
+  const modalOverlay = document.getElementById("modalOverlay");
+
+  if (modalOverlay) modalOverlay.style.display = "none";
+
+  document.body.style.overflow = "";
+}
+
 function badgeStatus(value) {
   const text = String(value || "-").trim().toUpperCase();
-
   let color = "badge-gray";
 
-  if (
-    text === "AKTIF" ||
-    text === "SELESAI"
-  ) {
-    color = "badge-green";
-  }
+  if (text === "AKTIF" || text === "SELESAI") color = "badge-green";
 
   if (
     text.includes("R1") ||
@@ -185,15 +177,9 @@ function badgeStatus(value) {
     text.includes("R3") ||
     text.includes("R4") ||
     text.includes("PENERTIBAN")
-  ) {
-    color = "badge-yellow";
-  }
+  ) color = "badge-yellow";
 
-  if (
-    text === "BELUM" ||
-    text.includes("PERLU") ||
-    text.includes("RALAT")
-  ) {
+  if (text === "BELUM" || text.includes("PERLU") || text.includes("RALAT")) {
     color = "badge-red";
   }
 
@@ -203,23 +189,12 @@ function badgeStatus(value) {
     text === "NONAKTIF" ||
     text === "TIDAK REKOM" ||
     text === "-"
-  ) {
-    color = "badge-gray";
-  }
+  ) color = "badge-gray";
 
   return `<strong class="status-badge ${color}">${text}</strong>`;
 }
 
-function closeDetailModal() {
-  const modalOverlay = document.getElementById("modalOverlay");
-
-  if (modalOverlay) {
-    modalOverlay.style.display = "none";
-  }
-
-  document.body.style.overflow = "";
-}
-}
+/* STATS */
 async function loadStats() {
   const statSantri = document.getElementById("statSantri");
   const statMuallim = document.getElementById("statMuallim");
@@ -243,7 +218,7 @@ async function loadStats() {
   }
 }
 
-document.addEventListener("DOMContentLoaded", loadStats);
+/* PENGUMUMAN */
 async function loadPengumuman() {
   const container = document.getElementById("pengumumanList");
 
@@ -254,9 +229,7 @@ async function loadPengumuman() {
     const json = await response.json();
 
     if (!json.success || !json.data || json.data.length === 0) {
-      container.innerHTML = `
-        <div class="empty-state">Belum ada pengumuman aktif.</div>
-      `;
+      container.innerHTML = `<div class="empty-state">Belum ada pengumuman aktif.</div>`;
       return;
     }
 
@@ -268,11 +241,8 @@ async function loadPengumuman() {
         <p>${item.isi}</p>
       </article>
     `).join("");
-
   } catch (error) {
-    container.innerHTML = `
-      <div class="empty-state">Gagal memuat pengumuman.</div>
-    `;
+    container.innerHTML = `<div class="empty-state">Gagal memuat pengumuman.</div>`;
   }
 }
 
@@ -289,28 +259,3 @@ function formatTanggal(value) {
     year: "numeric"
   });
 }
-
-document.addEventListener("DOMContentLoaded", loadPengumuman);
-document.addEventListener("DOMContentLoaded", function () {
-  const menuToggle = document.getElementById("menuToggle");
-  const mainNav = document.getElementById("mainNav");
-
-  if (menuToggle && mainNav) {
-    menuToggle.addEventListener("click", function () {
-      mainNav.classList.toggle("show");
-    });
-  }
-});
-document.addEventListener("DOMContentLoaded", function () {
-  const mainNav = document.getElementById("mainNav");
-
-  if (!mainNav) return;
-
-  const navLinks = mainNav.querySelectorAll("a");
-
-  navLinks.forEach((link) => {
-    link.addEventListener("click", function () {
-      mainNav.classList.remove("show");
-    });
-  });
-});
