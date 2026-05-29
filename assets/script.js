@@ -2,23 +2,30 @@ const API_URL = "https://script.google.com/macros/s/AKfycbzh51ITXyvrDz7VkzZhWV5G
 
 let hasilPencarian = [];
 
-document.addEventListener("DOMContentLoaded", function () 
-document.addEventListener("click", function(e){
-if(e.target.id === "modalOverlay"){
-modalOverlay.style.display = "none";}
-if(e.target.closest("#closeModal")){
-modalOverlay.style.display = "none";}
-});{
+document.addEventListener("DOMContentLoaded", function () {
   const button = document.getElementById("searchButton");
   const input = document.getElementById("searchInput");
-  const modalOverlay = document.getElementById("modalOverlay");
-const modalContent = document.getElementById("modalContent");
 
   if (button) button.addEventListener("click", cekSantri);
 
   if (input) {
     input.addEventListener("keydown", function (event) {
       if (event.key === "Enter") cekSantri();
+    });
+  }
+
+  const closeModal = document.getElementById("closeModal");
+  const modalOverlay = document.getElementById("modalOverlay");
+
+  if (closeModal) {
+    closeModal.addEventListener("click", closeDetailModal);
+  }
+
+  if (modalOverlay) {
+    modalOverlay.addEventListener("click", function (e) {
+      if (e.target.id === "modalOverlay") {
+        closeDetailModal();
+      }
     });
   }
 });
@@ -71,72 +78,75 @@ function tampilkanDaftar() {
   `;
 }
 
-function showDetail(index){
-
+function showDetail(index) {
   const s = hasilPencarian[index];
 
+  const modalOverlay = document.getElementById("modalOverlay");
+  const modalContent = document.getElementById("modalContent");
+
+  if (!s || !modalOverlay || !modalContent) return;
+
   modalContent.innerHTML = `
-    <h3 class="modal-title">
-      ${s.nama || "-"}
-    </h3>
+    <h3 class="modal-title">${s.nama || "-"}</h3>
 
     <div class="detail-grid">
-
       <div class="detail-item">
-        <span>Kode</span>
+        <span><i class="ri-id-card-line"></i> Kode</span>
         <strong>${s.kode || "-"}</strong>
       </div>
 
       <div class="detail-item">
-        <span>Kelas</span>
-        <strong>${s.kelas || "-"}</strong>
-      </div>
-
-      <div class="detail-item">
-        <span>Kamar</span>
+        <span><i class="ri-home-4-line"></i> Kamar</span>
         <strong>${s.kamar || "-"}</strong>
       </div>
 
       <div class="detail-item">
-        <span>ADNA</span>
+        <span><i class="ri-school-line"></i> Kelas</span>
+        <strong>${s.kelas || "-"}</strong>
+      </div>
+
+      <div class="detail-item">
+        <span><i class="ri-bookmark-line"></i> ADNA</span>
         <strong>${s.adna || "-"}</strong>
       </div>
 
       <div class="detail-item">
-        <span>Muallim</span>
+        <span><i class="ri-user-star-line"></i> Muallim</span>
         <strong>${s.muallim || "-"}</strong>
       </div>
 
       <div class="detail-item">
-        <span>Ruang</span>
+        <span><i class="ri-building-2-line"></i> Ruang</span>
         <strong>${s.ruang || "-"}</strong>
       </div>
-
     </div>
 
     <div class="status-area">
-
       <div class="detail-grid">
-
         <div class="detail-item">
-          <span>Status Santri</span>
+          <span><i class="ri-user-line"></i> Status Santri</span>
           <strong>${s.statusSantri || "-"}</strong>
         </div>
 
         <div class="detail-item">
-          <span>Status Rekom</span>
+          <span><i class="ri-flag-line"></i> Status Rekom</span>
           <strong>${s.statusRekom || "-"}</strong>
         </div>
 
         <div class="detail-item">
-          <span>Status Selesai</span>
+          <span><i class="ri-checkbox-circle-line"></i> Status Selesai</span>
           <strong>${s.statusSelesai || "-"}</strong>
         </div>
-
       </div>
-
     </div>
   `;
 
   modalOverlay.style.display = "flex";
+}
+
+function closeDetailModal() {
+  const modalOverlay = document.getElementById("modalOverlay");
+  if (modalOverlay) {
+    modalOverlay.style.display = "none";
+  }
 }
