@@ -84,18 +84,59 @@ function showDetail(index) {
     <div class="detail-card">
       <h3>${s.nama || "-"}</h3>
 
-      <div class="detail-item"><span>🆔 Kode</span><strong>${s.kode || "-"}</strong></div>
-      <div class="detail-item"><span>🏠 Kamar</span><strong>${s.kamar || "-"}</strong></div>
-      <div class="detail-item"><span>🏫 Kelas</span><strong>${s.kelas || "-"}</strong></div>
-      <div class="detail-item"><span>📖 ADNA</span><strong>${s.adna || "-"}</strong></div>
-      <div class="detail-item"><span>👳 Muallim</span><strong>${s.muallim || "-"}</strong></div>
-      <div class="detail-item"><span>🏢 Ruang</span><strong>${s.ruang || "-"}</strong></div>
+      <div class="detail-grid">
+        <div class="detail-item">
+          <span><i class="ri-id-card-line"></i> Kode</span>
+          <strong>${s.kode || "-"}</strong>
+        </div>
 
-      <hr>
+        <div class="detail-item">
+          <span><i class="ri-home-4-line"></i> Kamar</span>
+          <strong>${s.kamar || "-"}</strong>
+        </div>
 
-      <div class="detail-item"><span>📌 Status Santri</span><strong>${s.statusSantri || "-"}</strong></div>
-      <div class="detail-item"><span>📍 Status Rekom</span><strong>${s.statusRekom || "-"}</strong></div>
-      <div class="detail-item"><span>✅ Status Selesai</span><strong>${s.statusSelesai || "-"}</strong></div>
+        <div class="detail-item">
+          <span><i class="ri-school-line"></i> Kelas</span>
+          <strong>${s.kelas || "-"}</strong>
+        </div>
+
+        <div class="detail-item">
+          <span><i class="ri-bookmark-line"></i> ADNA</span>
+          <strong>${s.adna || "-"}</strong>
+        </div>
+
+        <div class="detail-item">
+          <span><i class="ri-user-star-line"></i> Muallim</span>
+          <strong>${s.muallim || "-"}</strong>
+        </div>
+
+        <div class="detail-item">
+          <span><i class="ri-building-2-line"></i> Ruang</span>
+          <strong>${s.ruang || "-"}</strong>
+        </div>
+      </div>
+
+      <div class="status-area">
+        <div class="detail-grid">
+          <div class="detail-item">
+            <span><i class="ri-user-line"></i> Status Santri</span>
+            <strong>${s.statusSantri || "-"}</strong>
+          </div>
+
+          <div class="detail-item">
+            <span><i class="ri-flag-line"></i> Status Rekom</span>
+            <strong>${s.statusRekom || "-"}</strong>
+          </div>
+
+          <div class="detail-item">
+            <span><i class="ri-checkbox-circle-line"></i> Status Selesai</span>
+            <strong>${s.statusSelesai || "-"}</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
     </div>
   `;
 }
