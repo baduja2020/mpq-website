@@ -3,18 +3,25 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <title>MPQ Al Falah</title>
+
   <link rel="icon" href="assets/favicon.png">
-  <link rel="stylesheet" href="assets/style.css" />
+  <link rel="stylesheet" href="assets/style.css">
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
 </head>
 <body>
 
 <header class="navbar">
-  <div class="brand">
+  <a href="index.html" class="brand">
     <img src="assets/logo-mpq.png" alt="Logo MPQ">
-    <span>MPQ Al Falah</span>
-  </div>
+    <div>
+      <strong>MPQ Al Falah</strong>
+      <span>Ploso Mojo Kediri</span>
+    </div>
+  </a>
 
   <nav>
     <a href="index.html">Beranda</a>
@@ -24,35 +31,87 @@
   </nav>
 </header>
 
-<div class="menu-card grid-menu">
+<main>
 
-  <a href="pages/kurikulum.html" class="menu-btn">
-    <i class="ri-book-open-line"></i>
-    <span>Kurikulum MPQ</span>
-  </a>
+  <section class="hero-section">
+    <div class="hero-content">
+      <img src="assets/logo-mpq.png" class="hero-logo" alt="Logo MPQ">
 
-  <a href="pages/tatib.html" class="menu-btn">
-    <i class="ri-file-list-3-line"></i>
-    <span>Tata Tertib MPQ</span>
-  </a>
+      <p class="eyebrow">Portal Informasi Resmi</p>
 
-  <a href="pages/cek-santri.html" class="menu-btn">
-    <i class="ri-user-search-line"></i>
-    <span>Cek Data Santri</span>
-  </a>
+      <h1>
+        Muassasah Pendidikan Al-Qur'an
+      </h1>
 
-  <a href="https://wa.me/62NOMORBOT" target="_blank" class="menu-btn">
-    <i class="ri-robot-2-line"></i>
-    <span>WA Bot MPQ</span>
-  </a>
+      <p class="hero-subtitle">
+        Pondok Pesantren Al Falah Ploso Mojo Kediri
+      </p>
 
-</div>
+      <p class="hero-desc">
+        Media informasi digital untuk kurikulum, tata tertib, dan layanan data santri MPQ secara mudah, rapi, dan terpusat.
+      </p>
+    </div>
+  </section>
+
+  <section class="info-section">
+    <div class="section-title">
+      <p>Informasi</p>
+      <h2>Layanan Utama MPQ</h2>
+    </div>
+
+    <div class="info-grid">
+      <article class="info-card">
+        <div class="card-icon">
+          <i class="ri-book-open-line"></i>
+        </div>
+        <h3>Kurikulum MPQ</h3>
+        <p>
+          Informasi kurikulum dan target pembelajaran santri dalam program MPQ.
+        </p>
+        <a href="pages/kurikulum.html">Lihat Kurikulum</a>
+      </article>
+
+      <article class="info-card">
+        <div class="card-icon">
+          <i class="ri-file-list-3-line"></i>
+        </div>
+        <h3>Tata Tertib</h3>
+        <p>
+          Pedoman kedisiplinan dan ketentuan santri dalam mengikuti kegiatan MPQ.
+        </p>
+        <a href="pages/tatib.html">Lihat Tata Tertib</a>
+      </article>
+
+      <article class="info-card">
+        <div class="card-icon">
+          <i class="ri-user-search-line"></i>
+        </div>
+        <h3>Cek Data Santri</h3>
+        <p>
+          Pencarian data santri berdasarkan nama, kode, kelas, kamar, atau ADNA.
+        </p>
+        <a href="pages/cek-santri.html">Cek Data</a>
+      </article>
+    </div>
+  </section>
+
+  <section class="update-section">
+    <div class="update-card">
+      <div>
+        <p class="eyebrow">Update Sistem</p>
+        <h2>Website MPQ dalam tahap pengembangan</h2>
+        <p>
+          Sistem informasi MPQ sedang dikembangkan bertahap agar dapat menunjang layanan pengurus, muallim, dan santri dengan lebih tertib.
+        </p>
+      </div>
+    </div>
+  </section>
+
 </main>
 
 <footer>
-  © 2026 MPQ Al Falah
+  <p>© 2026 MPQ Al Falah — Pondok Pesantren Al Falah Ploso Mojo Kediri</p>
 </footer>
 
-<script src="assets/script.js"></script>
 </body>
 </html>
