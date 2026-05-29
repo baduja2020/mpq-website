@@ -150,3 +150,27 @@ function closeDetailModal() {
     modalOverlay.style.display = "none";
   }
 }
+async function loadStats() {
+  const statSantri = document.getElementById("statSantri");
+  const statMuallim = document.getElementById("statMuallim");
+  const statRuang = document.getElementById("statRuang");
+  const statRekom = document.getElementById("statRekom");
+
+  if (!statSantri) return;
+
+  try {
+    const response = await fetch(`${API_URL}?mode=stats`);
+    const data = await response.json();
+
+    if (!data.success) return;
+
+    statSantri.textContent = data.santriAktif;
+    statMuallim.textContent = data.totalMuallim;
+    statRuang.textContent = data.totalRuang;
+    statRekom.textContent = data.rekomAktif;
+  } catch (error) {
+    console.log("Gagal load statistik");
+  }
+}
+
+document.addEventListener("DOMContentLoaded", loadStats);
