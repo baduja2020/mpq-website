@@ -273,3 +273,47 @@ footer {
   margin:6px 0;
   color:#d7e5dc;
 }
+.result-title{
+  color:#00ff88;
+  font-weight:700;
+  margin-bottom:12px;
+}
+
+.search-item{
+  width:100%;
+  text-align:left;
+  padding:14px 15px;
+  margin:10px 0;
+  border-radius:14px;
+  border:1px solid rgba(0,255,136,.25);
+  background:#101821;
+  color:white;
+  cursor:pointer;
+}
+
+.search-item strong{
+  display:block;
+  color:#00ff88;
+  font-size:15px;
+  margin-bottom:5px;
+}
+
+.search-item span{
+  color:#b8c7bd;
+  font-size:13px;
+}
+
+.back-btn{
+  border:none;
+  background:transparent;
+  color:#00ff88;
+  margin-bottom:12px;
+  cursor:pointer;
+  font-weight:700;
+}
+
+.santri-card hr{
+  border:none;
+  border-top:1px solid rgba(0,255,136,.2);
+  margin:14px 0;
+}
