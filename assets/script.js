@@ -297,3 +297,16 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 });
+document.addEventListener("DOMContentLoaded", function () {
+  const mainNav = document.getElementById("mainNav");
+
+  if (!mainNav) return;
+
+  const navLinks = mainNav.querySelectorAll("a");
+
+  navLinks.forEach((link) => {
+    link.addEventListener("click", function () {
+      mainNav.classList.remove("show");
+    });
+  });
+});
