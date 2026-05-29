@@ -854,3 +854,63 @@ footer span{
   background:#f1f5f9;
   color:#475569;
 }
+.menu-toggle{
+  display:none;
+  border:none;
+  background:var(--primary-soft);
+  color:var(--primary);
+  width:42px;
+  height:42px;
+  border-radius:12px;
+  font-size:24px;
+  cursor:pointer;
+}
+
+@media(max-width:768px){
+  .navbar{
+    flex-direction:row;
+    align-items:center;
+  }
+
+  .menu-toggle{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin-left:auto;
+  }
+
+  .navbar nav{
+    position:absolute;
+    top:78px;
+    left:18px;
+    right:18px;
+    display:none;
+    flex-direction:column;
+    gap:0;
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:10px;
+    box-shadow:var(--shadow);
+    z-index:200;
+  }
+
+  .navbar nav.show{
+    display:flex;
+  }
+
+  .navbar nav a{
+    padding:14px;
+    border-radius:12px;
+    font-size:14px;
+  }
+
+  .navbar nav a:hover,
+  .navbar nav a.active{
+    background:var(--primary-soft);
+  }
+
+  .navbar nav a::after{
+    display:none;
+  }
+}
