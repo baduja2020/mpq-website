@@ -191,11 +191,23 @@ footer {
   padding: 20px;
 }
 
-@media (max-width: 600px) {
-  .navbar {
-    flex-direction: column;
-    gap: 12px;
+/* Tampilan HP */
+@media screen and (max-width:768px){
+
+  .navbar{
+    padding:10px 15px;
   }
+
+  .logo-container img{
+    width:40px;
+    height:auto;
+  }
+
+  .logo-container h1{
+    font-size:20px;
+  }
+
+}
 
   nav {
     flex-wrap: wrap;
