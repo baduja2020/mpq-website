@@ -824,3 +824,33 @@ footer span{
     grid-template-columns:1fr;
   }
 }
+.status-badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:6px 10px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.02em;
+}
+
+.badge-green{
+  background:#e8f6ed;
+  color:#166534;
+}
+
+.badge-yellow{
+  background:#fff7d6;
+  color:#9a6700;
+}
+
+.badge-red{
+  background:#fdecec;
+  color:#b42318;
+}
+
+.badge-gray{
+  background:#f1f5f9;
+  color:#475569;
+}
