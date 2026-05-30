@@ -203,6 +203,9 @@ async function loadStats() {
   const statPindah = document.getElementById("statPindah");
 const statBoyong = document.getElementById("statBoyong");
 const statNonaktif = document.getElementById("statNonaktif");
+const heroSantri = document.getElementById("heroSantri");
+const heroMuallim = document.getElementById("heroMuallim");
+const heroRekom = document.getElementById("heroRekom");
 
   if (!statSantri) return;
 
