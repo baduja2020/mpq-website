@@ -1024,7 +1024,46 @@ footer span{
     margin-bottom:8px;
 }
 
+/* ================= MOBILE SLIDE CARD ================= */
 
+@media(max-width:768px){
+
+  .stat-grid{
+    display:flex;
+    overflow-x:auto;
+    gap:16px;
+    padding:4px 20px 18px;
+    scroll-snap-type:x mandatory;
+    -webkit-overflow-scrolling:touch;
+  }
+
+  .stat-grid::-webkit-scrollbar{
+    display:none;
+  }
+
+  .stat-card{
+    min-width:210px;
+    scroll-snap-align:start;
+  }
+
+  .announcement-grid{
+    display:flex;
+    overflow-x:auto;
+    gap:16px;
+    padding:4px 20px 18px;
+    scroll-snap-type:x mandatory;
+    -webkit-overflow-scrolling:touch;
+  }
+
+  .announcement-grid::-webkit-scrollbar{
+    display:none;
+  }
+
+  .announcement-card{
+    min-width:280px;
+    scroll-snap-align:start;
+  }
+}
 
 .footer-pro{
   background:#0d1f14;
