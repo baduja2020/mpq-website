@@ -999,6 +999,33 @@ footer span{
     opacity:.9;
 }
 
+
+.accordion{
+    background:#f8fbf9;
+    border:1px solid #dbe8df;
+    border-radius:18px;
+    padding:18px;
+    margin-bottom:14px;
+}
+
+.accordion summary{
+    cursor:pointer;
+    font-weight:700;
+    color:#176b3a;
+    font-size:17px;
+}
+
+.accordion ul{
+    margin-top:12px;
+    padding-left:18px;
+}
+
+.accordion li{
+    margin-bottom:8px;
+}
+
+
+
 .footer-pro{
   background:#0d1f14;
   color:#d8eadf;
