@@ -120,8 +120,6 @@ function showDetail(index) {
   if (!s || !modalOverlay || !modalContent) return;
 
   modalContent.innerHTML = `
-    <div class="modal-profile">
-      <h3 class="modal-title">${s.nama || "-"}</h3>
 <div class="modal-profile">
   <h3 class="modal-title">${s.nama || "-"}</h3>
 </div>
