@@ -165,12 +165,41 @@ function showDetail(index) {
         <strong>${s.ruang || "-"}</strong>
       </div>
     </div>
+
+    <div class="compact-section status-detail-section">
+      <h4>Status & Rekom</h4>
+
+      <div class="status-detail-row">
+        <span><i class="ri-user-line"></i> Status Santri</span>
+        ${badgeStatus(s.statusSantri)}
+      </div>
+
+      <div class="status-detail-row">
+        <span><i class="ri-flag-line"></i> Tanggungan Rekom</span>
+        ${badgeStatus(s.statusRekom)}
+      </div>
+
+      <div class="status-detail-row">
+        <span><i class="ri-checkbox-circle-line"></i> Status Selesai</span>
+        ${badgeStatus(s.statusSelesai)}
+      </div>
+
+      ${
+        s.keterangan && s.keterangan !== "-"
+          ? `
+            <div class="status-note">
+              <span><i class="ri-information-line"></i> Keterangan</span>
+              <p>${s.keterangan}</p>
+            </div>
+          `
+          : ""
+      }
+    </div>
   `;
 
   modalOverlay.style.display = "flex";
   document.body.style.overflow = "hidden";
 }
-
 function closeDetailModal() {
   const modalOverlay = document.getElementById("modalOverlay");
 
