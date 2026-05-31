@@ -122,14 +122,9 @@ function showDetail(index) {
   modalContent.innerHTML = `
     <div class="modal-profile">
       <h3 class="modal-title">${s.nama || "-"}</h3>
-
-      <div class="modal-chip-row">
-        ${badgeStatus(s.statusSantri)}
-        ${badgeStatus(s.statusRekom)}
-        ${badgeStatus(s.statusSelesai)}
-      </div>
-    </div>
-
+<div class="modal-profile">
+  <h3 class="modal-title">${s.nama || "-"}</h3>
+</div>
     <div class="compact-detail-grid">
       <div class="compact-item">
         <span><i class="ri-id-card-line"></i> Kode</span>
