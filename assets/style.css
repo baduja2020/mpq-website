@@ -1307,3 +1307,69 @@ nav a:hover::after{
     text-align:left;
   }
 }
+/* ================= STATUS DETAIL IN MODAL ================= */
+
+.status-detail-section{
+  background:#fbfdfb;
+  border:1px solid #edf3ee;
+  border-radius:18px;
+  padding:16px;
+}
+
+.status-detail-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:12px 0;
+  border-bottom:1px solid #edf3ee;
+}
+
+.status-detail-row:last-child{
+  border-bottom:none;
+}
+
+.status-detail-row span{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  color:var(--muted);
+  font-size:13px;
+  font-weight:600;
+}
+
+.status-detail-row span i{
+  color:var(--primary);
+  font-size:17px;
+}
+
+.status-note{
+  margin-top:12px;
+  padding:12px;
+  background:var(--primary-soft);
+  border-radius:14px;
+}
+
+.status-note span{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  color:var(--primary);
+  font-size:13px;
+  font-weight:800;
+  margin-bottom:6px;
+}
+
+.status-note p{
+  color:var(--text);
+  font-size:14px;
+  line-height:1.6;
+}
+
+@media(max-width:420px){
+  .status-detail-row{
+    align-items:flex-start;
+    flex-direction:column;
+    gap:6px;
+  }
+}
