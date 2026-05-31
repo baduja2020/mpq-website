@@ -827,7 +827,7 @@ nav a:hover::after{
 
 .footer-pro{
   width:100%;
-  background:#c1dbc1;
+  background:#f7faf7;
   color:var(--muted);
   padding:42px 20px;
   text-align:center;
