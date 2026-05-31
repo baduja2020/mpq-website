@@ -1251,3 +1251,155 @@ nav a:hover::after{
     gap:6px;
   }
 }
+/* ================= FIX POPUP SANTRI COMPACT ================= */
+
+.modal-chip-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:10px;
+  margin-bottom:18px;
+  padding-right:48px;
+}
+
+.compact-detail-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-bottom:18px;
+}
+
+.compact-item{
+  background:#fbfdfb;
+  border:1px solid #edf3ee;
+  border-radius:16px;
+  padding:14px;
+}
+
+.compact-item span{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  color:var(--muted);
+  font-size:13px;
+  margin-bottom:6px;
+}
+
+.compact-item span i{
+  color:var(--primary);
+  font-size:17px;
+}
+
+.compact-item strong{
+  display:block;
+  color:var(--text);
+  font-size:15px;
+  font-weight:800;
+}
+
+.compact-section{
+  margin-top:18px;
+  padding-top:16px;
+  border-top:1px solid var(--line);
+}
+
+.compact-section h4{
+  color:var(--primary);
+  font-size:17px;
+  font-weight:800;
+  margin-bottom:12px;
+}
+
+.compact-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  padding:12px 0;
+  border-bottom:1px solid #edf3ee;
+}
+
+.compact-row:last-child{
+  border-bottom:none;
+}
+
+.compact-row span{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  color:var(--muted);
+  font-size:13px;
+}
+
+.compact-row span i{
+  color:var(--primary);
+  font-size:17px;
+}
+
+.compact-row strong{
+  color:var(--text);
+  font-size:14px;
+  font-weight:800;
+  text-align:right;
+}
+
+/* Status & rekom tetap informatif */
+.status-detail-section{
+  background:#fbfdfb;
+  border:1px solid #edf3ee;
+  border-radius:18px;
+  padding:16px;
+}
+
+.status-detail-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:12px 0;
+  border-bottom:1px solid #edf3ee;
+}
+
+.status-detail-row:last-child{
+  border-bottom:none;
+}
+
+.status-detail-row span{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  color:var(--muted);
+  font-size:13px;
+  font-weight:700;
+}
+
+.status-detail-row span i{
+  color:var(--primary);
+  font-size:17px;
+}
+
+/* Mobile */
+@media(max-width:420px){
+  .compact-detail-grid{
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+  }
+
+  .compact-item{
+    padding:12px;
+  }
+
+  .compact-item span{
+    font-size:12px;
+  }
+
+  .compact-item strong{
+    font-size:14px;
+  }
+
+  .status-detail-row{
+    align-items:flex-start;
+    flex-direction:column;
+    gap:6px;
+  }
+}
