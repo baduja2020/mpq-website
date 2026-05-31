@@ -1403,3 +1403,8 @@ nav a:hover::after{
     gap:6px;
   }
 }
+.about-logo{
+  width:58px;
+  height:58px;
+  object-fit:contain;
+}
