@@ -2008,3 +2008,84 @@ nav a:hover::after{
     padding:10px 12px;
   }
 }
+/* ================= MOBILE MINIMAL SEARCH RESULT ================= */
+
+@media(max-width:600px){
+
+  .search-header{
+    font-size:14px;
+    font-weight:800;
+    margin:18px 0 12px;
+    color:var(--primary);
+  }
+
+  .search-card{
+    position:relative;
+    padding:18px 46px 18px 18px;
+    border-radius:18px;
+    margin-bottom:12px;
+
+    background:#ffffff;
+    border:1px solid #e5eee8;
+    box-shadow:0 8px 24px rgba(16,32,22,.04);
+  }
+
+  .search-card:hover{
+    background:#ffffff;
+    border-color:#d7e7dc;
+    transform:none;
+  }
+
+  .search-card::after{
+    content:"›";
+    position:absolute;
+    right:18px;
+    top:50%;
+    transform:translateY(-50%);
+
+    font-size:28px;
+    font-weight:400;
+    color:#b7c5bd;
+  }
+
+  .search-card-top{
+    display:block;
+    margin-bottom:10px;
+  }
+
+  .search-card-top .search-name{
+    font-size:15px;
+    line-height:1.45;
+    font-weight:900;
+    letter-spacing:-.02em;
+    color:#102016;
+  }
+
+  /* Tombol detail disembunyikan di mobile */
+  .search-detail-btn{
+    display:none;
+  }
+
+  .search-meta{
+    gap:12px;
+    margin-top:7px;
+    font-size:12px;
+    color:#6f7d74;
+  }
+
+  .search-meta span{
+    gap:5px;
+  }
+
+  .search-meta i{
+    font-size:14px;
+    color:#176d3a;
+  }
+
+  .search-highlight{
+    background:#fff3bf;
+    color:#7a4f00;
+    padding:0 4px;
+    border-radius:5px;
+  }
+}
