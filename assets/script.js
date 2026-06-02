@@ -312,16 +312,21 @@ function toggleAlpaDetail(button) {
   const isOpen = box.classList.contains("open");
 
   if (isOpen) {
-    content.style.maxHeight = content.scrollHeight + "px";
+  content.style.maxHeight = content.scrollHeight + "px";
 
-    requestAnimationFrame(() => {
-      content.style.maxHeight = "0px";
-    });
+  requestAnimationFrame(() => {
+    content.style.maxHeight = "0px";
+  });
 
+  if (badge) badge.textContent = "Rincian";
+
+  setTimeout(() => {
     box.classList.remove("open");
+  }, 350);
 
-    if (badge) badge.textContent = "Rincian";
-  } else {
+  return;
+}
+  else {
     box.classList.add("open");
     content.style.maxHeight = content.scrollHeight + "px";
 
