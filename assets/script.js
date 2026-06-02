@@ -329,12 +329,16 @@ function toggleAlpaDetail(button) {
 
     // Khusus mobile: setelah klik Rincian, otomatis scroll turun
     if (modalCard && window.innerWidth <= 600) {
-      setTimeout(() => {
-        modalCard.scrollTo({
-          top: box.offsetTop + button.offsetHeight - 20,
-          behavior: "smooth"
-        });
-      }, 200);
+     setTimeout(() => {
+  const target =
+    box.offsetTop +
+    content.scrollHeight * 0.4;
+
+  modalCard.scrollTo({
+    top: target,
+    behavior: "smooth"
+  });
+}, 200);
     }
   }
 }
