@@ -188,6 +188,55 @@ function showDetail(index) {
   modalOverlay.style.display = "flex";
   document.body.style.overflow = "hidden";
 }
+function renderDetailAlpa(s) {
+  const rincian = Array.isArray(s.rincianTanggungan)
+    ? s.rincianTanggungan
+    : [];
+
+  if (rincian.length === 0) {
+    return "";
+  }
+
+  return `
+    <details class="alpa-detail-box">
+      <summary>
+        <span><i class="ri-file-list-3-line"></i> Detail Alpa & Tanggungan</span>
+        <small>Lihat rincian</small>
+      </summary>
+
+      <div class="total-alpa-box">
+        <span>Total Alpa</span>
+        <strong>${s.totalAlpa || 0}</strong>
+      </div>
+
+      <div class="rekom-detail-list">
+        ${rincian.map(item => {
+          const selesai = String(item.status || "").toUpperCase() === "SELESAI";
+
+          return `
+            <div class="rekom-detail-item ${selesai ? "is-done" : "is-pending"}">
+              <div>
+                <strong>${item.label}</strong>
+                <span>Alpa: ${item.alpa}</span>
+              </div>
+
+              <em>${selesai ? "Selesai" : "Belum"}</em>
+            </div>
+          `;
+        }).join("")}
+      </div>
+    </details>
+  `;
+}
+
+
+
+
+
+
+
+
+
 function closeDetailModal() {
   const modalOverlay = document.getElementById("modalOverlay");
 
