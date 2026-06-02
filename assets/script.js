@@ -163,30 +163,28 @@ function showDetail(index) {
       </div>
     </div>
 
-    <div class="compact-section status-detail-section">
-      <h4>Status & Rekom</h4>
+ <div class="compact-section status-detail-section">
+  <h4>Status & Rekom</h4>
 
-      <div class="status-detail-row">
-        <span><i class="ri-user-line"></i> Status Santri</span>
-        ${badgeStatus(s.statusSantri)}
-      </div>
+  <div class="status-detail-row">
+    <span><i class="ri-user-line"></i> Status Santri</span>
+    ${badgeStatus(s.statusSantri)}
+  </div>
 
-      <div class="status-detail-row">
-        <span><i class="ri-flag-line"></i> Tanggungan Rekom</span>
-        ${badgeStatus(s.statusRekom)}
-      </div>
+  <div class="status-detail-row">
+    <span><i class="ri-flag-line"></i> Tanggungan Rekom</span>
+    ${badgeStatus(s.statusRekom)}
+  </div>
 
-      <div class="status-detail-row">
-        <span><i class="ri-checkbox-circle-line"></i> Status Selesai</span>
-        ${badgeStatus(s.statusSelesai)}
-      </div>
-    </div>
+  <div class="status-detail-row">
+    <span><i class="ri-checkbox-circle-line"></i> Status Selesai</span>
+    ${badgeStatus(s.statusSelesai)}
+  </div>
 
-       ${detailAlpaHtml}
-
-<div class="modal-scroll-hint" id="modalScrollHint">
-  <i class="ri-arrow-down-double-line"></i>
-  <span>Scroll ke bawah untuk detail lengkap</span>
+  <div class="floating-scroll-hint" id="modalScrollHint">
+    <i class="ri-arrow-down-line"></i>
+    <span>Scroll</span>
+  </div>
 </div>
   `;
 
