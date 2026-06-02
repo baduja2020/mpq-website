@@ -7,6 +7,8 @@ let searchRequestId = 0;
 
 const SEARCH_DELAY = 600;
 const MIN_SEARCH_LENGTH = 2;
+const searchCache = new Map();
+const MAX_CACHE_SIZE = 30;
 
 document.addEventListener("DOMContentLoaded", function () {
   setupSearch();
@@ -33,7 +35,30 @@ function setupMenu() {
     });
   });
 }
+function getSearchCacheKey(keyword) {
+  return String(keyword || "").trim().toLowerCase();
+}
 
+function saveSearchCache(keyword, data) {
+  const key = getSearchCacheKey(keyword);
+
+  if (!key) return;
+
+  if (searchCache.size >= MAX_CACHE_SIZE) {
+    const firstKey = searchCache.keys().next().value;
+    searchCache.delete(firstKey);
+  }
+
+  searchCache.set(key, data);
+}
+
+function getSearchCache(keyword) {
+  const key = getSearchCacheKey(keyword);
+
+  if (!key) return null;
+
+  return searchCache.has(key) ? searchCache.get(key) : null;
+}
 /* SEARCH */
 function setupSearch() {
   const button = document.getElementById("searchButton");
@@ -156,11 +181,20 @@ async function cekSantri(force = false) {
 
   if (!force && keyword === lastKeyword) return;
 
-  lastKeyword = keyword;
+ lastKeyword = keyword;
 
-  const currentRequestId = ++searchRequestId;
+const cachedResult = getSearchCache(keyword);
 
-  result.innerHTML = renderSearchSkeleton();
+if (cachedResult) {
+  hasilPencarian = cachedResult;
+  tampilkanDaftar();
+  scrollToSearchResultMobile();
+  return;
+}
+
+const currentRequestId = ++searchRequestId;
+
+result.innerHTML = renderSearchSkeleton();
 
   try {
     const response = await fetch(`${API_URL}?q=${encodeURIComponent(keyword)}`);
@@ -180,6 +214,7 @@ return;
 }
 
     hasilPencarian = json.data;
+saveSearchCache(keyword, json.data);
 tampilkanDaftar();
 scrollToSearchResultMobile();
   } catch (error) {
