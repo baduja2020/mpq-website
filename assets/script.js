@@ -207,7 +207,7 @@ function renderDetailAlpa(s) {
 
           <div class="alpa-summary-text">
             <h4>Detail Alpa & Tanggungan</h4>
-            <p>Ringkasan alpa dan status rekom</p>
+         
           </div>
         </div>
 
