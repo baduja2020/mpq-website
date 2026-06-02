@@ -512,6 +512,14 @@ ${detailAlpaHtml}
   </button>
 </div>
   `;
+
+  modalOverlay.style.display = "flex";
+  document.body.style.overflow = "hidden";
+
+  setupFloatingScrollHint();
+
+}
+
 function laporkanDataSalah(index) {
   const s = hasilPencarian[index];
 
@@ -542,11 +550,6 @@ Terima kasih.
   const url = `https://wa.me/${ADMIN_WA_NUMBER}?text=${encodeURIComponent(pesan)}`;
 
   window.open(url, "_blank");
-}
-  modalOverlay.style.display = "flex";
-  document.body.style.overflow = "hidden";
-
-  setupFloatingScrollHint();
 }
 
 function setupFloatingScrollHint() {
