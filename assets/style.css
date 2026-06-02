@@ -1946,3 +1946,65 @@ nav a:hover::after{
   border-radius:5px;
   font-weight:900;
 }
+/* ================= TOMBOL LIHAT DETAIL SEARCH ================= */
+
+.search-card-top{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:14px;
+  margin-bottom:6px;
+}
+
+.search-card-top .search-name{
+  flex:1;
+  margin-bottom:0;
+}
+
+.search-detail-btn{
+  flex-shrink:0;
+  border:none;
+  border-radius:999px;
+  padding:8px 12px;
+
+  background:var(--primary-soft);
+  color:var(--primary);
+
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+
+  font-size:12px;
+  font-weight:900;
+  cursor:pointer;
+
+  transition:
+    background .2s ease,
+    color .2s ease,
+    transform .2s ease;
+}
+
+.search-detail-btn i{
+  font-size:16px;
+  line-height:1;
+}
+
+.search-detail-btn:hover{
+  background:var(--primary);
+  color:white;
+  transform:translateX(2px);
+}
+
+@media(max-width:600px){
+  .search-card-top{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:10px;
+  }
+
+  .search-detail-btn{
+    width:100%;
+    padding:10px 12px;
+  }
+}
