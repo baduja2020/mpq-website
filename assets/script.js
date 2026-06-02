@@ -174,12 +174,14 @@ async function cekSantri(force = false) {
 
   if (!json.success || !json.data || json.data.length === 0) {
   hasilPencarian = [];
-  result.innerHTML = renderEmptySearchState(keyword);
-  return;
+result.innerHTML = renderEmptySearchState(keyword);
+scrollToSearchResultMobile();
+return;
 }
 
     hasilPencarian = json.data;
-    tampilkanDaftar();
+tampilkanDaftar();
+scrollToSearchResultMobile();
   } catch (error) {
     if (currentRequestId !== searchRequestId) return;
 
@@ -328,6 +330,20 @@ function renderSearchSkeleton() {
     </div>
   `;
 }
+function scrollToSearchResultMobile() {
+  if (window.innerWidth > 600) return;
+
+  const result = document.getElementById("result");
+  if (!result) return;
+
+  setTimeout(() => {
+    result.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+  }, 180);
+}
+
 function renderEmptySearchState(keyword = "") {
   return `
     <div class="search-empty-card">
