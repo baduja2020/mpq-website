@@ -190,24 +190,75 @@ async function cekSantri(force = false) {
     `;
   }
 }
+function escapeHtml(value) {
+  return String(value || "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function escapeRegExp(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function highlightText(value, keyword) {
+  const safeText = escapeHtml(value);
+  const cleanKeyword = String(keyword || "").trim();
+
+  if (!cleanKeyword) return safeText;
+
+  const terms = cleanKeyword
+    .split(/\s+/)
+    .filter(term => term.length >= 2)
+    .map(escapeRegExp);
+
+  if (terms.length === 0) return safeText;
+
+  const regex = new RegExp(`(${terms.join("|")})`, "gi");
+
+  return safeText.replace(regex, `<mark class="search-highlight">$1</mark>`);
+}
 function tampilkanDaftar() {
   const result = document.getElementById("result");
+  const input = document.getElementById("searchInput");
+
+  if (!result) return;
+
+  const keyword = input ? input.value.trim() : "";
 
   result.innerHTML = `
     <div class="search-header">Ditemukan ${hasilPencarian.length} santri</div>
 
     ${hasilPencarian.map((s, index) => `
       <div class="search-card" onclick="showDetail(${index})">
-        <div class="search-name">${s.nama || "-"}</div>
-
-        <div class="search-meta">
-          <span><i class="ri-id-card-line"></i> ${s.kode || "-"}</span>
-          <span><i class="ri-school-line"></i> ${s.kelas || "-"}</span>
+        <div class="search-name">
+          ${highlightText(s.nama || "-", keyword)}
         </div>
 
         <div class="search-meta">
-          <span><i class="ri-bookmark-line"></i> ${s.adna || "-"}</span>
-          <span><i class="ri-home-4-line"></i> ${s.kamar || "-"}</span>
+          <span>
+            <i class="ri-id-card-line"></i>
+            ${escapeHtml(s.kode || "-")}
+          </span>
+
+          <span>
+            <i class="ri-school-line"></i>
+            ${highlightText(s.kelas || "-", keyword)}
+          </span>
+        </div>
+
+        <div class="search-meta">
+          <span>
+            <i class="ri-bookmark-line"></i>
+            ${highlightText(s.adna || "-", keyword)}
+          </span>
+
+          <span>
+            <i class="ri-home-4-line"></i>
+            ${escapeHtml(s.kamar || "-")}
+          </span>
         </div>
       </div>
     `).join("")}
