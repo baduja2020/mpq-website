@@ -312,42 +312,44 @@ function toggleAlpaDetail(button) {
   const isOpen = box.classList.contains("open");
 
   if (isOpen) {
-  content.style.maxHeight = content.scrollHeight + "px";
-
-  requestAnimationFrame(() => {
-    content.style.maxHeight = "0px";
-  });
-
-  if (badge) badge.textContent = "Rincian";
-
-  setTimeout(() => {
-    box.classList.remove("open");
-  }, 350);
-
-  return;
-}
-  else {
-    box.classList.add("open");
     content.style.maxHeight = content.scrollHeight + "px";
 
-    if (badge) badge.textContent = "Tutup";
+    requestAnimationFrame(() => {
+      content.style.maxHeight = "0px";
+    });
 
-    // Khusus mobile: setelah klik Rincian, otomatis scroll turun
-    if (modalCard && window.innerWidth <= 600) {
-     setTimeout(() => {
-  const target =
-    box.offsetTop +
-    content.scrollHeight * 0.4;
+    if (badge) badge.textContent = "Rincian";
 
-  modalCard.scrollTo({
-    top: target,
-    behavior: "smooth"
+    setTimeout(() => {
+      box.classList.remove("open");
+    }, 380);
+
+    return;
+  }
+
+  box.classList.add("open");
+
+  content.style.maxHeight = "0px";
+
+  requestAnimationFrame(() => {
+    content.style.maxHeight = content.scrollHeight + "px";
   });
-}, 200);
-    }
+
+  if (badge) badge.textContent = "Tutup";
+
+  setTimeout(() => {
+    content.style.maxHeight = "none";
+  }, 400);
+
+  if (modalCard && window.innerWidth <= 600) {
+    setTimeout(() => {
+      modalCard.scrollTo({
+        top: box.offsetTop + 220,
+        behavior: "smooth"
+      });
+    }, 220);
   }
 }
-
 
 function closeDetailModal() {
   const modalOverlay = document.getElementById("modalOverlay");
