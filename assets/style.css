@@ -1448,23 +1448,7 @@ nav a:hover::after{
 
 .total-alpa-box{
   margin:0 16px 14px;
-  padding:16px 16px;
-  border-radius:16px;
-
-  background:linear-gradient(135deg, #e8f6ed, #f3fbf6);
-  border:1px solid #cdebd6;
-
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-
-  box-shadow:0 8px 22px rgba(22,101,52,.06);
-}
-
-.total-alpa-box{
-  margin:0 16px 14px;
-  padding:16px 16px;
+  padding:16px;
   border-radius:16px;
 
   background:linear-gradient(135deg, #eef6ff, #f8fbff);
@@ -1475,7 +1459,7 @@ nav a:hover::after{
   justify-content:space-between;
   gap:12px;
 
-  box-shadow:0 8px 22px rgba(37,99,235,.06);
+  box-sizing:border-box;
 }
 
 .total-alpa-box span{
@@ -1485,8 +1469,8 @@ nav a:hover::after{
 }
 
 .total-alpa-box strong{
-  min-width:42px;
-  height:34px;
+  min-width:36px;
+  height:36px;
   padding:0 12px;
 
   border-radius:999px;
@@ -1497,8 +1481,28 @@ nav a:hover::after{
   align-items:center;
   justify-content:center;
 
-  font-size:17px;
+  font-size:16px;
   font-weight:900;
+}
+
+/* Biar box rincian sejajar dengan Total Alpa */
+.rekom-detail-list{
+  padding:0 16px 16px;
+  display:grid;
+  gap:10px;
+  box-sizing:border-box;
+}
+
+.rekom-detail-item{
+  width:100%;
+  box-sizing:border-box;
+  padding:16px;
+  border-radius:16px;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
 }
 .rekom-detail-item{
   padding:12px 14px;
