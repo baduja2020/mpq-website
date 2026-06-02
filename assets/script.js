@@ -198,8 +198,8 @@ function renderDetailAlpa(s) {
   }
 
   return `
-    <details class="alpa-detail-box">
-      <summary class="alpa-detail-summary">
+    <div class="alpa-detail-box">
+      <button class="alpa-detail-summary" type="button" onclick="toggleAlpaDetail(this)">
         <div class="alpa-summary-left">
           <div class="alpa-summary-icon">
             <i class="ri-file-list-3-line"></i>
@@ -207,41 +207,71 @@ function renderDetailAlpa(s) {
 
           <div class="alpa-summary-text">
             <h4>Detail Alpa & Tanggungan</h4>
-         
+            <p>Ringkasan alpa dan status rekom</p>
           </div>
         </div>
 
         <span class="alpa-summary-badge">Rincian</span>
-      </summary>
+      </button>
 
-      <div class="total-alpa-box">
-        <span>Total Alpa</span>
-        <strong>${s.totalAlpa || 0}</strong>
-      </div>
+      <div class="alpa-detail-content">
+        <div class="total-alpa-box">
+          <span>Total Alpa</span>
+          <strong>${s.totalAlpa || 0}</strong>
+        </div>
 
-      <div class="rekom-detail-list">
-        ${rincian.map(item => {
-          const selesai = String(item.status || "").toUpperCase() === "SELESAI";
+        <div class="rekom-detail-list">
+          ${rincian.map(item => {
+            const selesai = String(item.status || "").toUpperCase() === "SELESAI";
 
-          return `
-            <div class="rekom-detail-item ${selesai ? "is-done" : "is-pending"}">
-              <div>
-                <strong>${item.label}</strong>
-                <span>Alpa: ${item.alpa}</span>
+            return `
+              <div class="rekom-detail-item ${selesai ? "is-done" : "is-pending"}">
+                <div>
+                  <strong>${item.label}</strong>
+                  <span>Alpa: ${item.alpa}</span>
+                </div>
+
+                <em>${selesai ? "Selesai" : "Belum"}</em>
               </div>
-
-              <em>${selesai ? "Selesai" : "Belum"}</em>
-            </div>
-          `;
-        }).join("")}
+            `;
+          }).join("")}
+        </div>
       </div>
-    </details>
+    </div>
   `;
 }
 
 
+function toggleAlpaDetail(button) {
+  const box = button.closest(".alpa-detail-box");
+  const content = box.querySelector(".alpa-detail-content");
+  const badge = box.querySelector(".alpa-summary-badge");
 
+  if (!box || !content) return;
 
+  const isOpen = box.classList.contains("open");
+
+  if (isOpen) {
+    content.style.maxHeight = content.scrollHeight + "px";
+
+    requestAnimationFrame(() => {
+      content.style.maxHeight = "0px";
+    });
+
+    box.classList.remove("open");
+
+    if (badge) {
+      badge.textContent = "Rincian";
+    }
+  } else {
+    box.classList.add("open");
+    content.style.maxHeight = content.scrollHeight + "px";
+
+    if (badge) {
+      badge.textContent = "Tutup";
+    }
+  }
+}
 
 
 
