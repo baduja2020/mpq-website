@@ -301,10 +301,13 @@ setTimeout(() => {
 }, 100);
 function toggleAlpaDetail(button) {
   const box = button.closest(".alpa-detail-box");
+  if (!box) return;
+
   const content = box.querySelector(".alpa-detail-content");
   const badge = box.querySelector(".alpa-summary-badge");
+  const modalCard = button.closest(".modal-card");
 
-  if (!box || !content) return;
+  if (!content) return;
 
   const isOpen = box.classList.contains("open");
 
@@ -317,19 +320,24 @@ function toggleAlpaDetail(button) {
 
     box.classList.remove("open");
 
-    if (badge) {
-      badge.textContent = "Rincian";
-    }
+    if (badge) badge.textContent = "Rincian";
   } else {
     box.classList.add("open");
     content.style.maxHeight = content.scrollHeight + "px";
 
-    if (badge) {
-      badge.textContent = "Tutup";
+    if (badge) badge.textContent = "Tutup";
+
+    // Khusus mobile: setelah klik Rincian, otomatis scroll turun
+    if (modalCard && window.innerWidth <= 600) {
+      setTimeout(() => {
+        modalCard.scrollTo({
+          top: box.offsetTop + button.offsetHeight - 12,
+          behavior: "smooth"
+        });
+      }, 120);
     }
   }
 }
-
 
 
 function closeDetailModal() {
