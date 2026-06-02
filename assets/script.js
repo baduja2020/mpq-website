@@ -186,6 +186,7 @@ function showDetail(index) {
     <span>Scroll</span>
   </div>
 </div>
+${detailAlpaHtml}
   `;
 
   setTimeout(() => {
