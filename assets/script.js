@@ -161,7 +161,6 @@ async function cekSantri(force = false) {
   const currentRequestId = ++searchRequestId;
 
   result.innerHTML = renderSearchSkeleton();
-  `;
 
   try {
     const response = await fetch(`${API_URL}?q=${encodeURIComponent(keyword)}`);
