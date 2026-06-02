@@ -1659,9 +1659,9 @@ nav a:hover::after{
   opacity:0;
   transform:translateY(-6px);
   transition:
-    max-height .38s ease,
-    opacity .28s ease,
-    transform .28s ease;
+    max-height .45s ease,
+    opacity .45s ease,
+    transform .45s ease;
 }
 
 .alpa-detail-box.open .alpa-detail-content{
