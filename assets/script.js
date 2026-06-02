@@ -1,6 +1,12 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbzh51ITXyvrDz7VkzZhWV5GB4IHrV-usd38wRa49VQuEXhABwgsoNW0m9WA2ztsotS0/exec";
 
 let hasilPencarian = [];
+let searchTimer = null;
+let lastKeyword = "";
+let searchRequestId = 0;
+
+const SEARCH_DELAY = 600;
+const MIN_SEARCH_LENGTH = 2;
 
 document.addEventListener("DOMContentLoaded", function () {
   setupSearch();
