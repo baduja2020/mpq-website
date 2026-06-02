@@ -1654,15 +1654,14 @@ nav a:hover::after{
 }
 
 .alpa-detail-content{
-  max-height: 0;
-  overflow: hidden;
-  opacity: 0;
-  transform: translateY(-5px);
-
+  max-height:0;
+  overflow:hidden;
+  opacity:0;
+  transform:translateY(-6px);
   transition:
-    max-height 0.35s ease,
-    opacity 0.25s ease,
-    transform 0.25s ease;
+    max-height .38s ease,
+    opacity .28s ease,
+    transform .28s ease;
 }
 
 .alpa-detail-box.open .alpa-detail-content{
