@@ -245,8 +245,36 @@ function renderDetailAlpa(s) {
     </div>
   `;
 }
+function updateSantriScrollHint() {
+  const body = document.getElementById("santriModalBody");
+  const hint = document.getElementById("santriScrollHint");
 
+  if (!body || !hint) return;
 
+  const canScroll = body.scrollHeight > body.clientHeight;
+  const nearBottom = body.scrollTop + body.clientHeight >= body.scrollHeight - 10;
+
+  if (!canScroll || nearBottom) {
+    hint.classList.add("hidden");
+  } else {
+    hint.classList.remove("hidden");
+  }
+}
+setTimeout(() => {
+  const body = document.getElementById("santriModalBody");
+  if (body) {
+    body.addEventListener("scroll", updateSantriScrollHint);
+    updateSantriScrollHint();
+  }
+}, 100);
+setTimeout(() => {
+  const body = document.getElementById("santriModalBody");
+  if (body) {
+    body.removeEventListener("scroll", updateSantriScrollHint);
+    body.addEventListener("scroll", updateSantriScrollHint);
+    updateSantriScrollHint();
+  }
+}, 100);
 function toggleAlpaDetail(button) {
   const box = button.closest(".alpa-detail-box");
   const content = box.querySelector(".alpa-detail-content");
