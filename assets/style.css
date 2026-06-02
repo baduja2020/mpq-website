@@ -1532,3 +1532,101 @@ nav a:hover::after{
     flex-direction:column;
   }
 }
+/* ================= DETAIL ALPA HEADER POLISH ================= */
+
+.alpa-detail-summary{
+  list-style:none;
+  cursor:pointer;
+  padding:16px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+}
+
+.alpa-detail-summary::-webkit-details-marker{
+  display:none;
+}
+
+.alpa-summary-left{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  min-width:0;
+  flex:1;
+}
+
+.alpa-summary-icon{
+  width:42px;
+  height:42px;
+  border-radius:14px;
+  background:var(--primary-soft);
+  color:var(--primary);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:20px;
+  flex-shrink:0;
+}
+
+.alpa-summary-text{
+  min-width:0;
+}
+
+.alpa-summary-text h4{
+  margin:0;
+  color:var(--primary);
+  font-size:17px;
+  line-height:1.25;
+  font-weight:900;
+}
+
+.alpa-summary-text p{
+  margin:4px 0 0;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.35;
+  font-weight:600;
+}
+
+.alpa-summary-badge{
+  flex-shrink:0;
+  padding:8px 12px;
+  border-radius:999px;
+  background:var(--primary-soft);
+  color:var(--primary);
+  font-size:12px;
+  font-weight:900;
+  white-space:nowrap;
+}
+
+.alpa-detail-box[open] .alpa-summary-badge{
+  background:var(--primary);
+  color:white;
+}
+
+@media(max-width:420px){
+  .alpa-detail-summary{
+    align-items:flex-start;
+    gap:10px;
+  }
+
+  .alpa-summary-icon{
+    width:38px;
+    height:38px;
+    font-size:18px;
+  }
+
+  .alpa-summary-text h4{
+    font-size:15px;
+  }
+
+  .alpa-summary-text p{
+    font-size:11px;
+  }
+
+  .alpa-summary-badge{
+    padding:7px 10px;
+    font-size:11px;
+  }
+}
