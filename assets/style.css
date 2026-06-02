@@ -1833,3 +1833,77 @@ nav a:hover::after{
   font-size:16px !important;
   line-height:1 !important;
 }
+/* ================= SKELETON LOADING SEARCH ================= */
+
+.search-skeleton-wrap{
+  display:grid;
+  gap:12px;
+  margin-top:12px;
+}
+
+.search-skeleton-card{
+  background:#ffffff;
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:16px;
+  overflow:hidden;
+}
+
+.skeleton-line{
+  position:relative;
+  overflow:hidden;
+  background:#eef3ef;
+  border-radius:999px;
+}
+
+.skeleton-line::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  transform:translateX(-100%);
+  background:linear-gradient(
+    90deg,
+    transparent,
+    rgba(255,255,255,.7),
+    transparent
+  );
+  animation:skeletonShimmer 1.15s infinite;
+}
+
+.skeleton-name{
+  width:62%;
+  height:16px;
+  margin-bottom:14px;
+}
+
+.skeleton-meta-row{
+  display:flex;
+  gap:12px;
+  margin-top:10px;
+}
+
+.skeleton-small{
+  width:34%;
+  height:12px;
+}
+
+@keyframes skeletonShimmer{
+  100%{
+    transform:translateX(100%);
+  }
+}
+
+@media(max-width:600px){
+  .search-skeleton-card{
+    padding:15px;
+    border-radius:15px;
+  }
+
+  .skeleton-name{
+    width:72%;
+  }
+
+  .skeleton-small{
+    width:42%;
+  }
+}
