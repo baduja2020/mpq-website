@@ -1696,76 +1696,55 @@ nav a:hover::after{
   z-index: 5;
 }
 
-.santri-modal-scroll-hint i{
-  font-size: 22px;
-  color: #1f7a45;
-  animation: scrollHintBounce 1.4s infinite;
-  line-height: 1;
-}
-
-.santri-modal-scroll-hint span{
-  font-size: 12px;
-  font-weight: 600;
-  color: #4f6f5c;
-}
-
-.santri-modal-scroll-hint.hidden{
-  opacity: 0;
-  transform: translateY(8px);
-}
-
-@keyframes scrollHintBounce {
-  0%, 100% {
-    transform: translateY(0);
-    opacity: .9;
-  }
-  50% {
-    transform: translateY(6px);
-    opacity: 1;
-  }
-}
-.status-detail-section{
-  position: relative;
-  overflow: hidden;
-}
-
+/* Default: desktop/tablet disembunyikan */
 .floating-scroll-hint{
-  position: absolute;
-  left: 50%;
-  bottom: 24px;
-  transform: translateX(-50%);
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
-  background: rgba(255,255,255,.55);
-  backdrop-filter: blur(8px);
-  box-shadow: 0 8px 24px rgba(0,0,0,.08);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  opacity: .45;
-  pointer-events: none;
-  z-index: 10;
-  animation: floatingScroll 1.4s ease-in-out infinite;
+  display: none;
 }
 
-.floating-scroll-hint i{
-  font-size: 30px;
-  color: #0b7a3b;
-  line-height: 1;
-}
+/* Khusus mobile */
+@media (max-width: 600px){
+  .status-detail-section{
+    position: relative;
+    overflow: hidden;
+  }
 
-.floating-scroll-hint span{
-  font-size: 11px;
-  font-weight: 700;
-  color: #0b7a3b;
-}
+  .floating-scroll-hint{
+    position: absolute;
+    left: 50%;
+    bottom: 22px;
+    transform: translateX(-50%);
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.45);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 8px 24px rgba(0,0,0,.06);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    opacity: .38;
+    pointer-events: none;
+    z-index: 10;
+    animation: floatingScroll 1.4s ease-in-out infinite;
+  }
 
-.floating-scroll-hint.hidden{
-  opacity: 0;
-  transform: translateX(-50%) translateY(10px);
+  .floating-scroll-hint i{
+    font-size: 30px;
+    color: #0b7a3b;
+    line-height: 1;
+  }
+
+  .floating-scroll-hint span{
+    font-size: 11px;
+    font-weight: 700;
+    color: #0b7a3b;
+  }
+
+  .floating-scroll-hint.hidden{
+    opacity: 0;
+  }
 }
 
 @keyframes floatingScroll{
