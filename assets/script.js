@@ -203,12 +203,35 @@ function escapeRegExp(value) {
   return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-function highlightText(value, keyword) {
-  const safeText = escapeHtml(value);
-  const cleanKeyword = String(keyword || "").trim();
+function normalizeSearchText(value) {
+  return String(value || "")
+    .toUpperCase()
+    .replace(/\s+/g, " ")
+    .trim();
+}
 
-  if (!cleanKeyword) return safeText;
+function highlightText(value, keyword, mode = "word") {
+  const rawText = String(value || "");
+  const safeText = escapeHtml(rawText);
+  const cleanKeyword = normalizeSearchText(keyword);
+  const cleanText = normalizeSearchText(rawText);
 
+  if (!cleanKeyword || !cleanText) return safeText;
+
+  // Khusus field pendek seperti KELAS dan ADNA:
+  // kalau field cocok dengan query, highlight satu field penuh
+  if (mode === "field") {
+    const keywordParts = cleanKeyword.split(" ").filter(Boolean);
+    const allPartsMatch = keywordParts.every(part => cleanText.includes(part));
+
+    if (cleanText.includes(cleanKeyword) || allPartsMatch) {
+      return `<mark class="search-highlight">${safeText}</mark>`;
+    }
+
+    return safeText;
+  }
+
+  // Untuk nama: highlight kata yang panjangnya minimal 2 huruf
   const terms = cleanKeyword
     .split(/\s+/)
     .filter(term => term.length >= 2)
@@ -234,7 +257,7 @@ function tampilkanDaftar() {
     ${hasilPencarian.map((s, index) => `
       <div class="search-card" onclick="showDetail(${index})">
         <div class="search-name">
-          ${highlightText(s.nama || "-", keyword)}
+          ${highlightText(s.nama || "-", keyword, "word")}
         </div>
 
         <div class="search-meta">
@@ -245,14 +268,14 @@ function tampilkanDaftar() {
 
           <span>
             <i class="ri-school-line"></i>
-            ${highlightText(s.kelas || "-", keyword)}
+            ${highlightText(s.kelas || "-", keyword, "field")}
           </span>
         </div>
 
         <div class="search-meta">
           <span>
             <i class="ri-bookmark-line"></i>
-            ${highlightText(s.adna || "-", keyword)}
+            ${highlightText(s.adna || "-", keyword, "field")}
           </span>
 
           <span>
