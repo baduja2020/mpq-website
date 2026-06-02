@@ -121,6 +121,7 @@ function showDetail(index) {
   if (!s || !modalOverlay || !modalContent) return;
 
   const detailAlpaHtml = renderDetailAlpa(s);
+  const hasDetailAlpa = detailAlpaHtml.trim() !== "";
 
   modalContent.innerHTML = `
     <div class="modal-profile">
