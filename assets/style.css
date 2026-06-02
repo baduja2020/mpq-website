@@ -1448,9 +1448,10 @@ nav a:hover::after{
 
 .total-alpa-box{
   margin:0 16px 12px;
-  padding:12px 14px;
+  padding:14px 14px;
   border-radius:14px;
-  background:var(--primary-soft);
+  background:#ffffff;
+  border:1px solid #edf3ee;
   display:flex;
   align-items:center;
   justify-content:space-between;
@@ -1458,7 +1459,7 @@ nav a:hover::after{
 
 .total-alpa-box span{
   color:var(--muted);
-  font-weight:700;
+  font-weight:800;
   font-size:13px;
 }
 
@@ -1466,12 +1467,6 @@ nav a:hover::after{
   color:var(--primary);
   font-size:18px;
   font-weight:900;
-}
-
-.rekom-detail-list{
-  padding:0 16px 16px;
-  display:grid;
-  gap:10px;
 }
 
 .rekom-detail-item{
