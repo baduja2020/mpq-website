@@ -206,35 +206,53 @@ ${detailAlpaHtml}
 function setupFloatingScrollHint() {
   const modalCard = document.querySelector(".modal-card");
   const hint = document.getElementById("modalScrollHint");
+  const detailBox = document.querySelector(".alpa-detail-box");
 
   if (!modalCard || !hint) return;
 
   const updateHint = () => {
-    const canScroll = modalCard.scrollHeight > modalCard.clientHeight + 5;
-    const alreadyScrolled = modalCard.scrollTop > 80;
+    const canScroll = modalCard.scrollHeight > modalCard.clientHeight + 10;
 
-    if (!canScroll || alreadyScrolled) {
+    const nearBottom =
+      modalCard.scrollTop + modalCard.clientHeight >=
+      modalCard.scrollHeight - 30;
+
+    const hasDetailBox = !!detailBox;
+
+    if (!hasDetailBox || !canScroll || nearBottom) {
       hint.classList.add("hidden");
     } else {
       hint.classList.remove("hidden");
     }
   };
 
-  modalCard.removeEventListener("scroll", updateHint);
-  modalCard.addEventListener("scroll", updateHint);
+  modalCard.onscroll = updateHint;
 
-  setTimeout(updateHint, 100);
+  setTimeout(updateHint, 150);
 }
-
 function renderDetailAlpa(s) {
+  const statusRekom = String(s.statusRekom || "").trim().toUpperCase();
+  const statusSelesai = String(s.statusSelesai || "").trim().toUpperCase();
+
   const rincian = Array.isArray(s.rincianTanggungan)
     ? s.rincianTanggungan
     : [];
 
-  if (rincian.length === 0) {
+  const isTidakRekom =
+    statusRekom === "TIDAK REKOM" ||
+    statusRekom === "-" ||
+    statusRekom === "";
+
+  const hasRincianValid = rincian.some(item => {
+    const label = String(item.label || "").trim();
+    const alpa = Number(item.alpa || 0);
+
+    return label !== "" && alpa > 0;
+  });
+
+  if (isTidakRekom || !hasRincianValid) {
     return "";
   }
-
   return `
     <div class="alpa-detail-box">
       <button class="alpa-detail-summary" type="button" onclick="toggleAlpaDetail(this)">
