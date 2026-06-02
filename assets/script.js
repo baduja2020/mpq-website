@@ -38,37 +38,107 @@ function setupMenu() {
 function setupSearch() {
   const button = document.getElementById("searchButton");
   const input = document.getElementById("searchInput");
+  const result = document.getElementById("result");
 
-  if (button) button.addEventListener("click", cekSantri);
-
-  if (input) {
-    input.addEventListener("keydown", function (event) {
-      if (event.key === "Enter") cekSantri();
+  if (button) {
+    button.addEventListener("click", function () {
+      clearTimeout(searchTimer);
+      cekSantri(true);
     });
   }
+
+  if (!input) return;
+
+  input.addEventListener("input", function () {
+    const keyword = input.value.trim();
+
+    clearTimeout(searchTimer);
+
+    if (!result) return;
+
+    if (!keyword) {
+      hasilPencarian = [];
+      lastKeyword = "";
+      result.innerHTML = "";
+      result.style.display = "none";
+      return;
+    }
+
+    if (keyword.length < MIN_SEARCH_LENGTH) {
+      hasilPencarian = [];
+      result.style.display = "block";
+      result.innerHTML = `
+        <div class="empty-state">
+          Ketik minimal ${MIN_SEARCH_LENGTH} huruf untuk mencari santri.
+        </div>
+      `;
+      return;
+    }
+
+    searchTimer = setTimeout(() => {
+      cekSantri(false);
+    }, SEARCH_DELAY);
+  });
+
+  input.addEventListener("keydown", function (event) {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      clearTimeout(searchTimer);
+      cekSantri(true);
+    }
+  });
 }
 
-async function cekSantri() {
+async function cekSantri(force = false) {
   const input = document.getElementById("searchInput");
   const result = document.getElementById("result");
 
   if (!input || !result) return;
 
   const keyword = input.value.trim();
+
   result.style.display = "block";
 
   if (!keyword) {
+    hasilPencarian = [];
+    lastKeyword = "";
     result.innerHTML = `<div class="empty-state">Masukkan kata pencarian terlebih dahulu.</div>`;
     return;
   }
 
-  result.innerHTML = `<div class="loading"><i class="ri-search-line"></i> Mencari data...</div>`;
+  if (!force && keyword.length < MIN_SEARCH_LENGTH) {
+    result.innerHTML = `
+      <div class="empty-state">
+        Ketik minimal ${MIN_SEARCH_LENGTH} huruf untuk mencari santri.
+      </div>
+    `;
+    return;
+  }
+
+  if (!force && keyword === lastKeyword) return;
+
+  lastKeyword = keyword;
+
+  const currentRequestId = ++searchRequestId;
+
+  result.innerHTML = `
+    <div class="loading">
+      <i class="ri-search-line"></i> Mencari data...
+    </div>
+  `;
 
   try {
     const response = await fetch(`${API_URL}?q=${encodeURIComponent(keyword)}`);
     const json = await response.json();
 
+    if (currentRequestId !== searchRequestId) return;
+
+    const latestKeyword = input.value.trim();
+
+    if (latestKeyword !== keyword) return;
+
     if (!json.success || !json.data || json.data.length === 0) {
+      hasilPencarian = [];
       result.innerHTML = `<div class="empty-state">Data santri tidak ditemukan.</div>`;
       return;
     }
@@ -76,10 +146,15 @@ async function cekSantri() {
     hasilPencarian = json.data;
     tampilkanDaftar();
   } catch (error) {
-    result.innerHTML = `<div class="empty-state">Gagal mengambil data. Silakan coba kembali.</div>`;
+    if (currentRequestId !== searchRequestId) return;
+
+    result.innerHTML = `
+      <div class="empty-state">
+        Gagal mengambil data. Silakan coba kembali.
+      </div>
+    `;
   }
 }
-
 function tampilkanDaftar() {
   const result = document.getElementById("result");
 
