@@ -1675,3 +1675,52 @@ nav a:hover::after{
 .alpa-summary-icon{
   transition:.25s ease;
 }
+.santri-modal-content{
+  position: relative;
+}
+
+.santri-modal-scroll-hint{
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 2px;
+  padding: 28px 12px 10px;
+  background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0.96));
+  pointer-events: none;
+  transition: opacity .25s ease, transform .25s ease;
+  z-index: 5;
+}
+
+.santri-modal-scroll-hint i{
+  font-size: 22px;
+  color: #1f7a45;
+  animation: scrollHintBounce 1.4s infinite;
+  line-height: 1;
+}
+
+.santri-modal-scroll-hint span{
+  font-size: 12px;
+  font-weight: 600;
+  color: #4f6f5c;
+}
+
+.santri-modal-scroll-hint.hidden{
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+@keyframes scrollHintBounce {
+  0%, 100% {
+    transform: translateY(0);
+    opacity: .9;
+  }
+  50% {
+    transform: translateY(6px);
+    opacity: 1;
+  }
+}
