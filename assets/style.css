@@ -1630,3 +1630,48 @@ nav a:hover::after{
     font-size:11px;
   }
 }
+/* ================= SMOOTH DETAIL ALPA ================= */
+
+.alpa-detail-box{
+  margin-top:18px;
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:#fbfdfb;
+  overflow:hidden;
+}
+
+.alpa-detail-summary{
+  width:100%;
+  border:none;
+  background:transparent;
+  cursor:pointer;
+  padding:16px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  text-align:left;
+}
+
+.alpa-detail-content{
+  max-height:0;
+  overflow:hidden;
+  transition:max-height .35s ease;
+}
+
+.alpa-detail-box.open .alpa-detail-content{
+  border-top:1px solid #edf3ee;
+}
+
+.alpa-detail-box.open .alpa-summary-badge{
+  background:var(--primary);
+  color:white;
+}
+
+.alpa-detail-box.open .alpa-summary-icon{
+  transform:scale(1.05);
+}
+
+.alpa-summary-icon{
+  transition:.25s ease;
+}
