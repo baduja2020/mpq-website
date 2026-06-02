@@ -252,12 +252,25 @@ function tampilkanDaftar() {
   const keyword = input ? input.value.trim() : "";
 
   result.innerHTML = `
-    <div class="search-header">Ditemukan ${hasilPencarian.length} santri</div>
+    <div class="search-header">
+      Ditemukan ${hasilPencarian.length} santri
+    </div>
 
     ${hasilPencarian.map((s, index) => `
       <div class="search-card" onclick="showDetail(${index})">
-        <div class="search-name">
-          ${highlightText(s.nama || "-", keyword, "word")}
+        <div class="search-card-top">
+          <div class="search-name">
+            ${highlightText(s.nama || "-", keyword, "word")}
+          </div>
+
+          <button 
+            class="search-detail-btn" 
+            type="button"
+            onclick="event.stopPropagation(); showDetail(${index})"
+          >
+            Lihat Detail
+            <i class="ri-arrow-right-s-line"></i>
+          </button>
         </div>
 
         <div class="search-meta">
