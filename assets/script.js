@@ -184,10 +184,10 @@ function showDetail(index) {
 
        ${detailAlpaHtml}
 
-    <div class="modal-scroll-hint" id="modalScrollHint">
-      <i class="ri-arrow-down-s-line"></i>
-      <span>Geser ke bawah</span>
-    </div>
+<div class="modal-scroll-hint" id="modalScrollHint">
+  <i class="ri-arrow-down-double-line"></i>
+  <span>Scroll ke bawah untuk detail lengkap</span>
+</div>
   `;
 
   modalOverlay.style.display = "flex";
