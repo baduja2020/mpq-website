@@ -203,7 +203,17 @@ ${detailAlpaHtml}
     }
   });
 }, 100);
+function scrollToDetailAlpa() {
+  const modalCard = document.querySelector(".modal-card");
+  const detailSection = document.querySelector(".detail-alpa-section");
 
+  if (!modalCard || !detailSection) return;
+
+  detailSection.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+}
   modalOverlay.style.display = "flex";
   document.body.style.overflow = "hidden";
 }
