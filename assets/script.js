@@ -182,11 +182,18 @@ function showDetail(index) {
     ${badgeStatus(s.statusSelesai)}
   </div>
 
-  <div class="floating-scroll-hint" id="modalScrollHint">
-    <i class="ri-arrow-down-line"></i>
-    <span>Scroll</span>
-  </div>
+  ${
+    hasDetailAlpa
+      ? `
+      <div class="floating-scroll-hint hidden" id="modalScrollHint">
+        <i class="ri-arrow-down-line"></i>
+        <span>Scroll</span>
+      </div>
+    `
+      : ""
+  }
 </div>
+
 ${detailAlpaHtml}
   `;
 
