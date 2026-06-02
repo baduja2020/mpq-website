@@ -2082,10 +2082,10 @@ nav a:hover::after{
     color:#176d3a;
   }
 
-  .search-highlight{
-    background:#fff3bf;
-    color:#7a4f00;
-    padding:0 4px;
-    border-radius:5px;
-  }
+ .search-highlight{
+  background:#f6ead2;
+  color:#7a4f00;
+  padding:0 4px;
+  border-radius:5px;
+}
 }
