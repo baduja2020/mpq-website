@@ -40,6 +40,44 @@ function setupSearch() {
   const input = document.getElementById("searchInput");
   const result = document.getElementById("result");
 
+  if (!input) return;
+
+  const searchBox = input.closest(".search-box");
+
+  if (searchBox && !document.getElementById("clearSearchButton")) {
+    const wrapper = document.createElement("div");
+    wrapper.className = "search-input-wrap";
+
+    input.parentNode.insertBefore(wrapper, input);
+    wrapper.appendChild(input);
+
+    const clearButton = document.createElement("button");
+    clearButton.type = "button";
+    clearButton.id = "clearSearchButton";
+    clearButton.className = "search-clear-btn";
+    clearButton.innerHTML = `<i class="ri-close-line"></i>`;
+    clearButton.setAttribute("aria-label", "Hapus pencarian");
+
+    wrapper.appendChild(clearButton);
+
+    clearButton.addEventListener("click", function () {
+      input.value = "";
+      hasilPencarian = [];
+      lastKeyword = "";
+      clearTimeout(searchTimer);
+
+      if (result) {
+        result.innerHTML = "";
+        result.style.display = "none";
+      }
+
+      clearButton.classList.remove("show");
+      input.focus();
+    });
+  }
+
+  const clearButton = document.getElementById("clearSearchButton");
+
   if (button) {
     button.addEventListener("click", function () {
       clearTimeout(searchTimer);
@@ -47,12 +85,14 @@ function setupSearch() {
     });
   }
 
-  if (!input) return;
-
   input.addEventListener("input", function () {
     const keyword = input.value.trim();
 
     clearTimeout(searchTimer);
+
+    if (clearButton) {
+      clearButton.classList.toggle("show", keyword.length > 0);
+    }
 
     if (!result) return;
 
@@ -88,7 +128,6 @@ function setupSearch() {
     }
   });
 }
-
 async function cekSantri(force = false) {
   const input = document.getElementById("searchInput");
   const result = document.getElementById("result");
