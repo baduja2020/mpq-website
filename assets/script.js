@@ -7,9 +7,10 @@ let searchRequestId = 0;
 
 const SEARCH_DELAY = 600;
 const MIN_SEARCH_LENGTH = 2;
+
 const searchCache = new Map();
 const MAX_CACHE_SIZE = 30;
-
+const ADMIN_WA_NUMBER = "6285745061987";
 document.addEventListener("DOMContentLoaded", function () {
   setupSearch();
   setupModal();
@@ -503,8 +504,45 @@ function showDetail(index) {
 </div>
 
 ${detailAlpaHtml}
-  `;
 
+<div class="modal-report-box">
+  <button class="report-data-btn" type="button" onclick="laporkanDataSalah(${index})">
+    <i class="ri-error-warning-line"></i>
+    Laporkan Data Salah
+  </button>
+</div>
+  `;
+function laporkanDataSalah(index) {
+  const s = hasilPencarian[index];
+
+  if (!s) return;
+
+  const pesan = `
+Assalamu'alaikum admin MPQ.
+
+Saya ingin melaporkan data santri berikut:
+
+Nama: ${s.nama || "-"}
+Kode: ${s.kode || "-"}
+Kelas: ${s.kelas || "-"}
+ADNA: ${s.adna || "-"}
+Kamar: ${s.kamar || "-"}
+Muallim: ${s.muallim || "-"}
+Ruang: ${s.ruang || "-"}
+
+Bagian data yang salah:
+(Tulis di sini)
+
+Data yang benar:
+(Tulis di sini)
+
+Terima kasih.
+`.trim();
+
+  const url = `https://wa.me/${ADMIN_WA_NUMBER}?text=${encodeURIComponent(pesan)}`;
+
+  window.open(url, "_blank");
+}
   modalOverlay.style.display = "flex";
   document.body.style.overflow = "hidden";
 
