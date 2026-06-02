@@ -188,6 +188,21 @@ function showDetail(index) {
 </div>
   `;
 
+  setTimeout(() => {
+  const modalCard = document.querySelector(".modal-card");
+  const hint = document.getElementById("modalScrollHint");
+
+  if (!modalCard || !hint) return;
+
+  modalCard.addEventListener("scroll", () => {
+    if (modalCard.scrollTop > 80) {
+      hint.classList.add("hidden");
+    } else {
+      hint.classList.remove("hidden");
+    }
+  });
+}, 100);
+
   modalOverlay.style.display = "flex";
   document.body.style.overflow = "hidden";
 }
