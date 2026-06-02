@@ -322,19 +322,29 @@ function toggleAlpaDetail(button) {
 
     setTimeout(() => {
       box.classList.remove("open");
-    }, 380);
+    }, 450);
 
     return;
   }
 
-  box.classList.add("open");
-
   content.style.maxHeight = "0px";
+  box.classList.add("open");
 
   requestAnimationFrame(() => {
     content.style.maxHeight = content.scrollHeight + "px";
   });
 
+  if (badge) badge.textContent = "Tutup";
+
+  if (modalCard && window.innerWidth <= 600) {
+    setTimeout(() => {
+      modalCard.scrollTo({
+        top: box.offsetTop + 220,
+        behavior: "smooth"
+      });
+    }, 250);
+  }
+}
   if (badge) badge.textContent = "Tutup";
 
   setTimeout(() => {
