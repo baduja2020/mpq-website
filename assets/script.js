@@ -114,15 +114,19 @@ function setupModal() {
 
 function showDetail(index) {
   const s = hasilPencarian[index];
+
   const modalOverlay = document.getElementById("modalOverlay");
   const modalContent = document.getElementById("modalContent");
 
   if (!s || !modalOverlay || !modalContent) return;
 
+  const detailAlpaHtml = renderDetailAlpa(s);
+
   modalContent.innerHTML = `
-<div class="modal-profile">
-  <h3 class="modal-title">${s.nama || "-"}</h3>
-</div>
+    <div class="modal-profile">
+      <h3 class="modal-title">${s.nama || "-"}</h3>
+    </div>
+
     <div class="compact-detail-grid">
       <div class="compact-item">
         <span><i class="ri-id-card-line"></i> Kode</span>
@@ -176,18 +180,9 @@ function showDetail(index) {
         <span><i class="ri-checkbox-circle-line"></i> Status Selesai</span>
         ${badgeStatus(s.statusSelesai)}
       </div>
-
-      ${
-        s.keterangan && s.keterangan !== "-"
-          ? `
-            <div class="status-note">
-              <span><i class="ri-information-line"></i> Keterangan</span>
-              <p>${s.keterangan}</p>
-            </div>
-          `
-          : ""
-      }
     </div>
+
+    ${detailAlpaHtml}
   `;
 
   modalOverlay.style.display = "flex";
