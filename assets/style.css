@@ -2200,3 +2200,39 @@ nav a:hover::after{
     font-size:11px;
   }
 }
+/* ================= SEARCH HEADER INFO ================= */
+
+.search-header-pro{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  margin:18px 0 14px;
+}
+
+.search-header-pro strong{
+  color:var(--primary);
+  font-size:17px;
+  font-weight:900;
+}
+
+.search-header-pro small{
+  color:#6f7d74;
+  font-size:12px;
+  font-weight:600;
+  line-height:1.5;
+}
+
+@media(max-width:600px){
+  .search-header-pro{
+    margin:16px 0 12px;
+    gap:3px;
+  }
+
+  .search-header-pro strong{
+    font-size:14px;
+  }
+
+  .search-header-pro small{
+    font-size:11px;
+  }
+}
