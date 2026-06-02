@@ -172,11 +172,11 @@ async function cekSantri(force = false) {
 
     if (latestKeyword !== keyword) return;
 
-    if (!json.success || !json.data || json.data.length === 0) {
-      hasilPencarian = [];
-      result.innerHTML = `<div class="empty-state">Data santri tidak ditemukan.</div>`;
-      return;
-    }
+  if (!json.success || !json.data || json.data.length === 0) {
+  hasilPencarian = [];
+  result.innerHTML = renderEmptySearchState(keyword);
+  return;
+}
 
     hasilPencarian = json.data;
     tampilkanDaftar();
@@ -322,7 +322,32 @@ function renderSearchSkeleton() {
     </div>
   `;
 }
+function renderEmptySearchState(keyword = "") {
+  return `
+    <div class="search-empty-card">
+      <div class="search-empty-icon">
+        <i class="ri-search-eye-line"></i>
+      </div>
 
+      <h3>Data tidak ditemukan</h3>
+
+      <p>
+        Tidak ada santri yang cocok dengan pencarian
+        <strong>${escapeHtml(keyword)}</strong>.
+      </p>
+
+      <div class="search-empty-tips">
+        <span>Coba cari dengan:</span>
+
+        <div>
+          <small>Nama santri</small>
+          <small>Kelas: 3 IBT G</small>
+          <small>ADNA: A 01</small>
+        </div>
+      </div>
+    </div>
+  `;
+}
 
 /* MODAL */
 function setupModal() {
