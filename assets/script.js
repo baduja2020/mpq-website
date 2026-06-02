@@ -160,10 +160,7 @@ async function cekSantri(force = false) {
 
   const currentRequestId = ++searchRequestId;
 
-  result.innerHTML = `
-    <div class="loading">
-      <i class="ri-search-line"></i> Mencari data...
-    </div>
+  result.innerHTML = renderSearchSkeleton();
   `;
 
   try {
