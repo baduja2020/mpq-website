@@ -331,10 +331,10 @@ function toggleAlpaDetail(button) {
     if (modalCard && window.innerWidth <= 600) {
       setTimeout(() => {
         modalCard.scrollTo({
-          top: box.offsetTop + button.offsetHeight - 12,
+          top: box.offsetTop + button.offsetHeight - 20,
           behavior: "smooth"
         });
-      }, 120);
+      }, 200);
     }
   }
 }
