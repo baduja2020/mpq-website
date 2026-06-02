@@ -2236,3 +2236,54 @@ nav a:hover::after{
     font-size:11px;
   }
 }
+/* ================= LAPORKAN DATA SALAH ================= */
+
+.modal-report-box{
+  margin-top:18px;
+  padding-top:16px;
+  border-top:1px solid #edf3ee;
+}
+
+.report-data-btn{
+  width:100%;
+  border:none;
+  border-radius:16px;
+  padding:13px 16px;
+
+  background:#fff7ed;
+  color:#c2410c;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+
+  font-size:13px;
+  font-weight:900;
+  cursor:pointer;
+
+  transition:
+    background .2s ease,
+    transform .2s ease;
+}
+
+.report-data-btn i{
+  font-size:18px;
+}
+
+.report-data-btn:hover{
+  background:#ffedd5;
+  transform:translateY(-1px);
+}
+
+@media(max-width:600px){
+  .modal-report-box{
+    margin-top:16px;
+  }
+
+  .report-data-btn{
+    padding:13px 14px;
+    border-radius:15px;
+    font-size:13px;
+  }
+}
