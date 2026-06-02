@@ -1462,8 +1462,24 @@ nav a:hover::after{
   box-shadow:0 8px 22px rgba(22,101,52,.06);
 }
 
+.total-alpa-box{
+  margin:0 16px 14px;
+  padding:16px 16px;
+  border-radius:16px;
+
+  background:linear-gradient(135deg, #eef6ff, #f8fbff);
+  border:1px solid #cfe3ff;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+
+  box-shadow:0 8px 22px rgba(37,99,235,.06);
+}
+
 .total-alpa-box span{
-  color:#166534;
+  color:#1e3a8a;
   font-weight:900;
   font-size:13px;
 }
@@ -1474,8 +1490,8 @@ nav a:hover::after{
   padding:0 12px;
 
   border-radius:999px;
- background:#dff5e7;
-color:#166534;
+  background:#dbeafe;
+  color:#1d4ed8;
 
   display:flex;
   align-items:center;
