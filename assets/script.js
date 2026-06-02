@@ -199,9 +199,19 @@ function renderDetailAlpa(s) {
 
   return `
     <details class="alpa-detail-box">
-      <summary>
-        <span><i class="ri-file-list-3-line"></i> Detail Alpa & Tanggungan</span>
-        <small>Lihat rincian</small>
+      <summary class="alpa-detail-summary">
+        <div class="alpa-summary-left">
+          <div class="alpa-summary-icon">
+            <i class="ri-file-list-3-line"></i>
+          </div>
+
+          <div class="alpa-summary-text">
+            <h4>Detail Alpa & Tanggungan</h4>
+            <p>Ringkasan alpa dan status rekom</p>
+          </div>
+        </div>
+
+        <span class="alpa-summary-badge">Rincian</span>
       </summary>
 
       <div class="total-alpa-box">
@@ -228,8 +238,6 @@ function renderDetailAlpa(s) {
     </details>
   `;
 }
-
-
 
 
 
