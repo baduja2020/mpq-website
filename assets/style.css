@@ -1762,7 +1762,7 @@ nav a:hover::after{
     transform: translateX(-50%) translateY(8px);
   }
 }
-/* ===== TOMBOL X INPUT PENCARIAN ===== */
+/* ===== TOMBOL X KECIL DI INPUT PENCARIAN ===== */
 
 .search-input-wrap{
   position:relative;
@@ -1773,75 +1773,63 @@ nav a:hover::after{
 
 .search-input-wrap input{
   width:100%;
-  padding-right:52px;
+  padding-right:42px;
 }
 
-/* dibuat spesifik agar tidak ikut style .search-box button */
 .search-box .search-input-wrap .search-clear-btn{
-  position:absolute;
-  top:50%;
-  right:12px;
-  transform:translateY(-50%) scale(.85);
+  position:absolute !important;
+  top:50% !important;
+  right:14px !important;
+  transform:translateY(-50%) scale(.9) !important;
 
-  width:32px;
-  height:32px;
-  min-width:32px;
-  max-width:32px;
+  width:24px !important;
+  height:24px !important;
+  min-width:24px !important;
+  max-width:24px !important;
 
-  padding:0;
-  margin:0;
+  padding:0 !important;
+  margin:0 !important;
 
-  border:none;
-  border-radius:50%;
-  background:#eef7f1;
-  color:var(--primary);
+  border:none !important;
+  border-radius:50% !important;
 
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  background:rgba(22,101,52,.10) !important;
+  color:var(--primary) !important;
 
-  font-size:18px;
-  line-height:1;
-  font-weight:800;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+
+  font-size:14px !important;
+  line-height:1 !important;
+  font-weight:800 !important;
 
   cursor:pointer;
   opacity:0;
   visibility:hidden;
 
+  box-shadow:none !important;
+
   transition:
-    opacity .2s ease,
-    visibility .2s ease,
-    transform .2s ease,
-    background .2s ease,
-    color .2s ease;
+    opacity .18s ease,
+    visibility .18s ease,
+    transform .18s ease,
+    background .18s ease;
 }
 
 .search-box .search-input-wrap .search-clear-btn.show{
   opacity:1;
   visibility:visible;
-  transform:translateY(-50%) scale(1);
+  transform:translateY(-50%) scale(1) !important;
 }
 
-.search-box .search-input-wrap .search-clear-btn:hover{
-  background:var(--primary);
-  color:white;
+.search-box .search-input-wrap .search-clear-btn:hover,
+.search-box .search-input-wrap .search-clear-btn:active{
+  background:rgba(22,101,52,.16) !important;
+  color:var(--primary) !important;
 }
 
 .search-box .search-input-wrap .search-clear-btn i{
-  font-size:20px;
-  line-height:1;
-}
-
-@media(max-width:768px){
-  .search-input-wrap{
-    width:100%;
-  }
-
-  .search-box .search-input-wrap .search-clear-btn{
-    width:32px;
-    height:32px;
-    min-width:32px;
-    max-width:32px;
-    padding:0;
-  }
+  font-size:16px !important;
+  line-height:1 !important;
 }
