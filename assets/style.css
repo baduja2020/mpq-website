@@ -1447,28 +1447,43 @@ nav a:hover::after{
 }
 
 .total-alpa-box{
-  margin:0 16px 12px;
-  padding:14px 14px;
-  border-radius:14px;
-  background:#ffffff;
-  border:1px solid #edf3ee;
+  margin:0 16px 14px;
+  padding:16px 16px;
+  border-radius:16px;
+
+  background:linear-gradient(135deg, #e8f6ed, #f3fbf6);
+  border:1px solid #cdebd6;
+
   display:flex;
   align-items:center;
   justify-content:space-between;
+  gap:12px;
+
+  box-shadow:0 8px 22px rgba(22,101,52,.06);
 }
 
 .total-alpa-box span{
-  color:var(--muted);
-  font-weight:800;
+  color:#166534;
+  font-weight:900;
   font-size:13px;
 }
 
 .total-alpa-box strong{
-  color:var(--primary);
-  font-size:18px;
+  min-width:42px;
+  height:34px;
+  padding:0 12px;
+
+  border-radius:999px;
+  background:#166534;
+  color:white;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-size:17px;
   font-weight:900;
 }
-
 .rekom-detail-item{
   padding:12px 14px;
   border-radius:14px;
