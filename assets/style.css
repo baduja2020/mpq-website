@@ -1724,3 +1724,13 @@ nav a:hover::after{
     opacity: 1;
   }
 }
+.santri-modal-scroll-hint i{
+  font-size: 34px;
+  color: #1f7a45;
+  animation: scrollHintBounce 1.2s infinite;
+}
+.santri-modal-scroll-hint span{
+  font-size: 14px;
+  font-weight: 800;
+  color: #1f7a45;
+}
