@@ -1937,3 +1937,12 @@ nav a:hover::after{
     width:42%;
   }
 }
+/* ================= HIGHLIGHT HASIL PENCARIAN ================= */
+
+.search-highlight{
+  background:#fff3bf;
+  color:#7a4f00;
+  padding:0 3px;
+  border-radius:5px;
+  font-weight:900;
+}
