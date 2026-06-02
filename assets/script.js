@@ -218,6 +218,29 @@ function tampilkanDaftar() {
   `;
 }
 
+function renderSearchSkeleton() {
+  return `
+    <div class="search-skeleton-wrap">
+      ${Array.from({ length: 3 }).map(() => `
+        <div class="search-skeleton-card">
+          <div class="skeleton-line skeleton-name"></div>
+
+          <div class="skeleton-meta-row">
+            <div class="skeleton-line skeleton-small"></div>
+            <div class="skeleton-line skeleton-small"></div>
+          </div>
+
+          <div class="skeleton-meta-row">
+            <div class="skeleton-line skeleton-small"></div>
+            <div class="skeleton-line skeleton-small"></div>
+          </div>
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
+
 /* MODAL */
 function setupModal() {
   const closeModal = document.getElementById("closeModal");
