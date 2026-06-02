@@ -250,10 +250,16 @@ function tampilkanDaftar() {
   if (!result) return;
 
   const keyword = input ? input.value.trim() : "";
+  const isLimited = hasilPencarian.length >= 30;
 
   result.innerHTML = `
-    <div class="search-header">
-      Ditemukan ${hasilPencarian.length} santri
+    <div class="search-header search-header-pro">
+      <strong>Ditemukan ${hasilPencarian.length} santri</strong>
+      ${
+        isLimited
+          ? `<small>Menampilkan maksimal 30 hasil. Perjelas pencarian agar lebih akurat.</small>`
+          : `<small>Ketuk salah satu data untuk melihat detail.</small>`
+      }
     </div>
 
     ${hasilPencarian.map((s, index) => `
