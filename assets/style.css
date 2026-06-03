@@ -2579,3 +2579,12 @@ nav a:hover::after{
     display:none;
   }
 }
+/* Slider yang tidak perlu digeser: tombol disembunyikan */
+.slider-shell.slider-static .slider-btn{
+  display:none;
+}
+
+/* Desktop: kalau card tidak overflow, tetap tampil rapi */
+.slider-shell.slider-static .info-slider{
+  justify-content:center;
+}
