@@ -15,6 +15,7 @@ document.addEventListener("DOMContentLoaded", function () {
   setupSearch();
   setupModal();
   setupMenu();
+  setupAutoSliders();
   loadStats();
   loadPengumuman();
 });
@@ -852,5 +853,67 @@ function formatTanggal(value) {
     day: "2-digit",
     month: "long",
     year: "numeric"
+  });
+}
+function setupAutoSliders() {
+  const sliders = document.querySelectorAll("[data-auto-slider]");
+
+  sliders.forEach((slider) => {
+    const cards = slider.querySelectorAll(".info-card");
+
+    if (cards.length <= 1) return;
+
+    let timer = null;
+    const delay = 3200;
+
+    const getStep = () => {
+      const firstCard = cards[0];
+      const gap = parseFloat(getComputedStyle(slider).gap || 0);
+
+      return firstCard.offsetWidth + gap;
+    };
+
+    const autoMove = () => {
+      const maxScroll = slider.scrollWidth - slider.clientWidth;
+
+      if (maxScroll <= 10) return;
+
+      const step = getStep();
+      const nextLeft = slider.scrollLeft + step;
+
+      if (nextLeft >= maxScroll - 10) {
+        slider.scrollTo({
+          left: 0,
+          behavior: "smooth"
+        });
+      } else {
+        slider.scrollTo({
+          left: nextLeft,
+          behavior: "smooth"
+        });
+      }
+    };
+
+    const start = () => {
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+      stop();
+      timer = setInterval(autoMove, delay);
+    };
+
+    const stop = () => {
+      if (timer) {
+        clearInterval(timer);
+        timer = null;
+      }
+    };
+
+    slider.addEventListener("mouseenter", stop);
+    slider.addEventListener("mouseleave", start);
+
+    slider.addEventListener("touchstart", stop, { passive:true });
+    slider.addEventListener("touchend", start, { passive:true });
+
+    start();
   });
 }
