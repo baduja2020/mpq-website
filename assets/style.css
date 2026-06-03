@@ -2314,3 +2314,70 @@ nav a:hover::after{
     font-size:13px;
   }
 }
+/* ================= PENGUMUMAN KOSONG ================= */
+
+.announcement-empty-card{
+  max-width:460px;
+  margin:0 auto;
+  padding:32px 24px;
+
+  background:#ffffff;
+  border:1px solid #e5eee8;
+  border-radius:24px;
+
+  text-align:center;
+  box-shadow:0 12px 35px rgba(16,32,22,.05);
+}
+
+.announcement-empty-icon{
+  width:64px;
+  height:64px;
+  margin:0 auto 16px;
+
+  border-radius:20px;
+  background:#f1f7f3;
+  color:var(--primary);
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-size:30px;
+}
+
+.announcement-empty-card h3{
+  color:#102016;
+  font-size:20px;
+  font-weight:900;
+  margin-bottom:8px;
+}
+
+.announcement-empty-card p{
+  max-width:340px;
+  margin:0 auto;
+
+  color:#6f7d74;
+  font-size:14px;
+  line-height:1.7;
+}
+
+@media(max-width:600px){
+  .announcement-empty-card{
+    padding:26px 20px;
+    border-radius:22px;
+  }
+
+  .announcement-empty-icon{
+    width:56px;
+    height:56px;
+    font-size:26px;
+  }
+
+  .announcement-empty-card h3{
+    font-size:18px;
+  }
+
+  .announcement-empty-card p{
+    font-size:13px;
+  }
+}
