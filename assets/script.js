@@ -922,19 +922,19 @@ function setupSliderButtons() {
   const sliders = document.querySelectorAll("[data-auto-slider]");
 
   sliders.forEach((slider) => {
-    const sliderName = slider.dataset.autoSlider;
-    const prevBtn = document.querySelector(`[data-slider-prev="${sliderName}"]`);
-    const nextBtn = document.querySelector(`[data-slider-next="${sliderName}"]`);
+    const name = slider.dataset.autoSlider;
+    const prevBtn = document.querySelector(`[data-slider-prev="${name}"]`);
+    const nextBtn = document.querySelector(`[data-slider-next="${name}"]`);
 
     const getStep = () => {
-      const firstCard = slider.querySelector(".info-card");
-      if (!firstCard) return 320;
+      const card = slider.querySelector(".info-card");
+      if (!card) return 320;
 
       const gap = parseFloat(getComputedStyle(slider).gap || 0);
-      return firstCard.offsetWidth + gap;
+      return card.offsetWidth + gap;
     };
 
-    const goNext = () => {
+    function next() {
       const maxScroll = slider.scrollWidth - slider.clientWidth;
       const nextLeft = slider.scrollLeft + getStep();
 
@@ -942,9 +942,9 @@ function setupSliderButtons() {
         left: nextLeft >= maxScroll - 10 ? 0 : nextLeft,
         behavior: "smooth"
       });
-    };
+    }
 
-    const goPrev = () => {
+    function prev() {
       const maxScroll = slider.scrollWidth - slider.clientWidth;
       const prevLeft = slider.scrollLeft - getStep();
 
@@ -952,14 +952,9 @@ function setupSliderButtons() {
         left: prevLeft <= 10 ? maxScroll : prevLeft,
         behavior: "smooth"
       });
-    };
-
-    if (nextBtn) {
-      nextBtn.addEventListener("click", goNext);
     }
 
-    if (prevBtn) {
-      prevBtn.addEventListener("click", goPrev);
-    }
+    if (nextBtn) nextBtn.addEventListener("click", next);
+    if (prevBtn) prevBtn.addEventListener("click", prev);
   });
 }
