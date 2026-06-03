@@ -2692,3 +2692,17 @@ nav a:hover::after{
     margin-top:18px;
   }
 }
+/* ================= SLIDE HINT HANYA MOBILE ================= */
+
+/* Desktop/tablet besar: sembunyikan tulisan geser */
+.section .slide-hint{
+  display:none !important;
+}
+
+/* Mobile: tampilkan lagi */
+@media(max-width:700px){
+  .section .slide-hint{
+    display:flex !important;
+  }
+}
+
