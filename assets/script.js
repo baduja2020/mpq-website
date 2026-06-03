@@ -730,7 +730,7 @@ function badgeStatus(value) {
 
   return `<strong class="status-badge ${color}">${text}</strong>`;
 }
-function animateCounter(element, endValue, duration = 1200) {
+function animateCounter(element, endValue, duration = 1600) {
   if (!element) return;
 
   const finalValue = Number(endValue) || 0;
