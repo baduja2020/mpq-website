@@ -865,7 +865,11 @@ function setupAutoSliders() {
     if (cards.length <= 1) return;
 
     let timer = null;
-    const delay = 3200;
+    const delay = 3600;
+
+    const isScrollable = () => {
+      return slider.scrollWidth > slider.clientWidth + 20;
+    };
 
     const getStep = () => {
       const firstCard = cards[0];
@@ -875,14 +879,14 @@ function setupAutoSliders() {
     };
 
     const autoMove = () => {
+      if (!isScrollable()) return;
+
       const maxScroll = slider.scrollWidth - slider.clientWidth;
-
-      if (maxScroll <= 10) return;
-
       const step = getStep();
       const nextLeft = slider.scrollLeft + step;
 
-      if (nextLeft >= maxScroll - 10) {
+      // Kalau sudah sampai akhir, muter lagi ke awal
+      if (nextLeft >= maxScroll - 15) {
         slider.scrollTo({
           left: 0,
           behavior: "smooth"
@@ -899,6 +903,9 @@ function setupAutoSliders() {
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
       stop();
+
+      if (!isScrollable()) return;
+
       timer = setInterval(autoMove, delay);
     };
 
@@ -912,8 +919,10 @@ function setupAutoSliders() {
     slider.addEventListener("mouseenter", stop);
     slider.addEventListener("mouseleave", start);
 
-    slider.addEventListener("touchstart", stop, { passive:true });
-    slider.addEventListener("touchend", start, { passive:true });
+    slider.addEventListener("touchstart", stop, { passive: true });
+    slider.addEventListener("touchend", start, { passive: true });
+
+    window.addEventListener("resize", start);
 
     start();
   });
@@ -922,9 +931,25 @@ function setupSliderButtons() {
   const sliders = document.querySelectorAll("[data-auto-slider]");
 
   sliders.forEach((slider) => {
+    const shell = slider.closest(".slider-shell");
     const name = slider.dataset.autoSlider;
+
     const prevBtn = document.querySelector(`[data-slider-prev="${name}"]`);
     const nextBtn = document.querySelector(`[data-slider-next="${name}"]`);
+
+    const isScrollable = () => {
+      return slider.scrollWidth > slider.clientWidth + 20;
+    };
+
+    const updateButtonState = () => {
+      if (!shell) return;
+
+      if (!isScrollable()) {
+        shell.classList.add("slider-static");
+      } else {
+        shell.classList.remove("slider-static");
+      }
+    };
 
     const getStep = () => {
       const card = slider.querySelector(".info-card");
@@ -936,25 +961,53 @@ function setupSliderButtons() {
 
     function next() {
       const maxScroll = slider.scrollWidth - slider.clientWidth;
-      const nextLeft = slider.scrollLeft + getStep();
 
-      slider.scrollTo({
-        left: nextLeft >= maxScroll - 10 ? 0 : nextLeft,
-        behavior: "smooth"
-      });
+      if (maxScroll <= 20) return;
+
+      const step = getStep();
+      const nextLeft = slider.scrollLeft + step;
+
+      // Kalau sudah mentok kanan, balik ke awal
+      if (nextLeft >= maxScroll - 15) {
+        slider.scrollTo({
+          left: 0,
+          behavior: "smooth"
+        });
+      } else {
+        slider.scrollTo({
+          left: nextLeft,
+          behavior: "smooth"
+        });
+      }
     }
 
     function prev() {
       const maxScroll = slider.scrollWidth - slider.clientWidth;
-      const prevLeft = slider.scrollLeft - getStep();
 
-      slider.scrollTo({
-        left: prevLeft <= 10 ? maxScroll : prevLeft,
-        behavior: "smooth"
-      });
+      if (maxScroll <= 20) return;
+
+      const step = getStep();
+      const prevLeft = slider.scrollLeft - step;
+
+      // Kalau sudah mentok kiri, balik ke akhir
+      if (prevLeft <= 15) {
+        slider.scrollTo({
+          left: maxScroll,
+          behavior: "smooth"
+        });
+      } else {
+        slider.scrollTo({
+          left: prevLeft,
+          behavior: "smooth"
+        });
+      }
     }
 
     if (nextBtn) nextBtn.addEventListener("click", next);
     if (prevBtn) prevBtn.addEventListener("click", prev);
+
+    updateButtonState();
+
+    window.addEventListener("resize", updateButtonState);
   });
 }
