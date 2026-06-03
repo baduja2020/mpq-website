@@ -730,7 +730,32 @@ function badgeStatus(value) {
 
   return `<strong class="status-badge ${color}">${text}</strong>`;
 }
+function animateCounter(element, endValue, duration = 1400) {
+  if (!element) return;
 
+  const finalValue = Number(endValue) || 0;
+  const startValue = 0;
+  const startTime = performance.now();
+
+  function updateCounter(currentTime) {
+    const elapsed = currentTime - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+
+    // easing biar animasinya halus
+    const easeOut = 1 - Math.pow(1 - progress, 3);
+    const currentValue = Math.floor(startValue + (finalValue - startValue) * easeOut);
+
+    element.textContent = currentValue;
+
+    if (progress < 1) {
+      requestAnimationFrame(updateCounter);
+    } else {
+      element.textContent = finalValue;
+    }
+  }
+
+  requestAnimationFrame(updateCounter);
+}
 /* STATS */
 async function loadStats() {
   const statSantri = document.getElementById("statSantri");
@@ -738,11 +763,11 @@ async function loadStats() {
   const statRuang = document.getElementById("statRuang");
   const statRekom = document.getElementById("statRekom");
   const statPindah = document.getElementById("statPindah");
-const statBoyong = document.getElementById("statBoyong");
-const statNonaktif = document.getElementById("statNonaktif");
-const heroSantri = document.getElementById("heroSantri");
-const heroMuallim = document.getElementById("heroMuallim");
-const heroRekom = document.getElementById("heroRekom");
+  const statBoyong = document.getElementById("statBoyong");
+  const statNonaktif = document.getElementById("statNonaktif");
+  const heroSantri = document.getElementById("heroSantri");
+  const heroMuallim = document.getElementById("heroMuallim");
+  const heroRekom = document.getElementById("heroRekom");
 
   if (!statSantri) return;
 
@@ -752,24 +777,23 @@ const heroRekom = document.getElementById("heroRekom");
 
     if (!data.success) return;
 
-    statSantri.textContent = data.santriAktif;
-    statMuallim.textContent = data.totalMuallim;
-    statRuang.textContent = data.totalRuang;
-    statRekom.textContent = data.rekomAktif;
-if (heroSantri) heroSantri.textContent = data.santriAktif;
-if (heroMuallim) heroMuallim.textContent = data.totalMuallim;
-if (heroRekom) heroRekom.textContent = data.rekomAktif;
-if (statPindah) statPindah.textContent = data.santriPindah;
-if (statBoyong) statBoyong.textContent = data.santriBoyong;
-if (statNonaktif) statNonaktif.textContent = data.santriNonaktif;
-    if (statPindah) statPindah.textContent = data.santriPindah;
-if (statBoyong) statBoyong.textContent = data.santriBoyong;
-if (statNonaktif) statNonaktif.textContent = data.santriNonaktif;
+    animateCounter(statSantri, data.santriAktif);
+    animateCounter(statMuallim, data.totalMuallim);
+    animateCounter(statRuang, data.totalRuang);
+    animateCounter(statRekom, data.rekomAktif);
+
+    if (heroSantri) animateCounter(heroSantri, data.santriAktif);
+    if (heroMuallim) animateCounter(heroMuallim, data.totalMuallim);
+    if (heroRekom) animateCounter(heroRekom, data.rekomAktif);
+
+    if (statPindah) animateCounter(statPindah, data.santriPindah);
+    if (statBoyong) animateCounter(statBoyong, data.santriBoyong);
+    if (statNonaktif) animateCounter(statNonaktif, data.santriNonaktif);
+
   } catch (error) {
     console.log("Gagal load statistik");
   }
 }
-
 /* PENGUMUMAN */
 async function loadPengumuman() {
   const container = document.getElementById("pengumumanList");
