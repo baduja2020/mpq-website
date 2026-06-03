@@ -2381,3 +2381,87 @@ nav a:hover::after{
     font-size:13px;
   }
 }
+/* ================= AUTO SLIDER CARD SECTION ================= */
+
+.slider-shell{
+  max-width:1180px;
+  margin:0 auto;
+  position:relative;
+}
+
+.info-slider{
+  display:flex !important;
+  grid-template-columns:none !important;
+
+  gap:22px;
+  overflow-x:auto;
+  overflow-y:hidden;
+
+  scroll-snap-type:x mandatory;
+  scroll-behavior:smooth;
+
+  padding:4px 4px 22px;
+  -webkit-overflow-scrolling:touch;
+
+  scrollbar-width:none;
+}
+
+.info-slider::-webkit-scrollbar{
+  display:none;
+}
+
+.info-slider .info-card{
+  flex:0 0 clamp(300px, 42%, 420px);
+  scroll-snap-align:start;
+  scroll-snap-stop:always;
+
+  min-height:260px;
+}
+
+.info-slider .info-card:hover{
+  transform:translateY(-4px);
+}
+
+/* Hint khusus slider */
+.section .slide-hint{
+  max-width:1180px;
+  margin:0 auto 16px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+
+  color:#6f7d74;
+  font-size:13px;
+  font-weight:700;
+}
+
+.section .slide-hint i{
+  color:var(--primary);
+  font-size:17px;
+}
+
+/* Mobile */
+@media(max-width:700px){
+  .slider-shell{
+    max-width:100%;
+  }
+
+  .info-slider{
+    gap:14px;
+    padding:4px 22px 20px;
+  }
+
+  .info-slider .info-card{
+    flex:0 0 86%;
+    min-height:auto;
+  }
+
+  .section .slide-hint{
+    justify-content:flex-start;
+    padding:0 24px;
+    font-size:12px;
+    margin-bottom:12px;
+  }
+}
