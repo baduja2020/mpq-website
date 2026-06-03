@@ -680,6 +680,33 @@ nav a:hover::after{
   text-align:center;
   font-weight:800;
 }
+.search-period-info{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+
+  margin:8px 0 20px;
+  padding:8px 12px;
+
+  border-radius:999px;
+  background:#f1f7f3;
+  color:#166534;
+
+  font-size:12px;
+  font-weight:800;
+}
+
+.search-period-info i{
+  font-size:15px;
+}
+
+@media(max-width:600px){
+  .search-period-info{
+    margin:6px 0 18px;
+    font-size:11px;
+    padding:7px 10px;
+  }
+}
 
 /* ================= MODAL DETAIL ================= */
 
