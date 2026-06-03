@@ -882,21 +882,22 @@ function setupAutoSliders() {
       if (!isScrollable()) return;
 
       const maxScroll = slider.scrollWidth - slider.clientWidth;
+      const currentLeft = slider.scrollLeft;
       const step = getStep();
-      const nextLeft = slider.scrollLeft + step;
 
-      // Kalau sudah sampai akhir, muter lagi ke awal
-      if (nextLeft >= maxScroll - 15) {
+      // Kalau posisi sekarang sudah kanan, balik ke awal
+      if (currentLeft >= maxScroll - 15) {
         slider.scrollTo({
           left: 0,
           behavior: "smooth"
         });
-      } else {
-        slider.scrollTo({
-          left: nextLeft,
-          behavior: "smooth"
-        });
+        return;
       }
+
+      slider.scrollTo({
+        left: Math.min(currentLeft + step, maxScroll),
+        behavior: "smooth"
+      });
     };
 
     const start = () => {
@@ -964,21 +965,24 @@ function setupSliderButtons() {
 
       if (maxScroll <= 20) return;
 
+      const currentLeft = slider.scrollLeft;
       const step = getStep();
-      const nextLeft = slider.scrollLeft + step;
 
-      // Kalau sudah mentok kanan, balik ke awal
-      if (nextLeft >= maxScroll - 15) {
+      // Kalau posisi SEKARANG sudah di kanan, baru balik ke awal
+      if (currentLeft >= maxScroll - 15) {
         slider.scrollTo({
           left: 0,
           behavior: "smooth"
         });
-      } else {
-        slider.scrollTo({
-          left: nextLeft,
-          behavior: "smooth"
-        });
+        return;
       }
+
+      // Kalau belum mentok, geser ke kanan.
+      // Kalau step terlalu besar, langsung ke posisi paling kanan.
+      slider.scrollTo({
+        left: Math.min(currentLeft + step, maxScroll),
+        behavior: "smooth"
+      });
     }
 
     function prev() {
@@ -986,28 +990,28 @@ function setupSliderButtons() {
 
       if (maxScroll <= 20) return;
 
+      const currentLeft = slider.scrollLeft;
       const step = getStep();
-      const prevLeft = slider.scrollLeft - step;
 
-      // Kalau sudah mentok kiri, balik ke akhir
-      if (prevLeft <= 15) {
+      // Kalau posisi SEKARANG masih di kiri, klik kiri muter ke akhir
+      if (currentLeft <= 15) {
         slider.scrollTo({
           left: maxScroll,
           behavior: "smooth"
         });
-      } else {
-        slider.scrollTo({
-          left: prevLeft,
-          behavior: "smooth"
-        });
+        return;
       }
+
+      slider.scrollTo({
+        left: Math.max(currentLeft - step, 0),
+        behavior: "smooth"
+      });
     }
 
     if (nextBtn) nextBtn.addEventListener("click", next);
     if (prevBtn) prevBtn.addEventListener("click", prev);
 
     updateButtonState();
-
     window.addEventListener("resize", updateButtonState);
   });
 }
