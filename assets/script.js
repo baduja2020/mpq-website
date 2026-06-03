@@ -16,6 +16,7 @@ document.addEventListener("DOMContentLoaded", function () {
   setupModal();
   setupMenu();
   setupAutoSliders();
+  setupSliderButtons();
   loadStats();
   loadPengumuman();
 });
@@ -915,5 +916,50 @@ function setupAutoSliders() {
     slider.addEventListener("touchend", start, { passive:true });
 
     start();
+  });
+}
+function setupSliderButtons() {
+  const sliders = document.querySelectorAll("[data-auto-slider]");
+
+  sliders.forEach((slider) => {
+    const sliderName = slider.dataset.autoSlider;
+    const prevBtn = document.querySelector(`[data-slider-prev="${sliderName}"]`);
+    const nextBtn = document.querySelector(`[data-slider-next="${sliderName}"]`);
+
+    const getStep = () => {
+      const firstCard = slider.querySelector(".info-card");
+      if (!firstCard) return 320;
+
+      const gap = parseFloat(getComputedStyle(slider).gap || 0);
+      return firstCard.offsetWidth + gap;
+    };
+
+    const goNext = () => {
+      const maxScroll = slider.scrollWidth - slider.clientWidth;
+      const nextLeft = slider.scrollLeft + getStep();
+
+      slider.scrollTo({
+        left: nextLeft >= maxScroll - 10 ? 0 : nextLeft,
+        behavior: "smooth"
+      });
+    };
+
+    const goPrev = () => {
+      const maxScroll = slider.scrollWidth - slider.clientWidth;
+      const prevLeft = slider.scrollLeft - getStep();
+
+      slider.scrollTo({
+        left: prevLeft <= 10 ? maxScroll : prevLeft,
+        behavior: "smooth"
+      });
+    };
+
+    if (nextBtn) {
+      nextBtn.addEventListener("click", goNext);
+    }
+
+    if (prevBtn) {
+      prevBtn.addEventListener("click", goPrev);
+    }
   });
 }
