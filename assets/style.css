@@ -2446,22 +2446,36 @@ nav a:hover::after{
 @media(max-width:700px){
   .slider-shell{
     max-width:100%;
+    overflow:hidden;
   }
 
   .info-slider{
     gap:14px;
-    padding:4px 22px 20px;
+    padding:4px 0 22px;
+
+    scroll-snap-type:x mandatory;
+    scroll-padding-inline:0;
+  }
+
+  .info-slider::before,
+  .info-slider::after{
+    content:"";
+    flex:0 0 7%;
   }
 
   .info-slider .info-card{
     flex:0 0 86%;
-    min-height:auto;
+    max-width:none;
+    min-height:235px;
+
+    scroll-snap-align:center;
   }
 
   .section .slide-hint{
-    justify-content:flex-start;
+    justify-content:center;
     padding:0 24px;
     font-size:12px;
     margin-bottom:12px;
+    text-align:center;
   }
 }
