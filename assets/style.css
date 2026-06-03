@@ -2479,3 +2479,59 @@ nav a:hover::after{
     text-align:center;
   }
 }
+/* ================= SLIDER BUTTON DESKTOP ================= */
+
+.slider-shell{
+  position:relative;
+}
+
+.slider-btn{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  z-index:5;
+
+  width:44px;
+  height:44px;
+  border:none;
+  border-radius:50%;
+
+  background:#ffffff;
+  color:var(--primary);
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-size:26px;
+  cursor:pointer;
+
+  box-shadow:0 12px 30px rgba(16,32,22,.12);
+  border:1px solid #e5eee8;
+
+  transition:
+    background .2s ease,
+    color .2s ease,
+    transform .2s ease,
+    opacity .2s ease;
+}
+
+.slider-btn:hover{
+  background:var(--primary);
+  color:white;
+  transform:translateY(-50%) scale(1.06);
+}
+
+.slider-prev{
+  left:-22px;
+}
+
+.slider-next{
+  right:-22px;
+}
+
+@media(max-width:700px){
+  .slider-btn{
+    display:none;
+  }
+}
