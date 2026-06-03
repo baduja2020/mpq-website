@@ -808,10 +808,10 @@ async function loadPengumuman() {
     const response = await fetch(`${API_URL}?mode=pengumuman`);
     const json = await response.json();
 
-    if (!json.success || !json.data || json.data.length === 0) {
-      container.innerHTML = `<div class="empty-state">Belum ada pengumuman aktif.</div>`;
-      return;
-    }
+   if (!json.success || !json.data || json.data.length === 0) {
+  container.innerHTML = renderPengumumanKosong();
+  return;
+}
 
     container.innerHTML = json.data.map(item => `
       <article class="announcement-card">
@@ -824,6 +824,20 @@ async function loadPengumuman() {
   } catch (error) {
     container.innerHTML = `<div class="empty-state">Gagal memuat pengumuman.</div>`;
   }
+}
+function renderPengumumanKosong() {
+  return `
+    <div class="announcement-empty-card">
+      <div class="announcement-empty-icon">
+        <i class="ri-megaphone-line"></i>
+      </div>
+
+      <h3>Belum Ada Pengumuman</h3>
+      <p>
+        Saat ini belum ada pengumuman dari MPQ Al Falah.
+      </p>
+    </div>
+  `;
 }
 
 function formatTanggal(value) {
