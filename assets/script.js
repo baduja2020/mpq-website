@@ -834,7 +834,8 @@ function renderPengumumanKosong() {
 
       <h3>Belum Ada Pengumuman</h3>
       <p>
-        Saat ini belum ada pengumuman dari MPQ Al Falah.
+        Saat ini belum ada pengumuman dari <br>
+        MPQ Al Falah.
       </p>
     </div>
   `;
