@@ -2588,3 +2588,107 @@ nav a:hover::after{
 .slider-shell.slider-static .info-slider{
   justify-content:center;
 }
+/* ================= POLISHING SLIDER CARD ================= */
+
+/* Card slider dibuat tinggi rata dan lebih rapi */
+.info-slider .info-card{
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
+
+  min-height:250px;
+  padding:34px 32px;
+}
+
+/* Link di card rata bawah agar semua card terlihat sejajar */
+.info-slider .info-card a{
+  margin-top:auto;
+  width:max-content;
+}
+
+/* Icon card lebih konsisten */
+.info-slider .info-card > i{
+  width:58px;
+  height:58px;
+  border-radius:18px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  margin-bottom:28px;
+}
+
+/* Judul card */
+.info-slider .info-card h3{
+  margin-bottom:12px;
+  line-height:1.35;
+}
+
+/* Paragraf card */
+.info-slider .info-card p{
+  line-height:1.75;
+}
+
+/* Tombol slider dibuat lebih soft */
+.slider-btn{
+  width:42px;
+  height:42px;
+
+  background:rgba(255,255,255,.92);
+  backdrop-filter:blur(10px);
+
+  box-shadow:0 14px 34px rgba(16,32,22,.10);
+}
+
+.slider-btn i{
+  font-size:26px;
+}
+
+.slider-prev{
+  left:-16px;
+}
+
+.slider-next{
+  right:-16px;
+}
+
+/* Hover lebih elegan */
+.slider-btn:hover{
+  background:var(--primary);
+  color:#ffffff;
+  transform:translateY(-50%) scale(1.04);
+}
+
+/* Jarak bawah slider biar tidak terlalu mepet */
+.info-slider{
+  padding-bottom:30px;
+}
+
+/* Mobile tetap compact dan minimal */
+@media(max-width:700px){
+  .info-slider .info-card{
+    min-height:240px;
+    padding:30px 28px;
+  }
+
+  .info-slider .info-card > i{
+    width:54px;
+    height:54px;
+    border-radius:17px;
+    margin-bottom:26px;
+  }
+
+  .info-slider .info-card h3{
+    font-size:20px;
+  }
+
+  .info-slider .info-card p{
+    font-size:14px;
+    line-height:1.8;
+  }
+
+  .info-slider .info-card a{
+    margin-top:18px;
+  }
+}
