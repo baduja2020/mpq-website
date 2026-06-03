@@ -741,9 +741,11 @@ function animateCounter(element, endValue, duration = 1200) {
     const elapsed = currentTime - startTime;
     const progress = Math.min(elapsed / duration, 1);
 
-    // easing biar animasinya halus
+    // animasi halus
     const easeOut = 1 - Math.pow(1 - progress, 3);
-    const currentValue = Math.floor(startValue + (finalValue - startValue) * easeOut);
+    const currentValue = Math.floor(
+      startValue + (finalValue - startValue) * easeOut
+    );
 
     element.textContent = currentValue;
 
@@ -762,14 +764,16 @@ async function loadStats() {
   const statMuallim = document.getElementById("statMuallim");
   const statRuang = document.getElementById("statRuang");
   const statRekom = document.getElementById("statRekom");
+
   const statPindah = document.getElementById("statPindah");
   const statBoyong = document.getElementById("statBoyong");
   const statNonaktif = document.getElementById("statNonaktif");
+
   const heroSantri = document.getElementById("heroSantri");
   const heroMuallim = document.getElementById("heroMuallim");
   const heroRekom = document.getElementById("heroRekom");
 
-  if (!statSantri) return;
+  if (!statSantri && !heroSantri) return;
 
   try {
     const response = await fetch(`${API_URL}?mode=stats`);
@@ -782,13 +786,13 @@ async function loadStats() {
     animateCounter(statRuang, data.totalRuang);
     animateCounter(statRekom, data.rekomAktif);
 
-    if (heroSantri) animateCounter(heroSantri, data.santriAktif);
-    if (heroMuallim) animateCounter(heroMuallim, data.totalMuallim);
-    if (heroRekom) animateCounter(heroRekom, data.rekomAktif);
+    animateCounter(heroSantri, data.santriAktif);
+    animateCounter(heroMuallim, data.totalMuallim);
+    animateCounter(heroRekom, data.rekomAktif);
 
-    if (statPindah) animateCounter(statPindah, data.santriPindah);
-    if (statBoyong) animateCounter(statBoyong, data.santriBoyong);
-    if (statNonaktif) animateCounter(statNonaktif, data.santriNonaktif);
+    animateCounter(statPindah, data.santriPindah);
+    animateCounter(statBoyong, data.santriBoyong);
+    animateCounter(statNonaktif, data.santriNonaktif);
 
   } catch (error) {
     console.log("Gagal load statistik");
