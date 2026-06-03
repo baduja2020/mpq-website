@@ -865,7 +865,7 @@ function setupAutoSliders() {
     if (cards.length <= 1) return;
 
     let timer = null;
-    const delay = 3600;
+    const delay = 4600;
 
     const isScrollable = () => {
       return slider.scrollWidth > slider.clientWidth + 20;
