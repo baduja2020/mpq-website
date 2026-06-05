@@ -118,6 +118,46 @@ Cari
 
 </div>
 
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const params = new URLSearchParams(window.location.search);
+  const keyword = params.get("q");
 
+  if (!keyword) return;
+
+  const cleanKeyword = keyword.trim();
+  if (!cleanKeyword) return;
+
+  const input =
+    document.querySelector("#searchInput") ||
+    document.querySelector("#searchKeyword") ||
+    document.querySelector("input[type='search']") ||
+    document.querySelector("input[placeholder*='Nama']") ||
+    document.querySelector("input[placeholder*='Kelas']") ||
+    document.querySelector("input[placeholder*='Adna']");
+
+  if (!input) {
+    console.warn("Input pencarian tidak ditemukan.");
+    return;
+  }
+
+  input.value = cleanKeyword;
+
+  input.dispatchEvent(new Event("input", { bubbles: true }));
+  input.dispatchEvent(new Event("change", { bubbles: true }));
+
+  setTimeout(function () {
+    const tombolCari =
+      document.querySelector("#searchButton") ||
+      document.querySelector("#btnSearch") ||
+      document.querySelector("button[type='submit']") ||
+      document.querySelector("button");
+
+    if (tombolCari) {
+      tombolCari.click();
+    }
+  }, 400);
+});
+</script>
 </body>
 </html>
