@@ -25,51 +25,6 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 
-
-function setupInteractiveFeedback() {
-  // Feedback hanya untuk card/konten. Navbar sengaja tidak dimasukkan agar menu tetap aman.
-  const selector = [
-    '.hero-btn',
-    '.info-card',
-    '.stat-card',
-    '.announcement-card',
-    '.search-card',
-    '.search-detail-btn',
-    '.accordion summary',
-    '.pedoman-card',
-    '.footer-wa',
-    '.rekom-card',
-    '.rekom-item',
-    '.rekom-summary-card'
-  ].join(',');
-
-  const addPress = (el) => {
-    if (!el) return;
-    el.classList.add('press-feedback');
-    if (el.matches('.info-card, .stat-card, .announcement-card, .search-card, .pedoman-card, .rekom-card, .rekom-item, .rekom-summary-card')) {
-      el.classList.add('press-glow');
-    }
-  };
-
-  const clearPress = () => {
-    document.querySelectorAll('.press-feedback, .press-glow').forEach((el) => {
-      el.classList.remove('press-feedback');
-      el.classList.remove('press-glow');
-    });
-  };
-
-  document.addEventListener('pointerdown', (event) => {
-    const target = event.target.closest(selector);
-    if (target) addPress(target);
-  }, { passive: true });
-
-  document.addEventListener('pointerup', clearPress, { passive: true });
-  document.addEventListener('pointercancel', clearPress, { passive: true });
-}
-
-
-
-
 function setupScrollReveal() {
   const selector = [
     '.intro-section .about-card',
@@ -112,11 +67,42 @@ function setupScrollReveal() {
       }
     });
   }, {
-    threshold: 0.06,
-    rootMargin: '0px 0px -5% 0px'
+    threshold: 0.04,
+    rootMargin: '0px 0px -2% 0px'
   });
 
   elements.forEach(el => observer.observe(el));
+}
+
+
+function setupInteractiveFeedback() {
+  const selector = [
+    '.hero-btn',
+    '.info-card',
+    '.stat-card',
+    '.announcement-card',
+    '.search-card',
+    '.search-detail-btn',
+    '.pedoman-card',
+    '.footer-wa',
+    '.rekom-card',
+    '.rekom-item',
+    '.rekom-summary-card'
+  ].join(',');
+
+  const clearPress = () => {
+    document.querySelectorAll('.press-feedback').forEach((el) => {
+      el.classList.remove('press-feedback');
+    });
+  };
+
+  document.addEventListener('pointerdown', (event) => {
+    const target = event.target.closest(selector);
+    if (target) target.classList.add('press-feedback');
+  }, { passive: true });
+
+  document.addEventListener('pointerup', clearPress, { passive: true });
+  document.addEventListener('pointercancel', clearPress, { passive: true });
 }
 
 /* MENU */
@@ -127,7 +113,6 @@ function setupMenu() {
   if (!menuToggle || !mainNav) return;
 
   menuToggle.addEventListener("click", function () {
-    menuToggle.classList.remove("press-feedback");
     mainNav.classList.toggle("show");
   });
 
