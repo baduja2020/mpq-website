@@ -5,7 +5,7 @@
   --text:#102016;
   --muted:#68766d;
   --line:#dce8df;
-  --primary:#2b302d;
+  --primary:#166534;
   --primary-2:#15803d;
   --primary-soft:#e8f6ed;
   --dark:#0d1f14;
@@ -632,6 +632,7 @@ nav a:hover::after{
 }
 
 .search-card{
+  position:relative;
   background:white;
   border:1px solid var(--line);
   border-radius:16px;
@@ -644,6 +645,30 @@ nav a:hover::after{
 .search-card:hover{
   background:var(--primary-soft);
   border-color:var(--primary);
+}
+
+.rekom-indicator-dot{
+  position:absolute;
+  top:12px;
+  right:12px;
+  width:10px;
+  height:10px;
+  border-radius:999px;
+  border:2px solid #ffffff;
+  box-shadow:0 4px 12px rgba(16,32,22,.22);
+  z-index:4;
+}
+
+.rekom-indicator-dot.active{
+  background:#ef4444;
+}
+
+.rekom-indicator-dot.done{
+  background:#16a34a;
+}
+
+.search-card.has-rekom-indicator .search-card-top{
+  padding-right:18px;
 }
 
 .search-name{
@@ -2815,6 +2840,7 @@ nav a:hover::after{
 }
 
 .rekom-row{
+  position:relative;
   border:1px solid var(--line);
   border-radius:18px;
   background:var(--surface);
@@ -2832,6 +2858,11 @@ nav a:hover::after{
   font-family:inherit;
   cursor:pointer;
   display:block;
+}
+
+.rekom-row-head .rekom-indicator-dot{
+  top:10px;
+  right:13px;
 }
 
 .rekom-row-head:hover{
