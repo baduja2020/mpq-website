@@ -5,7 +5,7 @@
   --text:#102016;
   --muted:#68766d;
   --line:#dce8df;
-  --primary:#166534;
+  --primary:#2b302d;
   --primary-2:#15803d;
   --primary-soft:#e8f6ed;
   --dark:#0d1f14;
@@ -3238,3 +3238,139 @@ nav a:hover::after{
   background:#f8fafc;
 }
 
+
+
+/* ================= REKOM STATUS COLOR PATCH ================= */
+.status-detail-row{
+  padding:11px 12px;
+  border:1px solid transparent;
+  border-radius:14px;
+  margin-top:8px;
+  border-bottom:1px solid transparent;
+}
+
+.status-detail-row:first-of-type{
+  margin-top:0;
+}
+
+.status-detail-row:last-child{
+  border-bottom:1px solid transparent;
+}
+
+.status-detail-row.status-row-success{
+  background:#effaf1;
+  border-color:#b8e2c3;
+}
+
+.status-detail-row.status-row-warning{
+  background:#fff8e6;
+  border-color:#f3c77a;
+}
+
+.status-detail-row.status-row-danger{
+  background:#fff1f0;
+  border-color:#fecaca;
+}
+
+.status-detail-row.status-row-neutral{
+  background:#f8fafc;
+  border-color:#e2e8f0;
+}
+
+.status-detail-row.status-row-success span i{
+  color:#0f7a3b;
+}
+
+.status-detail-row.status-row-warning span i{
+  color:#a15c00;
+}
+
+.status-detail-row.status-row-danger span i{
+  color:#b42318;
+}
+
+.rekom-head-tags{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin-top:9px;
+  padding-right:8px;
+}
+
+.rekom-mini-tag{
+  display:inline-flex;
+  align-items:center;
+  min-height:24px;
+  padding:4px 9px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:900;
+  line-height:1;
+  border:1px solid transparent;
+  white-space:nowrap;
+}
+
+.rekom-mini-tag.total,
+.rekom-total-strip span.info-total{
+  background:#eef5ff;
+  color:#1d4ed8;
+  border-color:#bfdbfe;
+}
+
+.rekom-mini-tag.success{
+  background:#eaf8ee;
+  color:#0f7a3b;
+  border-color:#b8e2c3;
+}
+
+.rekom-mini-tag.warning{
+  background:#fff5d9;
+  color:#8a5a00;
+  border-color:#f3c77a;
+}
+
+.rekom-mini-tag.danger{
+  background:#fff1f0;
+  color:#b42318;
+  border-color:#fecaca;
+}
+
+.rekom-mini-tag.neutral{
+  background:#eef5f1;
+  color:#64748b;
+  border-color:#dbe7df;
+}
+
+.rekom-total-strip span.info-total strong{
+  color:inherit;
+}
+
+.rekom-total-strip span.info-selesai.warning{
+  background:#fff5d9;
+  color:#8a5a00;
+}
+
+.rekom-note{
+  border:1px solid #e9d5ff;
+  background:#faf5ff;
+  color:#6b21a8;
+}
+
+.rekom-note strong{
+  color:inherit;
+}
+
+@media(max-width:520px){
+  .rekom-row-head{
+    padding-right:44px;
+  }
+
+  .rekom-head-tags{
+    gap:5px;
+  }
+
+  .rekom-mini-tag{
+    font-size:10.5px;
+    padding:4px 8px;
+  }
+}
