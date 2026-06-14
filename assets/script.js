@@ -1023,6 +1023,7 @@ const rekomState = {
   filtered: [],
   loaded: false,
   openedKey: null,
+  visiblePeriods: [],
 };
 
 function setupRekomPage() {
@@ -1237,6 +1238,51 @@ function updateRekomSummary() {
   summary.innerHTML = `Menampilkan <strong>${total}</strong> santri aktif`;
 }
 
+
+const REKOM_PERIODS = [
+  { label: "Penertiban", alpaKey: "alpaPenertiban", statusKey: "sPenertiban" },
+  { label: "Rekom 1", alpaKey: "alpa1", statusKey: "s1" },
+  { label: "Rekom 2", alpaKey: "alpa2", statusKey: "s2" },
+  { label: "Rekom 3", alpaKey: "alpa3", statusKey: "s3" },
+  { label: "Rekom 4", alpaKey: "alpa4", statusKey: "s4" },
+];
+
+function toRekomNumber(value) {
+  const raw = String(value ?? "").replace(",", ".").trim();
+  const num = Number(raw);
+  return Number.isFinite(num) ? num : 0;
+}
+
+function hasRekomPeriodData(item, period) {
+  const alpa = toRekomNumber(item?.[period.alpaKey]);
+  const status = normalizeSearchText(item?.[period.statusKey] || "");
+  return alpa > 0 || status === "s" || status === "selesai";
+}
+
+function getVisibleRekomPeriods(data = []) {
+  let maxIndex = -1;
+
+  data.forEach((item) => {
+    REKOM_PERIODS.forEach((period, index) => {
+      if (hasRekomPeriodData(item, period)) {
+        maxIndex = Math.max(maxIndex, index);
+      }
+    });
+  });
+
+  /*
+    Tampilan detail bersifat timeline.
+    Jika Rekom 2 sudah pernah terisi pada data manapun, maka tampil:
+    Penertiban, Rekom 1, Rekom 2.
+    Rekom 3/4 disembunyikan sampai benar-benar ada datanya.
+  */
+  const minimumIndex = 1; // Penertiban + Rekom 1 sebagai tampilan minimum.
+  const visibleUntil = Math.max(maxIndex, minimumIndex);
+
+  return REKOM_PERIODS.slice(0, visibleUntil + 1);
+}
+
+
 function renderRekomList() {
   const list = document.getElementById("rekomList");
   if (!list) return;
@@ -1274,12 +1320,8 @@ function renderRekomCard(item) {
       </button>
 
       <div class="rekom-row-detail">
-        <div class="rekom-detail-grid-mini">
-          ${renderRekomPeriod("Penertiban", item.alpaPenertiban, item.sPenertiban)}
-          ${renderRekomPeriod("Rekom 1", item.alpa1, item.s1)}
-          ${renderRekomPeriod("Rekom 2", item.alpa2, item.s2)}
-          ${renderRekomPeriod("Rekom 3", item.alpa3, item.s3)}
-          ${renderRekomPeriod("Rekom 4", item.alpa4, item.s4)}
+        <div class="rekom-detail-grid-mini" style="--rekom-period-count:${Math.min(Math.max(rekomState.visiblePeriods.length, 2), 4)}">
+          ${rekomState.visiblePeriods.map((period) => renderRekomPeriod(period.label, item[period.alpaKey], item[period.statusKey])).join("")}
         </div>
 
         <div class="rekom-total-strip">
@@ -1295,13 +1337,17 @@ function renderRekomCard(item) {
 }
 
 function renderRekomPeriod(label, alpa, status) {
-  const isDone = normalizeSearchText(status) === "S" || normalizeSearchText(status) === "SELESAI";
-  const hasAlpa = Number(alpa || 0) > 0;
+  const statusNorm = normalizeSearchText(status);
+  const isDone = statusNorm === "s" || statusNorm === "selesai";
+  const alpaNumber = toRekomNumber(alpa);
+  const hasAlpa = alpaNumber > 0;
+  const statusText = hasAlpa ? (isDone ? "Selesai" : "Belum") : "-";
+
   return `
     <div class="rekom-period ${isDone ? "done" : ""} ${!hasAlpa ? "empty" : ""}">
-      <span>${label}</span>
-      <strong>${Number(alpa || 0)}</strong>
-      <em>${hasAlpa ? (isDone ? "Selesai" : "Belum") : "-"}</em>
+      <span>${escapeHtml(label)}</span>
+      <strong>${escapeHtml(String(alpaNumber))}</strong>
+      <em>${escapeHtml(statusText)}</em>
     </div>
   `;
 }
