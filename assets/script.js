@@ -479,19 +479,19 @@ function showDetail(index) {
  <div class="compact-section status-detail-section">
   <h4>Status & Rekom</h4>
 
-  <div class="status-detail-row">
+  <div class="status-detail-row ${getStatusRowClass(s.statusSantri, "santri")}">
     <span><i class="ri-user-line"></i> Status Santri</span>
-    ${badgeStatus(s.statusSantri)}
+    ${badgeStatus(s.statusSantri, "santri")}
   </div>
 
-  <div class="status-detail-row">
+  <div class="status-detail-row ${getStatusRowClass(s.statusRekom, "rekom")}">
     <span><i class="ri-flag-line"></i> Tanggungan Rekom</span>
-    ${badgeStatus(s.statusRekom)}
+    ${badgeStatus(s.statusRekom, "rekom")}
   </div>
 
-  <div class="status-detail-row">
+  <div class="status-detail-row ${getStatusRowClass(s.statusSelesai, "selesai")}">
     <span><i class="ri-checkbox-circle-line"></i> Status Selesai</span>
-    ${badgeStatus(s.statusSelesai)}
+    ${badgeStatus(s.statusSelesai, "selesai")}
   </div>
 
   ${
@@ -630,7 +630,7 @@ function renderDetailAlpa(s) {
 
         <div class="rekom-detail-list">
           ${rincian.map(item => {
-            const selesai = String(item.status || "").toUpperCase() === "SELESAI";
+            const selesai = isPeriodMarkedDone(item.status) || isOverallSelesai(s);
 
             return `
               <div class="rekom-detail-item ${selesai ? "is-done" : "is-pending"}">
@@ -705,32 +705,46 @@ function closeDetailModal() {
   document.body.style.overflow = "";
 }
 
-function badgeStatus(value) {
-  const text = String(value || "-").trim().toUpperCase();
-  let color = "badge-gray";
+function statusTone(value, context = "default") {
+  const raw = String(value || "-").trim().toUpperCase();
+  const norm = normalizeSearchText(raw);
 
-  if (text === "AKTIF" || text === "SELESAI") color = "badge-green";
+  const isEmpty = !norm || norm === "-";
+  const isNoRekom = norm === "tidak rekom" || norm === "tidak ada rekom";
+  const isInactive = ["pindah", "boyong", "nonaktif"].includes(norm);
+  const hasBelum = norm.includes("belum") || raw === "B";
+  const hasSelesai = (raw === "S" || norm === "s" || norm.includes("selesai")) && !hasBelum && !norm.includes("tidak");
+  const isAttention = norm.includes("perlu") || norm.includes("ralat") || norm.includes("cek");
+  const isRekomAktif = norm.includes("r1") || norm.includes("r2") || norm.includes("r3") || norm.includes("r4") || norm.includes("rekom") || norm.includes("penertiban");
 
-  if (
-    text.includes("R1") ||
-    text.includes("R2") ||
-    text.includes("R3") ||
-    text.includes("R4") ||
-    text.includes("PENERTIBAN")
-  ) color = "badge-yellow";
-
-  if (text === "BELUM" || text.includes("PERLU") || text.includes("RALAT")) {
-    color = "badge-red";
+  if (isEmpty || isNoRekom || isInactive) return "neutral";
+  if (context === "selesai") {
+    if (hasSelesai) return "success";
+    if (hasBelum) return "warning";
+    return "neutral";
   }
 
-  if (
-    text === "PINDAH" ||
-    text === "BOYONG" ||
-    text === "NONAKTIF" ||
-    text === "TIDAK REKOM" ||
-    text === "-"
-  ) color = "badge-gray";
+  if (raw === "AKTIF" || hasSelesai) return "success";
+  if (isAttention) return "danger";
+  if (hasBelum || isRekomAktif) return "warning";
 
+  return "neutral";
+}
+
+function statusToneToBadgeClass(tone) {
+  if (tone === "success") return "badge-green";
+  if (tone === "warning") return "badge-yellow";
+  if (tone === "danger") return "badge-red";
+  return "badge-gray";
+}
+
+function getStatusRowClass(value, context = "default") {
+  return `status-row-${statusTone(value, context)}`;
+}
+
+function badgeStatus(value, context = "default") {
+  const text = String(value || "-").trim().toUpperCase();
+  const color = statusToneToBadgeClass(statusTone(text, context));
   return `<strong class="status-badge ${color}">${text}</strong>`;
 }
 function animateCounter(element, endValue, duration = 1600) {
@@ -1225,6 +1239,8 @@ function applyRekomFilters() {
     return true;
   });
 
+  rekomState.visiblePeriods = getVisibleRekomPeriods(rekomState.filtered);
+
   renderRekomList();
   updateRekomSummary();
   updateRekomUrl();
@@ -1235,7 +1251,9 @@ function updateRekomSummary() {
   if (!summary) return;
 
   const total = rekomState.filtered.length;
-  summary.innerHTML = `Menampilkan <strong>${total}</strong> santri aktif`;
+  const selesai = rekomState.filtered.filter((item) => isOverallSelesai(item)).length;
+  const belum = rekomState.filtered.filter((item) => !isOverallSelesai(item)).length;
+  summary.innerHTML = `Menampilkan <strong>${total}</strong> santri aktif • <strong>${selesai}</strong> selesai • <strong>${belum}</strong> belum`;
 }
 
 
@@ -1315,31 +1333,22 @@ function getItemRekomPeriods(item) {
 }
 
 function getStatusClass(value = "") {
-  const v = normalizeSearchText(value);
-  if (!v || v === "-" || v === "tidak rekom") return "neutral";
-  if (v.includes("belum")) return "danger";
-  if (v.includes("selesai")) return "success";
-  if (v.includes("r") || v.includes("penertiban")) return "warning";
-  return "neutral";
+  return statusTone(value, "rekom");
 }
 
 function getSelesaiClass(value = "") {
-  const v = normalizeSearchText(value);
-  if (v.includes("selesai")) return "success";
-  if (v.includes("belum")) return "danger";
-  return "neutral";
+  return statusTone(value, "selesai");
 }
 
 
 function isOverallSelesai(item = {}) {
-  const selesai = normalizeSearchText(item.statusSelesai || "");
-  return selesai.includes("selesai") && !selesai.includes("tidak");
+  return statusTone(item.statusSelesai || "", "selesai") === "success";
 }
 
 function isPeriodMarkedDone(status = "") {
   const raw = String(status || "").trim().toUpperCase();
   const norm = normalizeSearchText(raw);
-  return raw === "S" || norm === "s" || norm.includes("selesai");
+  return raw === "S" || norm === "s" || (norm.includes("selesai") && !norm.includes("belum") && !norm.includes("tidak"));
 }
 
 
@@ -1352,6 +1361,8 @@ function renderRekomCard(item) {
   const selesaiClass = getSelesaiClass(item.statusSelesai);
 
   const overallSelesai = isOverallSelesai(item);
+  const statusText = item.statusRekom || "-";
+  const selesaiText = item.statusSelesai || "-";
 
   const periodHtml = periodItems.length
     ? periodItems.map((period) => renderRekomPeriod(period.label, item[period.alpaKey], item[period.statusKey], overallSelesai)).join("")
@@ -1371,6 +1382,11 @@ function renderRekomCard(item) {
         <span class="rekom-student-name">${escapeHtml(item.nama || "-")}</span>
         <span class="rekom-student-meta">
           ${escapeHtml(item.kelas || "-")} • Kamar ${escapeHtml(item.kamar || "-")} • ${escapeHtml(item.adna || "-")}
+        </span>
+        <span class="rekom-head-tags">
+          <span class="rekom-mini-tag total">Alpa ${escapeHtml(item.totalAlpa || "0")}</span>
+          <span class="rekom-mini-tag ${statusClass}">${escapeHtml(statusText)}</span>
+          <span class="rekom-mini-tag ${selesaiClass}">${escapeHtml(selesaiText)}</span>
         </span>
         <i class="ri-arrow-down-s-line"></i>
       </button>
