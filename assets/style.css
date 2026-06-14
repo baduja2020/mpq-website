@@ -5533,3 +5533,253 @@ nav a.press-feedback{
     height:70px !important;
   }
 }
+
+
+/* ================= APPLE STYLE V5 HOTFIX MOBILE & MOTION ================= */
+
+/* Kunci agar mobile tidak bisa geser horizontal */
+html,
+body{
+  width:100% !important;
+  max-width:100% !important;
+  overflow-x:hidden !important;
+  overscroll-behavior-x:none;
+}
+
+body{
+  min-width:0 !important;
+}
+
+.navbar,
+main,
+.hero,
+.section,
+.page,
+.footer-pro,
+.content-card{
+  max-width:100vw !important;
+}
+
+.hero,
+.section,
+.page,
+.content-card,
+.search-panel{
+  overflow-x:clip;
+}
+
+img,
+svg,
+video,
+canvas{
+  max-width:100%;
+}
+
+.hero h1,
+.hero h2,
+.section-heading h2,
+.page-title,
+.about-card h2{
+  max-width:100%;
+  overflow-wrap:break-word;
+}
+
+/* Logo di atas tombol hero dihapus supaya tidak rame */
+.hero-inline-logo{
+  display:none !important;
+}
+
+/* Logo card Tentang MPQ: jangan di tengah, pindah kiri dan tetap tanpa box */
+.about-card.apple-card-large,
+.about-card{
+  grid-template-columns:90px 1fr !important;
+  align-items:start !important;
+}
+
+.about-icon{
+  width:90px !important;
+  justify-content:flex-start !important;
+  align-items:flex-start !important;
+  margin:0 !important;
+  padding-top:2px !important;
+}
+
+.about-logo{
+  width:76px !important;
+  height:76px !important;
+  margin:0 !important;
+  display:block !important;
+}
+
+/* Tombol X pencarian: kecil bulat, bukan pill tinggi */
+.search-box .search-input-wrap .search-clear-btn,
+.search-box .search-input-wrap .search-clear-btn.show{
+  position:absolute !important;
+  top:50% !important;
+  right:14px !important;
+  left:auto !important;
+
+  width:18px !important;
+  height:18px !important;
+  min-width:18px !important;
+  max-width:18px !important;
+  min-height:18px !important;
+  max-height:18px !important;
+
+  padding:0 !important;
+  margin:0 !important;
+  border-radius:50% !important;
+  aspect-ratio:1 / 1 !important;
+
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+
+  background:#edf1ee !important;
+  border:1px solid rgba(16,32,22,.08) !important;
+  color:#89918c !important;
+  box-shadow:none !important;
+
+  font-size:10px !important;
+  line-height:1 !important;
+  transform:translateY(-50%) scale(1) !important;
+}
+
+.search-box .search-input-wrap .search-clear-btn i{
+  font-size:10px !important;
+  line-height:1 !important;
+  font-weight:700 !important;
+}
+
+.search-box .search-input-wrap .search-clear-btn:hover,
+.search-box .search-input-wrap .search-clear-btn:active{
+  background:#e3e8e5 !important;
+  color:#4b554f !important;
+  transform:translateY(-50%) scale(.96) !important;
+}
+
+.search-input-wrap input{
+  padding-right:42px !important;
+}
+
+/* Semua teks penting ikut muncul perlahan */
+.text-reveal{
+  opacity:0;
+  transform:translate3d(0,18px,0);
+  transition:
+    opacity .76s cubic-bezier(.22,1,.36,1),
+    transform .76s cubic-bezier(.22,1,.36,1);
+}
+
+.text-reveal.is-visible{
+  opacity:1;
+  transform:translate3d(0,0,0);
+}
+
+/* Aksen hijau dibuat sedikit lebih terlihat, tapi tidak mengganggu */
+.hero.apple-hero,
+.hero{
+  background:
+    radial-gradient(circle at 82% 18%, rgba(22,101,52,.18), transparent 34%),
+    radial-gradient(circle at 14% 86%, rgba(34,197,94,.10), transparent 28%),
+    linear-gradient(180deg,#ffffff 0%,#f7f8f7 100%) !important;
+}
+
+.hero.apple-hero::before,
+.hero::before{
+  opacity:1 !important;
+}
+
+.section:nth-of-type(even)::after{
+  content:"";
+  position:absolute;
+  width:260px;
+  height:260px;
+  left:-120px;
+  top:20%;
+  border-radius:999px;
+  background:radial-gradient(circle, rgba(22,101,52,.07), rgba(22,101,52,0) 72%);
+  transform:translate3d(0,calc(var(--bg-shift-2,0px) * -.08),0);
+  pointer-events:none;
+  z-index:0;
+}
+
+/* Navbar jangan ikut feedback, dan pastikan tetap clickable */
+.navbar,
+.navbar *,
+.brand,
+.menu-toggle,
+nav,
+nav a{
+  touch-action:manipulation;
+}
+
+.brand.press-feedback,
+.menu-toggle.press-feedback,
+nav a.press-feedback{
+  transform:none !important;
+  box-shadow:none !important;
+}
+
+/* Mobile fixes */
+@media(max-width:720px){
+  .navbar{
+    width:100% !important;
+    max-width:100vw !important;
+    left:0 !important;
+    right:0 !important;
+  }
+
+  .hero.apple-hero,
+  .hero{
+    width:100% !important;
+    max-width:100vw !important;
+    padding-left:18px !important;
+    padding-right:18px !important;
+  }
+
+  .hero h1{
+    font-size:clamp(38px,12vw,48px) !important;
+    line-height:1.02 !important;
+    letter-spacing:-.065em !important;
+  }
+
+  .about-card.apple-card-large,
+  .about-card{
+    grid-template-columns:1fr !important;
+    text-align:left !important;
+  }
+
+  .about-icon{
+    width:100% !important;
+    justify-content:flex-start !important;
+    align-items:flex-start !important;
+    margin-bottom:10px !important;
+  }
+
+  .about-logo{
+    width:64px !important;
+    height:64px !important;
+    margin-left:0 !important;
+    margin-right:auto !important;
+  }
+
+  .search-box .search-input-wrap .search-clear-btn,
+  .search-box .search-input-wrap .search-clear-btn.show{
+    width:18px !important;
+    height:18px !important;
+    min-width:18px !important;
+    max-width:18px !important;
+    min-height:18px !important;
+    max-height:18px !important;
+    right:13px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .text-reveal{
+    opacity:1 !important;
+    transform:none !important;
+    transition:none !important;
+  }
+}
