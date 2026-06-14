@@ -1135,6 +1135,7 @@ function setupRekomPage() {
       rekomState.openedKey = null;
       applyRekomFilters();
       updateRekomUrl(false);
+      syncRekomFilterPanel();
     });
   }
 
@@ -1163,7 +1164,9 @@ async function loadRekomData() {
     rekomState.loaded = true;
     populateRekomFilters(rekomState.data);
     applyRekomParamsFromUrl();
+    setupRekomFilterPanel();
     applyRekomFilters();
+    syncRekomFilterPanel();
   } catch (error) {
     if (summary) summary.textContent = "Gagal memuat data rekom.";
     if (list) {
@@ -1245,6 +1248,191 @@ function uniqueSorted(items) {
     .sort((a, b) => a.localeCompare(b, "id-ID", { numeric: true }));
 }
 
+const REKOM_FILTER_FIELDS = [
+  { id: "rekomKelasFilter", label: "Kelas", short: "Kelas", icon: "ri-school-line" },
+  { id: "rekomAdnaFilter", label: "ADNA", short: "ADNA", icon: "ri-book-open-line" },
+  { id: "rekomKamarFilter", label: "Kamar", short: "Kamar", icon: "ri-home-4-line" },
+  { id: "rekomStatusFilter", label: "Status Rekom", short: "Status", icon: "ri-flag-line" },
+  { id: "rekomSelesaiFilter", label: "Status Selesai", short: "Selesai", icon: "ri-checkbox-circle-line" },
+];
+
+function setupRekomFilterPanel() {
+  const toolbar = document.querySelector(".rekom-toolbar");
+  if (!toolbar) return;
+
+  let trigger = document.getElementById("rekomMobileFilterButton");
+  if (!trigger) {
+    trigger = document.createElement("button");
+    trigger.id = "rekomMobileFilterButton";
+    trigger.className = "rekom-mobile-filter-btn";
+    trigger.type = "button";
+    trigger.setAttribute("aria-haspopup", "dialog");
+    trigger.setAttribute("aria-controls", "rekomFilterSheet");
+    trigger.innerHTML = `
+      <i class="ri-equalizer-2-line"></i>
+      <span>Filter</span>
+      <em id="rekomMobileFilterCount">0</em>
+    `;
+
+    const searchInput = document.getElementById("rekomSearchInput");
+    if (searchInput && searchInput.nextSibling) {
+      toolbar.insertBefore(trigger, searchInput.nextSibling);
+    } else {
+      toolbar.appendChild(trigger);
+    }
+  }
+
+  let sheet = document.getElementById("rekomFilterSheet");
+  if (!sheet) {
+    sheet = document.createElement("section");
+    sheet.id = "rekomFilterSheet";
+    sheet.className = "rekom-filter-sheet";
+    sheet.setAttribute("aria-hidden", "true");
+    sheet.innerHTML = `
+      <div class="rekom-filter-backdrop" data-rekom-filter-close></div>
+      <div class="rekom-filter-panel" role="dialog" aria-modal="true" aria-label="Filter data rekom">
+        <div class="rekom-filter-handle"></div>
+        <div class="rekom-filter-head">
+          <div>
+            <strong>Filter Data</strong>
+            <span>Pilih kategori yang ingin ditampilkan</span>
+          </div>
+          <button type="button" class="rekom-filter-close" data-rekom-filter-close aria-label="Tutup filter">
+            <i class="ri-close-line"></i>
+          </button>
+        </div>
+        <div class="rekom-filter-body" id="rekomFilterBody"></div>
+        <div class="rekom-filter-actions">
+          <button type="button" class="rekom-filter-reset" id="rekomFilterSheetReset">Reset</button>
+          <button type="button" class="rekom-filter-apply" data-rekom-filter-close>Terapkan</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(sheet);
+
+    sheet.addEventListener("click", function (event) {
+      if (event.target.closest("[data-rekom-filter-close]")) {
+        closeRekomFilterPanel();
+      }
+    });
+  }
+
+  trigger.onclick = openRekomFilterPanel;
+
+  const sheetReset = document.getElementById("rekomFilterSheetReset");
+  if (sheetReset) {
+    sheetReset.onclick = function () {
+      const searchInput = document.getElementById("rekomSearchInput");
+      if (searchInput) searchInput.value = "";
+      REKOM_FILTER_FIELDS.forEach((field) => {
+        const select = document.getElementById(field.id);
+        if (select) select.value = "";
+      });
+      rekomState.openedKey = null;
+      applyRekomFilters();
+      updateRekomUrl(false);
+      syncRekomFilterPanel();
+    };
+  }
+
+  buildRekomFilterPanelOptions();
+  syncRekomFilterPanel();
+}
+
+function openRekomFilterPanel() {
+  buildRekomFilterPanelOptions();
+  syncRekomFilterPanel();
+
+  const sheet = document.getElementById("rekomFilterSheet");
+  if (!sheet) return;
+
+  sheet.classList.add("show");
+  sheet.setAttribute("aria-hidden", "false");
+  document.body.classList.add("rekom-filter-is-open");
+}
+
+function closeRekomFilterPanel() {
+  const sheet = document.getElementById("rekomFilterSheet");
+  if (!sheet) return;
+
+  sheet.classList.remove("show");
+  sheet.setAttribute("aria-hidden", "true");
+  document.body.classList.remove("rekom-filter-is-open");
+}
+
+function buildRekomFilterPanelOptions() {
+  const body = document.getElementById("rekomFilterBody");
+  if (!body) return;
+
+  body.innerHTML = REKOM_FILTER_FIELDS.map((field) => {
+    const select = document.getElementById(field.id);
+    if (!select) return "";
+
+    const buttons = Array.from(select.options).map((option) => {
+      const value = option.value || "";
+      const label = option.textContent || "Semua";
+      return `
+        <button type="button" class="rekom-filter-option" data-filter-target="${field.id}" data-filter-value="${escapeHtml(value)}">
+          <span>${escapeHtml(label)}</span>
+          <i class="ri-check-line"></i>
+        </button>
+      `;
+    }).join("");
+
+    return `
+      <div class="rekom-filter-group" data-filter-group="${field.id}">
+        <div class="rekom-filter-label">
+          <i class="${field.icon}"></i>
+          <span>${field.label}</span>
+        </div>
+        <div class="rekom-filter-options">
+          ${buttons}
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  body.querySelectorAll(".rekom-filter-option").forEach((button) => {
+    button.addEventListener("click", function () {
+      const targetId = this.dataset.filterTarget;
+      const value = this.dataset.filterValue || "";
+      const select = document.getElementById(targetId);
+      if (!select) return;
+
+      select.value = value;
+      rekomState.openedKey = null;
+      applyRekomFilters();
+      syncRekomFilterPanel();
+    });
+  });
+}
+
+function syncRekomFilterPanel() {
+  const countEl = document.getElementById("rekomMobileFilterCount");
+  const activeFilters = REKOM_FILTER_FIELDS.filter((field) => {
+    const select = document.getElementById(field.id);
+    return select && select.value;
+  });
+
+  if (countEl) {
+    countEl.textContent = String(activeFilters.length);
+    countEl.classList.toggle("active", activeFilters.length > 0);
+  }
+
+  const trigger = document.getElementById("rekomMobileFilterButton");
+  if (trigger) {
+    trigger.classList.toggle("has-active", activeFilters.length > 0);
+    trigger.setAttribute("aria-label", activeFilters.length ? `${activeFilters.length} filter aktif` : "Buka filter data rekom");
+  }
+
+  document.querySelectorAll(".rekom-filter-option").forEach((button) => {
+    const targetId = button.dataset.filterTarget;
+    const value = button.dataset.filterValue || "";
+    const select = document.getElementById(targetId);
+    button.classList.toggle("active", !!select && select.value === value);
+  });
+}
+
 function applyRekomParamsFromUrl() {
   const params = new URLSearchParams(window.location.search);
   const setValue = (id, key) => {
@@ -1311,6 +1499,7 @@ function applyRekomFilters() {
 
   renderRekomList();
   updateRekomSummary();
+  syncRekomFilterPanel();
   updateRekomUrl();
 }
 
