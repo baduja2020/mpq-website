@@ -5783,3 +5783,67 @@ nav a.press-feedback{
     transition:none !important;
   }
 }
+
+
+/* ================= APPLE STYLE V6 SCROLL FIX ================= */
+/* Hotfix: scroll mobile dikembalikan normal, motion tetap ringan */
+html,
+body{
+  overflow-x:hidden !important;
+  overflow-y:auto !important;
+  touch-action:pan-y !important;
+}
+
+body{
+  overscroll-behavior-x:none;
+}
+
+/* Jangan pakai overflow clip yang bisa bikin scroll terasa ketahan di beberapa browser mobile */
+.hero,
+.section,
+.page,
+.content-card,
+.search-panel{
+  overflow-x:hidden !important;
+}
+
+/* Motion dibuat lebih ringan supaya tidak menahan scroll */
+.reveal-on-scroll,
+.text-reveal{
+  transition:
+    opacity .46s cubic-bezier(.22,1,.36,1),
+    transform .46s cubic-bezier(.22,1,.36,1) !important;
+  transition-delay:0s !important;
+}
+
+.reveal-delay-1,
+.reveal-delay-2,
+.reveal-delay-3,
+.reveal-delay-4{
+  transition-delay:0s !important;
+}
+
+.text-reveal{
+  transform:translate3d(0,10px,0) !important;
+}
+
+.text-reveal.is-visible,
+.reveal-on-scroll.is-visible{
+  transform:translate3d(0,0,0) !important;
+}
+
+/* Search X tetap kecil dan tidak mengganggu input */
+.search-box .search-input-wrap .search-clear-btn,
+.search-box .search-input-wrap .search-clear-btn.show{
+  width:18px !important;
+  height:18px !important;
+  min-width:18px !important;
+  max-width:18px !important;
+  min-height:18px !important;
+  max-height:18px !important;
+  right:13px !important;
+  border-radius:50% !important;
+  padding:0 !important;
+  margin:0 !important;
+  transform:translateY(-50%) !important;
+}
