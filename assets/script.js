@@ -28,10 +28,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 function setupInteractiveFeedback() {
+  // Feedback hanya untuk card/konten. Navbar sengaja tidak dimasukkan agar menu tetap aman.
   const selector = [
-    '.menu-toggle',
-    '.brand',
-    'nav a',
     '.hero-btn',
     '.info-card',
     '.stat-card',
@@ -43,8 +41,7 @@ function setupInteractiveFeedback() {
     '.footer-wa',
     '.rekom-card',
     '.rekom-item',
-    '.rekom-summary-card',
-    'button'
+    '.rekom-summary-card'
   ].join(',');
 
   const addPress = (el) => {
@@ -55,10 +52,11 @@ function setupInteractiveFeedback() {
     }
   };
 
-  const removePress = (el) => {
-    if (!el) return;
-    el.classList.remove('press-feedback');
-    el.classList.remove('press-glow');
+  const clearPress = () => {
+    document.querySelectorAll('.press-feedback, .press-glow').forEach((el) => {
+      el.classList.remove('press-feedback');
+      el.classList.remove('press-glow');
+    });
   };
 
   document.addEventListener('pointerdown', (event) => {
@@ -66,11 +64,8 @@ function setupInteractiveFeedback() {
     if (target) addPress(target);
   }, { passive: true });
 
-  ['pointerup', 'pointercancel', 'pointerleave'].forEach((type) => {
-    document.addEventListener(type, () => {
-      document.querySelectorAll('.press-feedback, .press-glow').forEach(removePress);
-    }, { passive: true });
-  });
+  document.addEventListener('pointerup', clearPress, { passive: true });
+  document.addEventListener('pointercancel', clearPress, { passive: true });
 }
 
 function setupAmbientMotion() {
@@ -160,6 +155,7 @@ function setupMenu() {
   if (!menuToggle || !mainNav) return;
 
   menuToggle.addEventListener("click", function () {
+    menuToggle.classList.remove("press-feedback");
     mainNav.classList.toggle("show");
   });
 
