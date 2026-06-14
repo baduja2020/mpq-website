@@ -5335,3 +5335,201 @@ button:active{
     box-shadow:var(--shadow-soft);
   }
 }
+
+
+/* ================= APPLE STYLE V4 HOTFIX ================= */
+/* Navbar dikembalikan aman: sticky, no press feedback, mobile menu tetap bisa dibuka */
+.navbar{
+  position:sticky !important;
+  top:0 !important;
+  z-index:1000 !important;
+}
+.navbar.press-feedback,
+.navbar .press-feedback,
+.brand.press-feedback,
+.menu-toggle.press-feedback,
+nav a.press-feedback{
+  transform:none !important;
+  box-shadow:none !important;
+}
+.brand:hover,
+.menu-toggle:hover,
+nav a:hover{
+  transform:none !important;
+}
+
+/* Aksen hijau dibuat benar-benar terlihat, tapi tetap halus */
+.hero.apple-hero,
+.hero{
+  position:relative;
+  overflow:hidden;
+}
+.hero.apple-hero::before,
+.hero::before{
+  content:"";
+  position:absolute;
+  width:min(520px,72vw);
+  height:min(520px,72vw);
+  right:-120px;
+  top:40px;
+  border-radius:999px;
+  background:
+    radial-gradient(circle,
+      rgba(22,101,52,.16) 0%,
+      rgba(22,101,52,.10) 36%,
+      rgba(22,101,52,.035) 58%,
+      rgba(22,101,52,0) 74%);
+  transform:translate3d(0,calc(var(--bg-shift-1,0px) * .18),0);
+  pointer-events:none;
+  z-index:0;
+}
+.hero.apple-hero::after,
+.hero::after{
+  content:"";
+  position:absolute;
+  width:min(380px,64vw);
+  height:min(380px,64vw);
+  left:-130px;
+  bottom:-120px;
+  border-radius:999px;
+  background:
+    radial-gradient(circle,
+      rgba(34,197,94,.12) 0%,
+      rgba(34,197,94,.07) 38%,
+      rgba(34,197,94,.02) 62%,
+      rgba(34,197,94,0) 76%);
+  transform:translate3d(0,calc(var(--bg-shift-2,0px) * -.16),0);
+  pointer-events:none;
+  z-index:0;
+}
+.hero > *{
+  position:relative;
+  z-index:1;
+}
+.section{
+  position:relative;
+}
+.section::before{
+  content:"";
+  position:absolute;
+  width:220px;
+  height:220px;
+  right:max(18px,calc((100vw - 1180px) / 2));
+  top:18px;
+  border-radius:999px;
+  background:radial-gradient(circle, rgba(22,101,52,.055), rgba(22,101,52,0) 70%);
+  transform:translate3d(0,calc(var(--bg-shift-1,0px) * .08),0);
+  pointer-events:none;
+  z-index:0;
+}
+.section > *{
+  position:relative;
+  z-index:1;
+}
+
+/* Logo: bukan bergerak terus, hanya muncul perlahan saat awal/load */
+.hero-inline-logo img,
+.about-logo{
+  animation:none !important;
+}
+.hero-inline-logo img{
+  opacity:0;
+  transform:translate3d(0,18px,0) scale(.92);
+  animation:mpqLogoEnter .95s cubic-bezier(.22,1,.36,1) .25s forwards !important;
+}
+.about-card.is-visible .about-logo,
+.about-card:not(.reveal-on-scroll) .about-logo{
+  opacity:0;
+  transform:translate3d(0,14px,0) scale(.94);
+  animation:mpqLogoEnter .85s cubic-bezier(.22,1,.36,1) .12s forwards !important;
+}
+@keyframes mpqLogoEnter{
+  to{
+    opacity:1;
+    transform:translate3d(0,0,0) scale(1);
+  }
+}
+
+/* Posisi logo tentang MPQ: lebih natural di atas, tidak seperti ikon kotak */
+.about-card.apple-card-large,
+.about-card{
+  grid-template-columns:1fr !important;
+}
+.about-icon{
+  justify-content:center !important;
+  align-items:center !important;
+  width:100% !important;
+  margin-bottom:6px !important;
+}
+.about-logo{
+  width:86px !important;
+  height:86px !important;
+  margin:0 auto !important;
+}
+
+/* X pencarian diperkecil lagi */
+.search-box .search-input-wrap .search-clear-btn{
+  width:18px !important;
+  height:18px !important;
+  min-width:18px !important;
+  max-width:18px !important;
+  right:13px !important;
+  background:#eef2ef !important;
+  color:#8a918d !important;
+  box-shadow:none !important;
+}
+.search-box .search-input-wrap .search-clear-btn i{
+  font-size:10px !important;
+}
+.search-input-wrap input{
+  padding-right:44px !important;
+}
+
+/* Feedback hanya untuk card/konten, bukan navbar */
+.info-card:hover,
+.stat-card:hover,
+.announcement-card:hover,
+.search-card:hover,
+.pedoman-card:hover,
+.rekom-card:hover,
+.rekom-item:hover,
+.rekom-summary-card:hover{
+  transform:translateY(-3px);
+}
+.press-feedback{
+  transform:scale(.988) translateY(1px) !important;
+}
+.brand.press-feedback,
+.menu-toggle.press-feedback,
+nav a.press-feedback{
+  transform:none !important;
+}
+
+@media(max-width:720px){
+  .hero.apple-hero::before,
+  .hero::before{
+    width:310px;
+    height:310px;
+    right:-135px;
+    top:18px;
+    opacity:.95;
+  }
+  .hero.apple-hero::after,
+  .hero::after{
+    width:240px;
+    height:240px;
+    left:-120px;
+    bottom:-100px;
+    opacity:.72;
+  }
+  .section::before{
+    width:160px;
+    height:160px;
+    right:-70px;
+    top:8px;
+  }
+  .about-logo{
+    width:70px !important;
+    height:70px !important;
+  }
+}
