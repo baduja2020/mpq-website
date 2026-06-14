@@ -3189,3 +3189,52 @@ nav a:hover::after{
     min-height:68px;
   }
 }
+
+
+
+/* V4: warna status lebih informatif */
+.rekom-period.done{
+  border-color:#9ed9b0 !important;
+  background:linear-gradient(180deg,#ecfbf0,#dcf7e5) !important;
+}
+
+.rekom-period.done strong,
+.rekom-period.done .rekom-period-top i,
+.rekom-period.done em{
+  color:#08743a !important;
+}
+
+.rekom-period.pending{
+  border-color:#f2c66d !important;
+  background:linear-gradient(180deg,#fff8e7,#fff1c9) !important;
+}
+
+.rekom-period.pending strong,
+.rekom-period.pending .rekom-period-top i,
+.rekom-period.pending em{
+  color:#985700 !important;
+}
+
+.rekom-total-strip span.info-selesai.success{
+  background:#dcf7e5 !important;
+  color:#08743a !important;
+  border:1px solid #a4ddb5;
+}
+
+.rekom-total-strip span.info-selesai.danger{
+  background:#fff1c9 !important;
+  color:#985700 !important;
+  border:1px solid #f2c66d;
+}
+
+.rekom-total-strip span.info-status.warning{
+  background:#eef7ff !important;
+  color:#075985 !important;
+  border:1px solid #bae6fd;
+}
+
+.rekom-note{
+  border:1px solid #e2e8f0;
+  background:#f8fafc;
+}
+
