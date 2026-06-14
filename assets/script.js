@@ -1106,6 +1106,7 @@ const rekomState = {
   loaded: false,
   openedKey: null,
   visiblePeriods: [],
+  filterOpenGroup: null,
 };
 
 function setupRekomPage() {
@@ -1133,8 +1134,10 @@ function setupRekomPage() {
         if (el) el.value = "";
       });
       rekomState.openedKey = null;
+      rekomState.filterOpenGroup = null;
       applyRekomFilters();
       updateRekomUrl(false);
+      buildRekomFilterPanelOptions();
       syncRekomFilterPanel();
     });
   }
@@ -1249,11 +1252,11 @@ function uniqueSorted(items) {
 }
 
 const REKOM_FILTER_FIELDS = [
-  { id: "rekomKelasFilter", label: "Kelas", short: "Kelas", icon: "ri-school-line" },
-  { id: "rekomAdnaFilter", label: "ADNA", short: "ADNA", icon: "ri-book-open-line" },
-  { id: "rekomKamarFilter", label: "Kamar", short: "Kamar", icon: "ri-home-4-line" },
-  { id: "rekomStatusFilter", label: "Status Rekom", short: "Status", icon: "ri-flag-line" },
-  { id: "rekomSelesaiFilter", label: "Status Selesai", short: "Selesai", icon: "ri-checkbox-circle-line" },
+  { id: "rekomKelasFilter", label: "Kelas", short: "Kelas", icon: "ri-school-line", placeholder: "Cari kelas..." },
+  { id: "rekomKamarFilter", label: "Kamar", short: "Kamar", icon: "ri-home-4-line", placeholder: "Cari kamar..." },
+  { id: "rekomAdnaFilter", label: "ADNA", short: "ADNA", icon: "ri-book-open-line", placeholder: "Cari ADNA..." },
+  { id: "rekomStatusFilter", label: "Status Rekom", short: "Status", icon: "ri-flag-line", placeholder: "Cari status rekom..." },
+  { id: "rekomSelesaiFilter", label: "Status Selesai", short: "Selesai", icon: "ri-checkbox-circle-line", placeholder: "Cari status selesai..." },
 ];
 
 function setupRekomFilterPanel() {
@@ -1295,7 +1298,7 @@ function setupRekomFilterPanel() {
         <div class="rekom-filter-head">
           <div>
             <strong>Filter Data</strong>
-            <span>Pilih kategori yang ingin ditampilkan</span>
+            <span>Buka kategori, cari pilihan, lalu terapkan</span>
           </div>
           <button type="button" class="rekom-filter-close" data-rekom-filter-close aria-label="Tutup filter">
             <i class="ri-close-line"></i>
@@ -1329,8 +1332,10 @@ function setupRekomFilterPanel() {
         if (select) select.value = "";
       });
       rekomState.openedKey = null;
+      rekomState.filterOpenGroup = null;
       applyRekomFilters();
       updateRekomUrl(false);
+      buildRekomFilterPanelOptions();
       syncRekomFilterPanel();
     };
   }
@@ -1368,11 +1373,17 @@ function buildRekomFilterPanelOptions() {
     const select = document.getElementById(field.id);
     if (!select) return "";
 
+    const selectedOption = select.options[select.selectedIndex];
+    const selectedLabel = selectedOption ? selectedOption.textContent : "Semua";
+    const hasValue = !!select.value;
+    const isOpen = rekomState.filterOpenGroup === field.id;
+
     const buttons = Array.from(select.options).map((option) => {
       const value = option.value || "";
       const label = option.textContent || "Semua";
+      const labelKey = normalizeSearchText(label);
       return `
-        <button type="button" class="rekom-filter-option" data-filter-target="${field.id}" data-filter-value="${escapeHtml(value)}">
+        <button type="button" class="rekom-filter-option" data-filter-target="${field.id}" data-filter-value="${escapeHtml(value)}" data-filter-label="${escapeHtml(labelKey)}">
           <span>${escapeHtml(label)}</span>
           <i class="ri-check-line"></i>
         </button>
@@ -1380,17 +1391,61 @@ function buildRekomFilterPanelOptions() {
     }).join("");
 
     return `
-      <div class="rekom-filter-group" data-filter-group="${field.id}">
-        <div class="rekom-filter-label">
-          <i class="${field.icon}"></i>
-          <span>${field.label}</span>
-        </div>
-        <div class="rekom-filter-options">
-          ${buttons}
+      <div class="rekom-filter-group ${isOpen ? "open" : ""} ${hasValue ? "has-value" : ""}" data-filter-group="${field.id}">
+        <button type="button" class="rekom-filter-group-toggle" data-filter-toggle="${field.id}" aria-expanded="${isOpen ? "true" : "false"}">
+          <span class="rekom-filter-category-icon"><i class="${field.icon}"></i></span>
+          <span class="rekom-filter-category-text">
+            <strong>${field.label}</strong>
+            <em>${escapeHtml(selectedLabel || "Semua")}</em>
+          </span>
+          <span class="rekom-filter-category-arrow"><i class="ri-arrow-down-s-line"></i></span>
+        </button>
+        <div class="rekom-filter-group-panel">
+          <label class="rekom-filter-search">
+            <i class="ri-search-line"></i>
+            <input type="search" inputmode="search" placeholder="${escapeHtml(field.placeholder || `Cari ${field.label}...`)}" data-filter-search="${field.id}">
+          </label>
+          <div class="rekom-filter-options">
+            ${buttons}
+          </div>
+          <p class="rekom-filter-empty">Tidak ada pilihan yang cocok.</p>
         </div>
       </div>
     `;
   }).join("");
+
+  body.querySelectorAll(".rekom-filter-group-toggle").forEach((button) => {
+    button.addEventListener("click", function () {
+      const targetId = this.dataset.filterToggle;
+      rekomState.filterOpenGroup = rekomState.filterOpenGroup === targetId ? null : targetId;
+      buildRekomFilterPanelOptions();
+      syncRekomFilterPanel();
+      const activeInput = document.querySelector(`.rekom-filter-search input[data-filter-search="${targetId}"]`);
+      if (activeInput && rekomState.filterOpenGroup === targetId) {
+        setTimeout(() => activeInput.focus({ preventScroll: true }), 60);
+      }
+    });
+  });
+
+  body.querySelectorAll(".rekom-filter-search input").forEach((input) => {
+    input.addEventListener("input", function () {
+      const group = this.closest(".rekom-filter-group");
+      if (!group) return;
+
+      const keyword = normalizeSearchText(this.value || "");
+      let visibleCount = 0;
+
+      group.querySelectorAll(".rekom-filter-option").forEach((button) => {
+        const label = button.dataset.filterLabel || normalizeSearchText(button.textContent || "");
+        const isVisible = !keyword || label.includes(keyword);
+        button.classList.toggle("is-hidden", !isVisible);
+        if (isVisible) visibleCount += 1;
+      });
+
+      const empty = group.querySelector(".rekom-filter-empty");
+      if (empty) empty.classList.toggle("show", visibleCount === 0);
+    });
+  });
 
   body.querySelectorAll(".rekom-filter-option").forEach((button) => {
     button.addEventListener("click", function () {
@@ -1402,6 +1457,7 @@ function buildRekomFilterPanelOptions() {
       select.value = value;
       rekomState.openedKey = null;
       applyRekomFilters();
+      buildRekomFilterPanelOptions();
       syncRekomFilterPanel();
     });
   });
