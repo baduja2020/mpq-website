@@ -22,7 +22,6 @@ document.addEventListener("DOMContentLoaded", function () {
   setupRekomPage();
   setupScrollReveal();
   setupInteractiveFeedback();
-  setupAmbientMotion();
 });
 
 
@@ -70,36 +69,10 @@ function setupInteractiveFeedback() {
 
 
 
-function setupAmbientMotion() {
-  const root = document.body;
-  if (!root) return;
-
-  let ticking = false;
-
-  const update = () => {
-    const y = window.scrollY || window.pageYOffset || 0;
-    root.style.setProperty('--bg-shift-1', `${Math.min(y * 0.18, 90)}px`);
-    root.style.setProperty('--bg-shift-2', `${Math.min(y * 0.12, 70)}px`);
-    ticking = false;
-  };
-
-  const onScroll = () => {
-    if (!ticking) {
-      window.requestAnimationFrame(update);
-      ticking = true;
-    }
-  };
-
-  update();
-  window.addEventListener('scroll', onScroll, { passive: true });
-}
 
 function setupScrollReveal() {
   const selector = [
-    '.hero-text',
-    '.hero-actions',
-    '.hero-mini-stats',
-    '.about-card',
+    '.intro-section .about-card',
     '.section-heading',
     '.info-card',
     '.stat-card',
@@ -108,15 +81,13 @@ function setupScrollReveal() {
     '.accordion',
     '.pedoman-card',
     '.footer-pro',
-    '.search-period-info',
     '.search-header-pro',
     '.search-card',
     '.search-empty-card',
     '.rekom-hero-card',
     '.rekom-summary-card',
     '.rekom-card',
-    '.rekom-item',
-    '.rekom-shell-card'
+    '.rekom-item'
   ].join(',');
 
   const elements = Array.from(document.querySelectorAll(selector))
@@ -141,8 +112,8 @@ function setupScrollReveal() {
       }
     });
   }, {
-    threshold: 0.08,
-    rootMargin: '0px 0px -4% 0px'
+    threshold: 0.06,
+    rootMargin: '0px 0px -5% 0px'
   });
 
   elements.forEach(el => observer.observe(el));
