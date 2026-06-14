@@ -20,7 +20,64 @@ document.addEventListener("DOMContentLoaded", function () {
   loadStats();
   loadPengumuman();
   setupRekomPage();
+  setupScrollReveal();
 });
+
+
+function setupScrollReveal() {
+  const selector = [
+    '.hero-text',
+    '.hero-inline-logo',
+    '.hero-actions',
+    '.hero-mini-stats',
+    '.about-card',
+    '.section-heading',
+    '.info-card',
+    '.stat-card',
+    '.announcement-card',
+    '.content-card',
+    '.accordion',
+    '.pedoman-card',
+    '.footer-pro',
+    '.search-header-pro',
+    '.search-card',
+    '.search-empty-card',
+    '.rekom-hero-card',
+    '.rekom-summary-card',
+    '.rekom-card',
+    '.rekom-item',
+    '.rekom-shell-card'
+  ].join(',');
+
+  const elements = Array.from(document.querySelectorAll(selector))
+    .filter(el => !el.classList.contains('reveal-on-scroll'));
+
+  if (!elements.length) return;
+
+  elements.forEach((el, index) => {
+    el.classList.add('reveal-on-scroll');
+    el.classList.add(`reveal-delay-${index % 5}`);
+  });
+
+  if (!('IntersectionObserver' in window)) {
+    elements.forEach(el => el.classList.add('is-visible'));
+    return;
+  }
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, {
+    threshold: 0.12,
+    rootMargin: '0px 0px -8% 0px'
+  });
+
+  elements.forEach(el => observer.observe(el));
+}
 
 /* MENU */
 function setupMenu() {
