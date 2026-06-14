@@ -1231,8 +1231,8 @@ function populateRekomFilters(data) {
   fillSelect("rekomKelasFilter", uniqueSorted(data.map((item) => item.kelas)), "Semua Kelas");
   fillSelect("rekomAdnaFilter", uniqueSorted(data.map((item) => item.adna)), "Semua ADNA");
   fillSelect("rekomKamarFilter", uniqueSorted(data.map((item) => item.kamar)), "Semua Kamar");
-  fillSelect("rekomStatusFilter", uniqueSorted(data.map((item) => item.statusRekom)), "Semua Status");
-  fillSelect("rekomSelesaiFilter", uniqueSorted(data.map((item) => item.statusSelesai)), "Semua Selesai");
+  fillSelect("rekomStatusFilter", uniqueSorted(data.map((item) => item.statusRekom)), "Semua");
+  fillSelect("rekomSelesaiFilter", uniqueSorted(data.map((item) => item.statusSelesai)), "Semua");
 }
 
 function fillSelect(id, items, defaultText) {
@@ -1566,8 +1566,9 @@ function updateRekomSummary() {
   if (!summary) return;
 
   const total = rekomState.filtered.length;
-  const selesai = rekomState.filtered.filter((item) => isOverallSelesai(item)).length;
-  const belum = rekomState.filtered.filter((item) => !isOverallSelesai(item)).length;
+  const rekomItems = rekomState.filtered.filter((item) => hasAnyRekomDetail(item));
+  const selesai = rekomItems.filter((item) => isOverallSelesai(item)).length;
+  const belum = rekomItems.filter((item) => !isOverallSelesai(item)).length;
 
   summary.innerHTML = `
     <div class="rekom-summary-card total">
@@ -1583,7 +1584,7 @@ function updateRekomSummary() {
     <div class="rekom-summary-card pending">
       <span>Belum</span>
       <strong>${belum}</strong>
-      <em>perlu tindak lanjut</em>
+      <em>rekom belum</em>
     </div>
   `;
 }
