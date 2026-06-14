@@ -4025,3 +4025,327 @@ body.rekom-filter-is-open{
     display:none !important;
   }
 }
+
+/* =========================================================
+   PATCH v5 — FILTER BY CATEGORY + SEARCH
+   Fokus:
+   1) Filter tidak lagi membuka semua pilihan sekaligus.
+   2) Setiap kategori bisa dibuka/tutup sendiri.
+   3) Ada search bar per kategori.
+   4) Desktop tidak memakai dropdown native browser.
+   ========================================================= */
+
+/* Toolbar filter: desktop & mobile sama-sama pakai tombol filter custom */
+.rekom-toolbar{
+  grid-template-columns:minmax(260px,1fr) auto auto !important;
+  align-items:center !important;
+}
+
+.rekom-toolbar select{
+  display:none !important;
+}
+
+.rekom-mobile-filter-btn{
+  min-height:44px;
+  padding:0 15px;
+  border:1px solid #d6eadc;
+  border-radius:16px;
+  background:#effaf2;
+  color:var(--primary);
+  display:inline-flex !important;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  font-family:var(--font-main, inherit);
+  font-size:13.5px;
+  font-weight:760;
+  cursor:pointer;
+  white-space:nowrap;
+}
+
+.rekom-mobile-filter-btn i{
+  font-size:17px;
+}
+
+.rekom-mobile-filter-btn em{
+  min-width:19px;
+  height:19px;
+  padding:0 6px;
+  display:grid;
+  place-items:center;
+  border-radius:999px;
+  background:#dbece1;
+  color:#557060;
+  font-size:10.5px;
+  font-style:normal;
+  font-weight:800;
+}
+
+.rekom-mobile-filter-btn em.active,
+.rekom-mobile-filter-btn.has-active em{
+  background:var(--primary);
+  color:white;
+}
+
+.rekom-filter-sheet{
+  display:block !important;
+}
+
+/* kategori filter */
+.rekom-filter-body{
+  padding:14px 16px 8px !important;
+  overflow:auto !important;
+  -webkit-overflow-scrolling:touch;
+}
+
+.rekom-filter-group{
+  padding:0 !important;
+  margin:0 0 10px !important;
+  border:1px solid #deebe3;
+  border-radius:18px;
+  background:#fbfdfb;
+  overflow:hidden;
+}
+
+.rekom-filter-group.has-value{
+  border-color:#aedabb;
+  background:#f8fdfa;
+}
+
+.rekom-filter-group-toggle{
+  width:100%;
+  min-height:58px;
+  border:0;
+  background:transparent;
+  padding:11px 12px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  text-align:left;
+  font-family:var(--font-main, inherit);
+  cursor:pointer;
+}
+
+.rekom-filter-category-icon{
+  width:34px;
+  height:34px;
+  border-radius:13px;
+  display:grid;
+  place-items:center;
+  background:#edf8f1;
+  color:var(--primary);
+  flex:0 0 auto;
+}
+
+.rekom-filter-category-icon i{
+  font-size:17px;
+}
+
+.rekom-filter-category-text{
+  min-width:0;
+  flex:1 1 auto;
+}
+
+.rekom-filter-category-text strong{
+  display:block;
+  color:var(--text);
+  font-size:13.5px;
+  line-height:1.2;
+  font-weight:780;
+  letter-spacing:-.015em;
+}
+
+.rekom-filter-category-text em{
+  display:block;
+  margin-top:3px;
+  color:var(--muted);
+  font-size:12.2px;
+  line-height:1.2;
+  font-style:normal;
+  font-weight:620;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.rekom-filter-group.has-value .rekom-filter-category-text em{
+  color:var(--primary);
+  font-weight:760;
+}
+
+.rekom-filter-category-arrow{
+  width:28px;
+  height:28px;
+  border-radius:999px;
+  display:grid;
+  place-items:center;
+  background:#f0f6f2;
+  color:#738177;
+  flex:0 0 auto;
+  transition:transform .18s ease, background .18s ease, color .18s ease;
+}
+
+.rekom-filter-category-arrow i{
+  font-size:18px;
+}
+
+.rekom-filter-group.open .rekom-filter-category-arrow{
+  transform:rotate(180deg);
+  background:var(--primary);
+  color:#fff;
+}
+
+.rekom-filter-group-panel{
+  display:none;
+  padding:0 12px 12px;
+  border-top:1px solid #e5eee8;
+}
+
+.rekom-filter-group.open .rekom-filter-group-panel{
+  display:block;
+}
+
+.rekom-filter-search{
+  height:40px;
+  margin:12px 0 10px;
+  padding:0 11px;
+  border:1px solid #dcebe2;
+  border-radius:14px;
+  background:#fff;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.rekom-filter-search i{
+  color:#7f9287;
+  font-size:16px;
+}
+
+.rekom-filter-search input{
+  min-width:0;
+  width:100%;
+  height:100%;
+  border:0;
+  outline:0;
+  background:transparent;
+  color:var(--text);
+  font-family:var(--font-main, inherit);
+  font-size:13px;
+  font-weight:650;
+}
+
+.rekom-filter-search input::placeholder{
+  color:#8a9a90;
+  font-weight:600;
+}
+
+.rekom-filter-options{
+  display:grid !important;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  max-height:280px;
+  overflow:auto;
+  padding:1px 1px 2px;
+  -webkit-overflow-scrolling:touch;
+}
+
+.rekom-filter-option.is-hidden{
+  display:none !important;
+}
+
+.rekom-filter-empty{
+  display:none;
+  margin:10px 0 2px;
+  padding:12px;
+  border-radius:14px;
+  background:#f6faf7;
+  color:#718077;
+  font-size:12.5px;
+  font-weight:650;
+  text-align:center;
+}
+
+.rekom-filter-empty.show{
+  display:block;
+}
+
+/* Desktop: panel filter jadi modal yang rapi, bukan bottom sheet */
+@media(min-width:621px){
+  .rekom-filter-panel{
+    left:50% !important;
+    right:auto !important;
+    bottom:auto !important;
+    top:50% !important;
+    width:min(760px, calc(100vw - 48px));
+    max-height:min(78vh, 760px) !important;
+    border-radius:28px !important;
+    transform:translate(-50%, calc(-50% + 24px)) scale(.98) !important;
+    box-shadow:0 28px 80px rgba(7,19,12,.25) !important;
+  }
+
+  .rekom-filter-sheet.show .rekom-filter-panel{
+    transform:translate(-50%, -50%) scale(1) !important;
+  }
+
+  .rekom-filter-backdrop{
+    background:rgba(7,19,12,.28) !important;
+    backdrop-filter:blur(5px) !important;
+  }
+
+  .rekom-filter-body{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    align-content:start;
+    padding:16px !important;
+  }
+
+  .rekom-filter-group{
+    margin:0 !important;
+  }
+
+  .rekom-filter-group.open{
+    grid-column:1 / -1;
+  }
+
+  .rekom-filter-group.open .rekom-filter-options{
+    grid-template-columns:repeat(4, minmax(0,1fr));
+    max-height:250px;
+  }
+
+  .rekom-filter-actions{
+    padding:14px 18px 16px !important;
+  }
+}
+
+@media(max-width:620px){
+  .rekom-toolbar{
+    grid-template-columns:minmax(0,1fr) auto !important;
+  }
+
+  .rekom-toolbar .rekom-reset-btn{
+    display:none !important;
+  }
+
+  .rekom-mobile-filter-btn{
+    min-height:42px !important;
+    padding:0 12px !important;
+    border-radius:15px !important;
+    font-size:13px !important;
+  }
+
+  .rekom-filter-panel{
+    max-height:82vh !important;
+  }
+
+  .rekom-filter-options{
+    max-height:260px;
+  }
+
+  .rekom-filter-option{
+    min-height:38px !important;
+    border-radius:14px !important;
+    font-size:12.5px !important;
+  }
+}
