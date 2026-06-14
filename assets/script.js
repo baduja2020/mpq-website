@@ -796,16 +796,15 @@ function hasAnyRekomDetail(item = {}) {
 }
 
 function getRekomIndicatorTone(item = {}) {
-  const statusNorm = normalizeSearchText(item?.statusRekom || item?.["STATUS REKOM"] || item?.["STATUS_REKOM"] || "");
-  const explicitNoRekom =
-    statusNorm === "TIDAK REKOM" ||
-    statusNorm === "TIDAK ADA REKOM" ||
-    statusNorm === "-";
+  const statusRekomText = item?.statusRekom || item?.["STATUS REKOM"] || item?.["STATUS_REKOM"] || "";
+  const statusSelesaiText = getOverallSelesaiText(item);
 
-  if (explicitNoRekom) return "";
+  if (isNoRekomStatus(statusRekomText) || isNoRekomStatus(statusSelesaiText)) return "";
+  if (isOverallSelesai(item)) return "done";
+  if (isOverallBelum(item)) return "active";
   if (!hasAnyRekomDetail(item)) return "";
 
-  return isOverallSelesai(item) ? "done" : "active";
+  return "active";
 }
 
 function renderRekomIndicator(item = {}) {
@@ -1566,9 +1565,14 @@ function updateRekomSummary() {
   if (!summary) return;
 
   const total = rekomState.filtered.length;
-  const rekomItems = rekomState.filtered.filter((item) => hasAnyRekomDetail(item));
-  const selesai = rekomItems.filter((item) => isOverallSelesai(item)).length;
-  const belum = rekomItems.filter((item) => !isOverallSelesai(item)).length;
+
+  /*
+    Ringkasan harus mengikuti status akhir dari sheet, bukan sekadar ada angka alpa.
+    Sebab ada santri yang punya catatan/alpa lama tetapi status akhirnya TIDAK REKOM.
+    Kalau dihitung dari angka alpa, jumlah "Belum" bisa membengkak.
+  */
+  const selesai = rekomState.filtered.filter((item) => isOverallSelesai(item)).length;
+  const belum = rekomState.filtered.filter((item) => isOverallBelum(item)).length;
 
   summary.innerHTML = `
     <div class="rekom-summary-card total">
@@ -1674,11 +1678,28 @@ function getSelesaiClass(value = "") {
 }
 
 
+function getOverallSelesaiText(item = {}) {
+  return String(
+    item.statusSelesai || item["STATUS SELESAI"] || item["STATUS_SELESAI"] || ""
+  ).trim();
+}
+
 function isOverallSelesai(item = {}) {
-  return statusTone(
-    item.statusSelesai || item["STATUS SELESAI"] || item["STATUS_SELESAI"] || "",
-    "selesai"
-  ) === "success";
+  return statusTone(getOverallSelesaiText(item), "selesai") === "success";
+}
+
+function isOverallBelum(item = {}) {
+  const raw = getOverallSelesaiText(item).toUpperCase();
+  const norm = normalizeSearchText(raw).toLowerCase();
+
+  if (!raw) return false;
+  if (raw === "B" || raw === "BLM" || raw === "BELUM") return true;
+  return norm.includes("belum") && !norm.includes("tidak");
+}
+
+function isNoRekomStatus(value = "") {
+  const norm = normalizeSearchText(value);
+  return norm === "-" || norm === "TIDAK REKOM" || norm === "TIDAK ADA REKOM";
 }
 
 function isPeriodMarkedDone(status = "") {
