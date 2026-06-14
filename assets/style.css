@@ -5124,472 +5124,112 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text"
 }
 
 
-/* ================= APPLE STYLE V3 INTERACTIVE POLISH ================= */
-body{
-  position:relative;
-  overflow-x:hidden;
-  background:
-    linear-gradient(180deg,#f7f8f7 0%,#fbfcfb 52%,#f7f8f7 100%);
-  --bg-shift-1:0px;
-  --bg-shift-2:0px;
-}
-body::before,
-body::after{
-  content:"";
-  position:fixed;
-  pointer-events:none;
-  z-index:0;
-  border-radius:999px;
-  opacity:.8;
-  will-change:transform;
-}
-body::before{
-  width:min(38vw,480px);
-  height:min(38vw,480px);
-  top:9%;
-  right:-10%;
-  background:radial-gradient(circle, rgba(22,101,52,.10) 0%, rgba(22,101,52,.06) 32%, rgba(22,101,52,0) 72%);
-  transform:translate3d(0,calc(var(--bg-shift-1) * .45),0);
-}
-body::after{
-  width:min(34vw,420px);
-  height:min(34vw,420px);
-  top:54%;
-  left:-9%;
-  background:radial-gradient(circle, rgba(34,197,94,.08) 0%, rgba(34,197,94,.05) 34%, rgba(34,197,94,0) 72%);
-  transform:translate3d(0,calc(var(--bg-shift-2) * -.35),0);
-}
-.navbar, main, .footer-pro{position:relative;z-index:1;}
+/* ================= APPLE STYLE V9 CLEAN SMOOTH ================= */
+/* Tujuan: smooth aman di HP. Tidak ada scroll handler berat, tidak ada motion background dinamis. */
 
-/* Logo motion */
-.hero-inline-logo img{
-  animation:heroLogoFloat 5.8s ease-in-out infinite;
-}
-.about-logo{
-  animation:aboutLogoFloat 6.4s ease-in-out infinite;
-}
-@keyframes heroLogoFloat{
-  0%,100%{transform:translate3d(0,0,0) scale(1) rotate(0deg);}
-  50%{transform:translate3d(0,-7px,0) scale(1.012) rotate(.6deg);}
-}
-@keyframes aboutLogoFloat{
-  0%,100%{transform:translate3d(0,0,0) rotate(0deg);}
-  50%{transform:translate3d(0,-5px,0) rotate(-.6deg);}
-}
-
-/* About card logo placement */
-.about-card{
-  position:relative;
-  overflow:hidden;
-}
-.about-icon{
-  align-self:start;
-  justify-content:flex-start;
-  padding-top:4px;
-}
-.about-logo{
-  display:block;
-  margin:0;
-}
-
-/* Search clear button more subtle */
-.search-input-wrap input{padding-right:52px;}
-.search-box .search-input-wrap .search-clear-btn{
-  right:12px !important;
-  width:22px !important;
-  height:22px !important;
-  min-width:22px !important;
-  max-width:22px !important;
-  border-radius:999px !important;
-  border:1px solid rgba(16,32,22,.06) !important;
-  background:#f1f3f2 !important;
-  color:#8a918d !important;
-  box-shadow:0 4px 12px rgba(15,23,42,.05) !important;
-}
-.search-box .search-input-wrap .search-clear-btn i{
-  font-size:12px !important;
-  font-weight:700 !important;
-}
-.search-box .search-input-wrap .search-clear-btn:hover,
-.search-box .search-input-wrap .search-clear-btn:active{
-  background:#e8ece9 !important;
-  color:#4d564f !important;
-}
-
-/* Interactive touch / press states */
-.brand,
-.menu-toggle,
-nav a,
-.hero-btn,
-.info-card,
-.stat-card,
-.announcement-card,
-.search-card,
-.search-detail-btn,
-.accordion,
-.accordion summary,
-.pedoman-card,
-.service-card,
-.footer-wa,
-.rekom-card,
-.rekom-item,
-.rekom-summary-card,
-.rekom-filter-btn,
-.rekom-reset-btn,
-button,
-a.btn{
-  transition:
-    transform .22s cubic-bezier(.22,1,.36,1),
-    box-shadow .22s cubic-bezier(.22,1,.36,1),
-    background-color .22s ease,
-    border-color .22s ease,
-    color .22s ease,
-    opacity .22s ease;
-  -webkit-tap-highlight-color:transparent;
-}
-.brand:hover,
-.menu-toggle:hover,
-nav a:hover,
-.hero-btn:hover,
-.search-detail-btn:hover,
-.footer-wa:hover{
-  transform:translateY(-1px);
-}
-.info-card:hover,
-.stat-card:hover,
-.announcement-card:hover,
-.search-card:hover,
-.pedoman-card:hover,
-.rekom-card:hover,
-.rekom-item:hover,
-.rekom-summary-card:hover{
-  transform:translateY(-4px);
-  box-shadow:0 22px 46px rgba(16,32,22,.10);
-}
-.press-feedback{
-  transform:scale(.985) translateY(1px) !important;
-}
-.press-glow{
-  box-shadow:0 14px 34px rgba(22,101,52,.12) !important;
-}
-nav a:active,
-.hero-btn:active,
-.menu-toggle:active,
-.search-detail-btn:active,
-.footer-wa:active,
-button:active{
-  transform:scale(.98);
-}
-
-/* Slight card sheen/accent */
-.info-card::before,
-.stat-card::before,
-.announcement-card::before,
-.pedoman-card::before,
-.search-card::before,
-.about-card::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  border-radius:inherit;
-  background:linear-gradient(135deg, rgba(22,101,52,.025), rgba(255,255,255,0) 36%);
-  pointer-events:none;
-}
-.info-card,.stat-card,.announcement-card,.pedoman-card,.search-card,.about-card{position:relative;overflow:hidden;}
-
-@media(max-width:720px){
-  body::before{
-    width:260px;
-    height:260px;
-    top:8%;
-    right:-28%;
-    opacity:.72;
-  }
-  body::after{
-    width:220px;
-    height:220px;
-    top:58%;
-    left:-26%;
-    opacity:.64;
-  }
-  .about-card.apple-card-large,.about-card{
-    gap:12px;
-  }
-  .about-icon{
-    padding-top:0;
-    margin-bottom:2px;
-  }
-  .about-logo{
-    width:64px;
-    height:64px;
-  }
-  .info-card:hover,
-  .stat-card:hover,
-  .announcement-card:hover,
-  .search-card:hover,
-  .pedoman-card:hover,
-  .rekom-card:hover,
-  .rekom-item:hover,
-  .rekom-summary-card:hover{
-    transform:none;
-    box-shadow:var(--shadow-soft);
-  }
-}
-
-
-/* ================= APPLE STYLE V4 HOTFIX ================= */
-/* Navbar dikembalikan aman: sticky, no press feedback, mobile menu tetap bisa dibuka */
-.navbar{
-  position:sticky !important;
-  top:0 !important;
-  z-index:1000 !important;
-}
-.navbar.press-feedback,
-.navbar .press-feedback,
-.brand.press-feedback,
-.menu-toggle.press-feedback,
-nav a.press-feedback{
-  transform:none !important;
-  box-shadow:none !important;
-}
-.brand:hover,
-.menu-toggle:hover,
-nav a:hover{
-  transform:none !important;
-}
-
-/* Aksen hijau dibuat benar-benar terlihat, tapi tetap halus */
-.hero.apple-hero,
-.hero{
-  position:relative;
-  overflow:hidden;
-}
-.hero.apple-hero::before,
-.hero::before{
-  content:"";
-  position:absolute;
-  width:min(520px,72vw);
-  height:min(520px,72vw);
-  right:-120px;
-  top:40px;
-  border-radius:999px;
-  background:
-    radial-gradient(circle,
-      rgba(22,101,52,.16) 0%,
-      rgba(22,101,52,.10) 36%,
-      rgba(22,101,52,.035) 58%,
-      rgba(22,101,52,0) 74%);
-  transform:translate3d(0,calc(var(--bg-shift-1,0px) * .18),0);
-  pointer-events:none;
-  z-index:0;
-}
-.hero.apple-hero::after,
-.hero::after{
-  content:"";
-  position:absolute;
-  width:min(380px,64vw);
-  height:min(380px,64vw);
-  left:-130px;
-  bottom:-120px;
-  border-radius:999px;
-  background:
-    radial-gradient(circle,
-      rgba(34,197,94,.12) 0%,
-      rgba(34,197,94,.07) 38%,
-      rgba(34,197,94,.02) 62%,
-      rgba(34,197,94,0) 76%);
-  transform:translate3d(0,calc(var(--bg-shift-2,0px) * -.16),0);
-  pointer-events:none;
-  z-index:0;
-}
-.hero > *{
-  position:relative;
-  z-index:1;
-}
-.section{
-  position:relative;
-}
-.section::before{
-  content:"";
-  position:absolute;
-  width:220px;
-  height:220px;
-  right:max(18px,calc((100vw - 1180px) / 2));
-  top:18px;
-  border-radius:999px;
-  background:radial-gradient(circle, rgba(22,101,52,.055), rgba(22,101,52,0) 70%);
-  transform:translate3d(0,calc(var(--bg-shift-1,0px) * .08),0);
-  pointer-events:none;
-  z-index:0;
-}
-.section > *{
-  position:relative;
-  z-index:1;
-}
-
-/* Logo: bukan bergerak terus, hanya muncul perlahan saat awal/load */
-.hero-inline-logo img,
-.about-logo{
-  animation:none !important;
-}
-.hero-inline-logo img{
-  opacity:0;
-  transform:translate3d(0,18px,0) scale(.92);
-  animation:mpqLogoEnter .95s cubic-bezier(.22,1,.36,1) .25s forwards !important;
-}
-.about-card.is-visible .about-logo,
-.about-card:not(.reveal-on-scroll) .about-logo{
-  opacity:0;
-  transform:translate3d(0,14px,0) scale(.94);
-  animation:mpqLogoEnter .85s cubic-bezier(.22,1,.36,1) .12s forwards !important;
-}
-@keyframes mpqLogoEnter{
-  to{
-    opacity:1;
-    transform:translate3d(0,0,0) scale(1);
-  }
-}
-
-/* Posisi logo tentang MPQ: lebih natural di atas, tidak seperti ikon kotak */
-.about-card.apple-card-large,
-.about-card{
-  grid-template-columns:1fr !important;
-}
-.about-icon{
-  justify-content:center !important;
-  align-items:center !important;
-  width:100% !important;
-  margin-bottom:6px !important;
-}
-.about-logo{
-  width:86px !important;
-  height:86px !important;
-  margin:0 auto !important;
-}
-
-/* X pencarian diperkecil lagi */
-.search-box .search-input-wrap .search-clear-btn{
-  width:18px !important;
-  height:18px !important;
-  min-width:18px !important;
-  max-width:18px !important;
-  right:13px !important;
-  background:#eef2ef !important;
-  color:#8a918d !important;
-  box-shadow:none !important;
-}
-.search-box .search-input-wrap .search-clear-btn i{
-  font-size:10px !important;
-}
-.search-input-wrap input{
-  padding-right:44px !important;
-}
-
-/* Feedback hanya untuk card/konten, bukan navbar */
-.info-card:hover,
-.stat-card:hover,
-.announcement-card:hover,
-.search-card:hover,
-.pedoman-card:hover,
-.rekom-card:hover,
-.rekom-item:hover,
-.rekom-summary-card:hover{
-  transform:translateY(-3px);
-}
-.press-feedback{
-  transform:scale(.988) translateY(1px) !important;
-}
-.brand.press-feedback,
-.menu-toggle.press-feedback,
-nav a.press-feedback{
-  transform:none !important;
-}
-
-@media(max-width:720px){
-  .hero.apple-hero::before,
-  .hero::before{
-    width:310px;
-    height:310px;
-    right:-135px;
-    top:18px;
-    opacity:.95;
-  }
-  .hero.apple-hero::after,
-  .hero::after{
-    width:240px;
-    height:240px;
-    left:-120px;
-    bottom:-100px;
-    opacity:.72;
-  }
-  .section::before{
-    width:160px;
-    height:160px;
-    right:-70px;
-    top:8px;
-  }
-  .about-logo{
-    width:70px !important;
-    height:70px !important;
-  }
-}
-
-
-/* ================= APPLE STYLE V5 HOTFIX MOBILE & MOTION ================= */
-
-/* Kunci agar mobile tidak bisa geser horizontal */
 html,
 body{
-  width:100% !important;
-  max-width:100% !important;
+  width:100%;
+  max-width:100%;
   overflow-x:hidden !important;
-  overscroll-behavior-x:none;
+  overflow-y:auto !important;
+  touch-action:auto !important;
 }
 
 body{
   min-width:0 !important;
+  background:
+    radial-gradient(circle at 88% 12%, rgba(22,101,52,.12), transparent 32%),
+    linear-gradient(180deg,#ffffff 0%,#f7f8f7 52%,#ffffff 100%) !important;
 }
 
+/* Semua container utama tidak boleh bikin mobile geser samping */
 .navbar,
 main,
 .hero,
 .section,
 .page,
 .footer-pro,
-.content-card{
+.content-card,
+.search-panel{
   max-width:100vw !important;
 }
 
-.hero,
-.section,
-.page,
-.content-card,
-.search-panel{
-  overflow-x:clip;
-}
-
-img,
-svg,
-video,
-canvas{
+img,svg,video,canvas{
   max-width:100%;
 }
 
-.hero h1,
-.hero h2,
-.section-heading h2,
-.page-title,
-.about-card h2{
-  max-width:100%;
-  overflow-wrap:break-word;
-}
-
-/* Logo di atas tombol hero dihapus supaya tidak rame */
-.hero-inline-logo{
+/* HERO: bersih, tanpa logo tambahan di atas tombol */
+.hero-inline-logo,
+.hero-logo-wrap,
+.hero-device-card{
   display:none !important;
 }
 
-/* Logo card Tentang MPQ: jangan di tengah, pindah kiri dan tetap tanpa box */
+.home-page .hero.apple-hero,
+.home-page .hero{
+  grid-template-columns:1fr !important;
+  justify-items:center;
+  text-align:center;
+  min-height:calc(100svh - 58px);
+  padding-top:54px !important;
+  padding-bottom:92px !important;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 82% 16%, rgba(22,101,52,.15), transparent 34%),
+    radial-gradient(circle at 10% 88%, rgba(34,197,94,.08), transparent 30%),
+    linear-gradient(180deg,#ffffff 0%,#f7f8f7 100%) !important;
+}
+
+.home-page .hero-text{
+  max-width:960px;
+  margin-inline:auto;
+}
+
+.home-page .hero p{
+  margin-left:auto;
+  margin-right:auto;
+}
+
+.home-page .hero-actions{
+  justify-content:center;
+  margin-top:28px !important;
+}
+
+.home-page .hero-mini-stats{
+  max-width:760px;
+  margin-left:auto;
+  margin-right:auto;
+  margin-top:44px !important;
+}
+
+/* Hero text: animasi awal saja, bukan ketika scroll */
+.home-page .hero-text .label,
+.home-page .hero-text h1,
+.home-page .hero-text h2,
+.home-page .hero-text > p,
+.home-page .hero-actions,
+.home-page .hero-mini-stats{
+  opacity:0;
+  transform:translate3d(0,16px,0);
+  animation:mpqHeroFadeUp .62s cubic-bezier(.22,1,.36,1) forwards;
+}
+
+.home-page .hero-text .label{animation-delay:.04s;}
+.home-page .hero-text h1{animation-delay:.11s;}
+.home-page .hero-text h2{animation-delay:.18s;}
+.home-page .hero-text > p{animation-delay:.25s;}
+.home-page .hero-actions{animation-delay:.33s;}
+.home-page .hero-mini-stats{animation-delay:.42s;}
+
+@keyframes mpqHeroFadeUp{
+  to{
+    opacity:1;
+    transform:translate3d(0,0,0);
+  }
+}
+
+/* About logo: kiri, tidak box, tidak tengah */
 .about-card.apple-card-large,
 .about-card{
   grid-template-columns:90px 1fr !important;
@@ -5598,25 +5238,32 @@ canvas{
 
 .about-icon{
   width:90px !important;
+  height:auto !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  padding:0 !important;
   justify-content:flex-start !important;
   align-items:flex-start !important;
-  margin:0 !important;
-  padding-top:2px !important;
+  box-shadow:none !important;
 }
 
 .about-logo{
   width:76px !important;
   height:76px !important;
   margin:0 !important;
-  display:block !important;
+  object-fit:contain;
 }
 
-/* Tombol X pencarian: kecil bulat, bukan pill tinggi */
+/* Search clear button: kecil bulat, pas di dalam input */
+.search-input-wrap input{
+  padding-right:42px !important;
+}
+
 .search-box .search-input-wrap .search-clear-btn,
 .search-box .search-input-wrap .search-clear-btn.show{
   position:absolute !important;
   top:50% !important;
-  right:14px !important;
+  right:13px !important;
   left:auto !important;
 
   width:18px !important;
@@ -5625,11 +5272,11 @@ canvas{
   max-width:18px !important;
   min-height:18px !important;
   max-height:18px !important;
+  aspect-ratio:1 / 1 !important;
 
   padding:0 !important;
   margin:0 !important;
   border-radius:50% !important;
-  aspect-ratio:1 / 1 !important;
 
   display:flex !important;
   align-items:center !important;
@@ -5637,81 +5284,78 @@ canvas{
 
   background:#edf1ee !important;
   border:1px solid rgba(16,32,22,.08) !important;
-  color:#89918c !important;
+  color:#87908a !important;
   box-shadow:none !important;
 
   font-size:10px !important;
   line-height:1 !important;
-  transform:translateY(-50%) scale(1) !important;
+  transform:translateY(-50%) !important;
 }
 
 .search-box .search-input-wrap .search-clear-btn i{
   font-size:10px !important;
   line-height:1 !important;
-  font-weight:700 !important;
 }
 
-.search-box .search-input-wrap .search-clear-btn:hover,
-.search-box .search-input-wrap .search-clear-btn:active{
-  background:#e3e8e5 !important;
-  color:#4b554f !important;
-  transform:translateY(-50%) scale(.96) !important;
-}
-
-.search-input-wrap input{
-  padding-right:42px !important;
-}
-
-/* Semua teks penting ikut muncul perlahan */
-.text-reveal{
+/* Scroll reveal ringan: card/section saja, bukan semua teks satu-satu */
+.reveal-on-scroll{
   opacity:0;
   transform:translate3d(0,18px,0);
   transition:
-    opacity .76s cubic-bezier(.22,1,.36,1),
-    transform .76s cubic-bezier(.22,1,.36,1);
+    opacity .48s cubic-bezier(.22,1,.36,1),
+    transform .48s cubic-bezier(.22,1,.36,1) !important;
+  will-change:auto !important;
 }
 
-.text-reveal.is-visible{
+.reveal-on-scroll.is-visible{
   opacity:1;
-  transform:translate3d(0,0,0);
+  transform:translate3d(0,0,0) !important;
 }
 
-/* Aksen hijau dibuat sedikit lebih terlihat, tapi tidak mengganggu */
-.hero.apple-hero,
-.hero{
-  background:
-    radial-gradient(circle at 82% 18%, rgba(22,101,52,.18), transparent 34%),
-    radial-gradient(circle at 14% 86%, rgba(34,197,94,.10), transparent 28%),
-    linear-gradient(180deg,#ffffff 0%,#f7f8f7 100%) !important;
+/* Interaksi ringan hanya untuk konten, bukan navbar */
+.info-card,
+.stat-card,
+.announcement-card,
+.search-card,
+.pedoman-card,
+.rekom-card,
+.rekom-item,
+.rekom-summary-card,
+.hero-btn,
+.search-detail-btn,
+.footer-wa{
+  transition:
+    transform .18s ease,
+    box-shadow .18s ease,
+    border-color .18s ease,
+    background-color .18s ease !important;
+  -webkit-tap-highlight-color:transparent;
 }
 
-.hero.apple-hero::before,
-.hero::before{
-  opacity:1 !important;
+@media (hover:hover){
+  .info-card:hover,
+  .stat-card:hover,
+  .announcement-card:hover,
+  .search-card:hover,
+  .pedoman-card:hover,
+  .rekom-card:hover,
+  .rekom-item:hover,
+  .rekom-summary-card:hover{
+    transform:translateY(-3px);
+    box-shadow:0 20px 42px rgba(16,32,22,.09);
+  }
 }
 
-.section:nth-of-type(even)::after{
-  content:"";
-  position:absolute;
-  width:260px;
-  height:260px;
-  left:-120px;
-  top:20%;
-  border-radius:999px;
-  background:radial-gradient(circle, rgba(22,101,52,.07), rgba(22,101,52,0) 72%);
-  transform:translate3d(0,calc(var(--bg-shift-2,0px) * -.08),0);
-  pointer-events:none;
-  z-index:0;
+.press-feedback{
+  transform:scale(.99) !important;
 }
 
-/* Navbar jangan ikut feedback, dan pastikan tetap clickable */
+/* Navbar aman: tidak ada feedback/transform */
 .navbar,
-.navbar *,
 .brand,
 .menu-toggle,
-nav,
 nav a{
-  touch-action:manipulation;
+  transform:none !important;
 }
 
 .brand.press-feedback,
@@ -5721,27 +5365,51 @@ nav a.press-feedback{
   box-shadow:none !important;
 }
 
-/* Mobile fixes */
+/* Sedikit ornamen hijau statis di section, tidak bergerak saat scroll */
+.section{
+  position:relative;
+}
+
+.section::before{
+  content:"";
+  position:absolute;
+  right:-110px;
+  top:20px;
+  width:230px;
+  height:230px;
+  border-radius:999px;
+  background:radial-gradient(circle, rgba(22,101,52,.055), rgba(22,101,52,0) 70%);
+  pointer-events:none;
+  z-index:0;
+}
+
+.section > *{
+  position:relative;
+  z-index:1;
+}
+
 @media(max-width:720px){
-  .navbar{
-    width:100% !important;
-    max-width:100vw !important;
-    left:0 !important;
-    right:0 !important;
+  .home-page .hero.apple-hero,
+  .home-page .hero{
+    min-height:calc(100svh - 58px);
+    padding:48px 18px 96px !important;
   }
 
-  .hero.apple-hero,
-  .hero{
-    width:100% !important;
-    max-width:100vw !important;
-    padding-left:18px !important;
-    padding-right:18px !important;
+  .home-page .hero h1{
+    font-size:clamp(38px,11.6vw,46px) !important;
+    line-height:1.03 !important;
   }
 
-  .hero h1{
-    font-size:clamp(38px,12vw,48px) !important;
-    line-height:1.02 !important;
-    letter-spacing:-.065em !important;
+  .home-page .hero-actions{
+    margin-top:26px !important;
+  }
+
+  .home-page .hero-mini-stats{
+    margin-top:40px !important;
+  }
+
+  .home-page .intro-section{
+    padding-top:76px !important;
   }
 
   .about-card.apple-card-large,
@@ -5752,330 +5420,29 @@ nav a.press-feedback{
 
   .about-icon{
     width:100% !important;
-    justify-content:flex-start !important;
-    align-items:flex-start !important;
     margin-bottom:10px !important;
   }
 
   .about-logo{
     width:64px !important;
     height:64px !important;
-    margin-left:0 !important;
-    margin-right:auto !important;
   }
 
-  .search-box .search-input-wrap .search-clear-btn,
-  .search-box .search-input-wrap .search-clear-btn.show{
-    width:18px !important;
-    height:18px !important;
-    min-width:18px !important;
-    max-width:18px !important;
-    min-height:18px !important;
-    max-height:18px !important;
-    right:13px !important;
+  .reveal-on-scroll{
+    transform:translate3d(0,12px,0);
+    transition-duration:.38s !important;
   }
 }
 
-@media (prefers-reduced-motion: reduce){
-  .text-reveal{
-    opacity:1 !important;
-    transform:none !important;
-    transition:none !important;
-  }
-}
-
-
-/* ================= APPLE STYLE V6 SCROLL FIX ================= */
-/* Hotfix: scroll mobile dikembalikan normal, motion tetap ringan */
-html,
-body{
-  overflow-x:hidden !important;
-  overflow-y:auto !important;
-  touch-action:pan-y !important;
-}
-
-body{
-  overscroll-behavior-x:none;
-}
-
-/* Jangan pakai overflow clip yang bisa bikin scroll terasa ketahan di beberapa browser mobile */
-.hero,
-.section,
-.page,
-.content-card,
-.search-panel{
-  overflow-x:hidden !important;
-}
-
-/* Motion dibuat lebih ringan supaya tidak menahan scroll */
-.reveal-on-scroll,
-.text-reveal{
-  transition:
-    opacity .46s cubic-bezier(.22,1,.36,1),
-    transform .46s cubic-bezier(.22,1,.36,1) !important;
-  transition-delay:0s !important;
-}
-
-.reveal-delay-1,
-.reveal-delay-2,
-.reveal-delay-3,
-.reveal-delay-4{
-  transition-delay:0s !important;
-}
-
-.text-reveal{
-  transform:translate3d(0,10px,0) !important;
-}
-
-.text-reveal.is-visible,
-.reveal-on-scroll.is-visible{
-  transform:translate3d(0,0,0) !important;
-}
-
-/* Search X tetap kecil dan tidak mengganggu input */
-.search-box .search-input-wrap .search-clear-btn,
-.search-box .search-input-wrap .search-clear-btn.show{
-  width:18px !important;
-  height:18px !important;
-  min-width:18px !important;
-  max-width:18px !important;
-  min-height:18px !important;
-  max-height:18px !important;
-  right:13px !important;
-  border-radius:50% !important;
-  padding:0 !important;
-  margin:0 !important;
-  transform:translateY(-50%) !important;
-}
-
-
-/* ================= APPLE STYLE V7 SMOOTH + HERO SPACE FIX ================= */
-/* Hilangkan penyebab scroll terasa berat: background tidak lagi di-update terus saat scroll */
-html,
-body{
-  overflow-x:hidden !important;
-  overflow-y:auto !important;
-  touch-action:auto !important;
-  scroll-behavior:smooth;
-}
-
-body::before,
-body::after,
-.hero.apple-hero::before,
-.hero::before,
-.hero.apple-hero::after,
-.hero::after,
-.section::before,
-.section::after{
-  will-change:auto !important;
-  transform:none !important;
-}
-
-/* Aksen hijau tetap ada, tapi statis agar scroll lebih smooth */
-.hero.apple-hero,
-.hero{
-  background:
-    radial-gradient(circle at 86% 16%, rgba(22,101,52,.16), transparent 34%),
-    radial-gradient(circle at 5% 88%, rgba(34,197,94,.09), transparent 30%),
-    linear-gradient(180deg,#ffffff 0%,#f7f8f7 100%) !important;
-}
-
-/* Motion dibuat lebih ringan dan tidak menahan scrolling */
-.reveal-on-scroll,
-.text-reveal{
-  transition:
-    opacity .34s ease-out,
-    transform .34s ease-out !important;
-  transition-delay:0s !important;
-  will-change:auto !important;
-}
-
-.reveal-on-scroll{
-  transform:translate3d(0,12px,0) !important;
-}
-
-.reveal-on-scroll.is-visible,
-.text-reveal.is-visible{
-  transform:none !important;
-}
-
-/* Homepage: kasih ruang lebih agar card bawah tidak terlihat pada layar awal mobile */
-.home-page .hero.apple-hero,
-.home-page .hero{
-  min-height:calc(100svh - 62px) !important;
-  align-content:center !important;
-}
-
-.home-page .hero-mini-stats{
-  margin-top:42px !important;
-}
-
-/* Desktop tetap proporsional */
-@media(min-width:721px){
-  .home-page .hero.apple-hero,
-  .home-page .hero{
-    min-height:calc(100vh - 74px) !important;
-    padding-top:92px !important;
-    padding-bottom:96px !important;
-  }
-}
-
-/* Mobile: statistik agak turun dan section berikutnya tidak langsung nongol */
-@media(max-width:720px){
-  .home-page .hero.apple-hero,
-  .home-page .hero{
-    min-height:calc(100svh - 58px) !important;
-    padding-top:50px !important;
-    padding-bottom:96px !important;
-    gap:22px !important;
-  }
-
-  .home-page .hero-actions{
-    margin-top:26px !important;
-  }
-
-  .home-page .hero-mini-stats{
-    margin-top:36px !important;
-  }
-
-  .home-page .intro-section{
-    padding-top:74px !important;
-  }
-
-  .home-page .hero h1{
-    font-size:clamp(37px,11.2vw,46px) !important;
-  }
-}
-
-/* HP pendek: jangan terlalu tinggi sampai terasa kosong */
 @media(max-width:420px) and (max-height:720px){
   .home-page .hero.apple-hero,
   .home-page .hero{
-    min-height:calc(100svh - 54px) !important;
     padding-top:38px !important;
-    padding-bottom:72px !important;
+    padding-bottom:76px !important;
   }
 
   .home-page .hero-mini-stats{
-    margin-top:28px !important;
-  }
-
-  .home-page .intro-section{
-    padding-top:58px !important;
-  }
-}
-
-
-/* ================= APPLE STYLE V8 LIGHT REVEAL ================= */
-/* Motion ringan ala Apple: tidak pakai scroll handler berat */
-
-/* Hero text muncul bertahap saat halaman pertama dibuka */
-.home-page .hero-text .label,
-.home-page .hero-text h1,
-.home-page .hero-text h2,
-.home-page .hero-text > p,
-.home-page .hero-actions,
-.home-page .hero-mini-stats{
-  opacity:0;
-  transform:translate3d(0,18px,0);
-  animation:appleHeroTextIn .72s cubic-bezier(.22,1,.36,1) forwards;
-  will-change:opacity,transform;
-}
-
-.home-page .hero-text .label{animation-delay:.06s;}
-.home-page .hero-text h1{animation-delay:.14s;}
-.home-page .hero-text h2{animation-delay:.22s;}
-.home-page .hero-text > p{animation-delay:.30s;}
-.home-page .hero-actions{animation-delay:.40s;}
-.home-page .hero-mini-stats{animation-delay:.52s;}
-
-@keyframes appleHeroTextIn{
-  to{
-    opacity:1;
-    transform:translate3d(0,0,0);
-  }
-}
-
-/* Scroll reveal ringan untuk section/card */
-.reveal-on-scroll{
-  opacity:0;
-  transform:translate3d(0,20px,0) scale(.992);
-  transition:
-    opacity .62s cubic-bezier(.22,1,.36,1),
-    transform .62s cubic-bezier(.22,1,.36,1) !important;
-  will-change:opacity,transform;
-}
-
-.reveal-on-scroll.is-visible{
-  opacity:1;
-  transform:translate3d(0,0,0) scale(1) !important;
-}
-
-/* Teks di dalam section ikut terasa muncul tanpa memberatkan scroll */
-.reveal-on-scroll .label,
-.reveal-on-scroll h1,
-.reveal-on-scroll h2,
-.reveal-on-scroll h3,
-.reveal-on-scroll p,
-.reveal-on-scroll li,
-.reveal-on-scroll small{
-  transition:
-    opacity .58s cubic-bezier(.22,1,.36,1),
-    transform .58s cubic-bezier(.22,1,.36,1);
-}
-
-.reveal-on-scroll:not(.is-visible) .label,
-.reveal-on-scroll:not(.is-visible) h1,
-.reveal-on-scroll:not(.is-visible) h2,
-.reveal-on-scroll:not(.is-visible) h3,
-.reveal-on-scroll:not(.is-visible) p,
-.reveal-on-scroll:not(.is-visible) li,
-.reveal-on-scroll:not(.is-visible) small{
-  opacity:0;
-  transform:translate3d(0,12px,0);
-}
-
-.reveal-on-scroll.is-visible .label,
-.reveal-on-scroll.is-visible h1,
-.reveal-on-scroll.is-visible h2,
-.reveal-on-scroll.is-visible h3,
-.reveal-on-scroll.is-visible p,
-.reveal-on-scroll.is-visible li,
-.reveal-on-scroll.is-visible small{
-  opacity:1;
-  transform:translate3d(0,0,0);
-}
-
-/* Sedikit aksen hijau tetap statis agar scroll tidak berat */
-.hero.apple-hero,
-.hero{
-  background:
-    radial-gradient(circle at 86% 14%, rgba(22,101,52,.17), transparent 35%),
-    radial-gradient(circle at 10% 92%, rgba(34,197,94,.10), transparent 32%),
-    linear-gradient(180deg,#ffffff 0%,#f7f8f7 100%) !important;
-}
-
-/* Pastikan tidak ada scroll lock / drag horizontal */
-html,body{
-  overflow-x:hidden !important;
-  overflow-y:auto !important;
-  touch-action:auto !important;
-}
-
-/* Agar animasi tidak bikin scroll terasa ketahan di HP */
-@media(max-width:720px){
-  .reveal-on-scroll{
-    transform:translate3d(0,14px,0) scale(.996);
-    transition-duration:.48s !important;
-  }
-
-  .home-page .hero-text .label,
-  .home-page .hero-text h1,
-  .home-page .hero-text h2,
-  .home-page .hero-text > p,
-  .home-page .hero-actions,
-  .home-page .hero-mini-stats{
-    animation-duration:.58s;
+    margin-top:30px !important;
   }
 }
 
@@ -6086,8 +5453,7 @@ html,body{
   .home-page .hero-text > p,
   .home-page .hero-actions,
   .home-page .hero-mini-stats,
-  .reveal-on-scroll,
-  .reveal-on-scroll *{
+  .reveal-on-scroll{
     opacity:1 !important;
     transform:none !important;
     animation:none !important;
