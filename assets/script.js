@@ -19,6 +19,7 @@ document.addEventListener("DOMContentLoaded", function () {
   setupSliderButtons();
   loadStats();
   loadPengumuman();
+  setupRekomPage();
 });
 
 /* MENU */
@@ -1014,4 +1015,318 @@ function setupSliderButtons() {
     updateButtonState();
     window.addEventListener("resize", updateButtonState);
   });
+}
+
+/* ================= REKOM PAGE ================= */
+const rekomState = {
+  data: [],
+  filtered: [],
+  loaded: false,
+  openedKey: null,
+};
+
+function setupRekomPage() {
+  const app = document.getElementById("rekomApp");
+  if (!app) return;
+
+  const searchInput = document.getElementById("rekomSearchInput");
+  const kelasFilter = document.getElementById("rekomKelasFilter");
+  const adnaFilter = document.getElementById("rekomAdnaFilter");
+  const kamarFilter = document.getElementById("rekomKamarFilter");
+  const statusFilter = document.getElementById("rekomStatusFilter");
+  const selesaiFilter = document.getElementById("rekomSelesaiFilter");
+  const resetButton = document.getElementById("rekomResetButton");
+
+  [searchInput, kelasFilter, adnaFilter, kamarFilter, statusFilter, selesaiFilter].forEach((el) => {
+    if (!el) return;
+    el.addEventListener("input", applyRekomFilters);
+    el.addEventListener("change", applyRekomFilters);
+  });
+
+  if (resetButton) {
+    resetButton.addEventListener("click", function () {
+      if (searchInput) searchInput.value = "";
+      [kelasFilter, adnaFilter, kamarFilter, statusFilter, selesaiFilter].forEach((el) => {
+        if (el) el.value = "";
+      });
+      rekomState.openedKey = null;
+      applyRekomFilters();
+      updateRekomUrl(false);
+    });
+  }
+
+  loadRekomData();
+}
+
+async function loadRekomData() {
+  const list = document.getElementById("rekomList");
+  const summary = document.getElementById("rekomSummary");
+
+  if (list) list.innerHTML = renderRekomSkeleton();
+  if (summary) summary.textContent = "Memuat data rekom...";
+
+  try {
+    const response = await fetch(`${API_URL}?mode=rekom`);
+    const json = await response.json();
+
+    if (!json.success || !Array.isArray(json.data)) {
+      throw new Error(json.message || "Data rekom tidak tersedia.");
+    }
+
+    rekomState.data = json.data
+      .map(normalizeRekomRow)
+      .filter((item) => normalizeSearchText(item.statusSantri) === "AKTIF");
+
+    rekomState.loaded = true;
+    populateRekomFilters(rekomState.data);
+    applyRekomParamsFromUrl();
+    applyRekomFilters();
+  } catch (error) {
+    if (summary) summary.textContent = "Gagal memuat data rekom.";
+    if (list) {
+      list.innerHTML = `
+        <div class="rekom-empty-card">
+          <i class="ri-error-warning-line"></i>
+          <h3>Data rekom belum bisa dimuat</h3>
+          <p>
+            Pastikan Apps Script website sudah mendukung <strong>mode=rekom</strong>
+            dan sheet <strong>DATA_REKOM_AKTIF</strong> tersedia.
+          </p>
+        </div>
+      `;
+    }
+  }
+}
+
+function normalizeRekomRow(row = {}) {
+  const get = (...keys) => {
+    for (const key of keys) {
+      if (row[key] !== undefined && row[key] !== null && String(row[key]).trim() !== "") {
+        return String(row[key]).trim();
+      }
+    }
+    return "";
+  };
+
+  const num = (...keys) => {
+    const value = get(...keys);
+    const parsed = Number(String(value || "0").replace(",", "."));
+    return Number.isFinite(parsed) ? parsed : 0;
+  };
+
+  return {
+    kode: get("kode", "KODE"),
+    nama: get("nama", "NAMA"),
+    kamar: get("kamar", "KAMAR"),
+    kelas: get("kelas", "KELAS"),
+    adna: get("adna", "ADNA"),
+    alpaPenertiban: num("alpaPenertiban", "ALPA !!!", "ALPA_!!!", "PENERTIBAN"),
+    sPenertiban: get("sPenertiban", "S !!!", "S_!!!", "S PENERTIBAN"),
+    alpa1: num("alpa1", "ALPA 1", "ALPA_1"),
+    s1: get("s1", "S 1", "S_1"),
+    alpa2: num("alpa2", "ALPA 2", "ALPA_2"),
+    s2: get("s2", "S 2", "S_2"),
+    alpa3: num("alpa3", "ALPA 3", "ALPA_3"),
+    s3: get("s3", "S 3", "S_3"),
+    alpa4: num("alpa4", "ALPA 4", "ALPA_4"),
+    s4: get("s4", "S 4", "S_4"),
+    totalAlpa: num("totalAlpa", "TOTAL ALPA", "TOTAL_ALPA"),
+    statusRekom: get("statusRekom", "STATUS REKOM", "STATUS_REKOM") || "TIDAK REKOM",
+    statusSelesai: get("statusSelesai", "STATUS SELESAI", "STATUS_SELESAI"),
+    statusSantri: get("statusSantri", "STATUS SANTRI", "STATUS_SANTRI") || "AKTIF",
+    keterangan: get("keterangan", "KETERANGAN", "KET"),
+  };
+}
+
+function populateRekomFilters(data) {
+  fillSelect("rekomKelasFilter", uniqueSorted(data.map((item) => item.kelas)), "Semua Kelas");
+  fillSelect("rekomAdnaFilter", uniqueSorted(data.map((item) => item.adna)), "Semua ADNA");
+  fillSelect("rekomKamarFilter", uniqueSorted(data.map((item) => item.kamar)), "Semua Kamar");
+  fillSelect("rekomStatusFilter", uniqueSorted(data.map((item) => item.statusRekom)), "Semua Status");
+  fillSelect("rekomSelesaiFilter", uniqueSorted(data.map((item) => item.statusSelesai)), "Semua Selesai");
+}
+
+function fillSelect(id, items, defaultText) {
+  const select = document.getElementById(id);
+  if (!select) return;
+
+  const current = select.value;
+  select.innerHTML = `<option value="">${defaultText}</option>` +
+    items.map((item) => `<option value="${escapeHtml(item)}">${escapeHtml(item)}</option>`).join("");
+
+  if (items.includes(current)) select.value = current;
+}
+
+function uniqueSorted(items) {
+  return [...new Set(items.map((item) => String(item || "").trim()).filter(Boolean))]
+    .sort((a, b) => a.localeCompare(b, "id-ID", { numeric: true }));
+}
+
+function applyRekomParamsFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const setValue = (id, key) => {
+    const el = document.getElementById(id);
+    const value = params.get(key);
+    if (el && value) el.value = value;
+  };
+
+  setValue("rekomSearchInput", "q");
+  setValue("rekomKelasFilter", "kelas");
+  setValue("rekomAdnaFilter", "adna");
+  setValue("rekomKamarFilter", "kamar");
+  setValue("rekomStatusFilter", "status");
+  setValue("rekomSelesaiFilter", "selesai");
+}
+
+function updateRekomUrl(push = true) {
+  const params = new URLSearchParams();
+  const add = (key, id) => {
+    const el = document.getElementById(id);
+    if (el && el.value) params.set(key, el.value);
+  };
+
+  add("q", "rekomSearchInput");
+  add("kelas", "rekomKelasFilter");
+  add("adna", "rekomAdnaFilter");
+  add("kamar", "rekomKamarFilter");
+  add("status", "rekomStatusFilter");
+  add("selesai", "rekomSelesaiFilter");
+
+  const nextUrl = `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ""}`;
+  if (push) window.history.replaceState({}, "", nextUrl);
+}
+
+function applyRekomFilters() {
+  if (!rekomState.loaded) return;
+
+  const keyword = normalizeSearchText(document.getElementById("rekomSearchInput")?.value || "");
+  const kelas = normalizeSearchText(document.getElementById("rekomKelasFilter")?.value || "");
+  const adna = normalizeSearchText(document.getElementById("rekomAdnaFilter")?.value || "");
+  const kamar = normalizeSearchText(document.getElementById("rekomKamarFilter")?.value || "");
+  const status = normalizeSearchText(document.getElementById("rekomStatusFilter")?.value || "");
+  const selesai = normalizeSearchText(document.getElementById("rekomSelesaiFilter")?.value || "");
+
+  rekomState.filtered = rekomState.data.filter((item) => {
+    const searchable = normalizeSearchText([
+      item.kode,
+      item.nama,
+      item.kelas,
+      item.kamar,
+      item.adna,
+    ].join(" "));
+
+    if (keyword && !searchable.includes(keyword)) return false;
+    if (kelas && normalizeSearchText(item.kelas) !== kelas) return false;
+    if (adna && normalizeSearchText(item.adna) !== adna) return false;
+    if (kamar && normalizeSearchText(item.kamar) !== kamar) return false;
+    if (status && normalizeSearchText(item.statusRekom) !== status) return false;
+    if (selesai && normalizeSearchText(item.statusSelesai) !== selesai) return false;
+    return true;
+  });
+
+  renderRekomList();
+  updateRekomSummary();
+  updateRekomUrl();
+}
+
+function updateRekomSummary() {
+  const summary = document.getElementById("rekomSummary");
+  if (!summary) return;
+
+  const total = rekomState.filtered.length;
+  summary.innerHTML = `Menampilkan <strong>${total}</strong> santri aktif`;
+}
+
+function renderRekomList() {
+  const list = document.getElementById("rekomList");
+  if (!list) return;
+
+  if (rekomState.filtered.length === 0) {
+    list.innerHTML = `
+      <div class="rekom-empty-card">
+        <i class="ri-search-eye-line"></i>
+        <h3>Data tidak ditemukan</h3>
+        <p>Coba ubah filter kelas, ADNA, kamar, status, atau kata pencarian.</p>
+      </div>
+    `;
+    return;
+  }
+
+  list.innerHTML = rekomState.filtered.map((item) => renderRekomCard(item)).join("");
+}
+
+function getRekomKey(item) {
+  return encodeURIComponent(item.kode || item.nama || Math.random().toString(36));
+}
+
+function renderRekomCard(item) {
+  const key = getRekomKey(item);
+  const isOpen = rekomState.openedKey === key;
+
+  return `
+    <article class="rekom-row ${isOpen ? "open" : ""}" data-rekom-key="${key}">
+      <button class="rekom-row-head" type="button" onclick="toggleRekomRow('${key}')">
+        <span class="rekom-student-name">${escapeHtml(item.nama || "-")}</span>
+        <span class="rekom-student-meta">
+          ${escapeHtml(item.kelas || "-")} • Kamar ${escapeHtml(item.kamar || "-")} • ${escapeHtml(item.adna || "-")}
+        </span>
+        <i class="ri-arrow-down-s-line"></i>
+      </button>
+
+      <div class="rekom-row-detail">
+        <div class="rekom-detail-grid-mini">
+          ${renderRekomPeriod("Penertiban", item.alpaPenertiban, item.sPenertiban)}
+          ${renderRekomPeriod("Rekom 1", item.alpa1, item.s1)}
+          ${renderRekomPeriod("Rekom 2", item.alpa2, item.s2)}
+          ${renderRekomPeriod("Rekom 3", item.alpa3, item.s3)}
+          ${renderRekomPeriod("Rekom 4", item.alpa4, item.s4)}
+        </div>
+
+        <div class="rekom-total-strip">
+          <span>Total Alpa: <strong>${escapeHtml(item.totalAlpa)}</strong></span>
+          <span>Status: <strong>${escapeHtml(item.statusRekom || "-")}</strong></span>
+          <span>Selesai: <strong>${escapeHtml(item.statusSelesai || "-")}</strong></span>
+        </div>
+
+        ${item.keterangan ? `<p class="rekom-note"><strong>Keterangan:</strong> ${escapeHtml(item.keterangan)}</p>` : ""}
+      </div>
+    </article>
+  `;
+}
+
+function renderRekomPeriod(label, alpa, status) {
+  const isDone = normalizeSearchText(status) === "S" || normalizeSearchText(status) === "SELESAI";
+  const hasAlpa = Number(alpa || 0) > 0;
+  return `
+    <div class="rekom-period ${isDone ? "done" : ""} ${!hasAlpa ? "empty" : ""}">
+      <span>${label}</span>
+      <strong>${Number(alpa || 0)}</strong>
+      <em>${hasAlpa ? (isDone ? "Selesai" : "Belum") : "-"}</em>
+    </div>
+  `;
+}
+
+function toggleRekomRow(key) {
+  rekomState.openedKey = rekomState.openedKey === key ? null : key;
+  renderRekomList();
+
+  if (rekomState.openedKey && window.innerWidth <= 700) {
+    setTimeout(() => {
+      const row = document.querySelector(`[data-rekom-key="${key}"]`);
+      if (row) row.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 80);
+  }
+}
+
+function renderRekomSkeleton() {
+  return `
+    <div class="rekom-skeleton-list">
+      ${Array.from({ length: 6 }).map(() => `
+        <div class="rekom-skeleton-row">
+          <div class="skeleton-line skeleton-name"></div>
+          <div class="skeleton-line skeleton-small"></div>
+        </div>
+      `).join("")}
+    </div>
+  `;
 }
