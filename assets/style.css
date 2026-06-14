@@ -5122,3 +5122,216 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text"
     height:72px;
   }
 }
+
+
+/* ================= APPLE STYLE V3 INTERACTIVE POLISH ================= */
+body{
+  position:relative;
+  overflow-x:hidden;
+  background:
+    linear-gradient(180deg,#f7f8f7 0%,#fbfcfb 52%,#f7f8f7 100%);
+  --bg-shift-1:0px;
+  --bg-shift-2:0px;
+}
+body::before,
+body::after{
+  content:"";
+  position:fixed;
+  pointer-events:none;
+  z-index:0;
+  border-radius:999px;
+  opacity:.8;
+  will-change:transform;
+}
+body::before{
+  width:min(38vw,480px);
+  height:min(38vw,480px);
+  top:9%;
+  right:-10%;
+  background:radial-gradient(circle, rgba(22,101,52,.10) 0%, rgba(22,101,52,.06) 32%, rgba(22,101,52,0) 72%);
+  transform:translate3d(0,calc(var(--bg-shift-1) * .45),0);
+}
+body::after{
+  width:min(34vw,420px);
+  height:min(34vw,420px);
+  top:54%;
+  left:-9%;
+  background:radial-gradient(circle, rgba(34,197,94,.08) 0%, rgba(34,197,94,.05) 34%, rgba(34,197,94,0) 72%);
+  transform:translate3d(0,calc(var(--bg-shift-2) * -.35),0);
+}
+.navbar, main, .footer-pro{position:relative;z-index:1;}
+
+/* Logo motion */
+.hero-inline-logo img{
+  animation:heroLogoFloat 5.8s ease-in-out infinite;
+}
+.about-logo{
+  animation:aboutLogoFloat 6.4s ease-in-out infinite;
+}
+@keyframes heroLogoFloat{
+  0%,100%{transform:translate3d(0,0,0) scale(1) rotate(0deg);}
+  50%{transform:translate3d(0,-7px,0) scale(1.012) rotate(.6deg);}
+}
+@keyframes aboutLogoFloat{
+  0%,100%{transform:translate3d(0,0,0) rotate(0deg);}
+  50%{transform:translate3d(0,-5px,0) rotate(-.6deg);}
+}
+
+/* About card logo placement */
+.about-card{
+  position:relative;
+  overflow:hidden;
+}
+.about-icon{
+  align-self:start;
+  justify-content:flex-start;
+  padding-top:4px;
+}
+.about-logo{
+  display:block;
+  margin:0;
+}
+
+/* Search clear button more subtle */
+.search-input-wrap input{padding-right:52px;}
+.search-box .search-input-wrap .search-clear-btn{
+  right:12px !important;
+  width:22px !important;
+  height:22px !important;
+  min-width:22px !important;
+  max-width:22px !important;
+  border-radius:999px !important;
+  border:1px solid rgba(16,32,22,.06) !important;
+  background:#f1f3f2 !important;
+  color:#8a918d !important;
+  box-shadow:0 4px 12px rgba(15,23,42,.05) !important;
+}
+.search-box .search-input-wrap .search-clear-btn i{
+  font-size:12px !important;
+  font-weight:700 !important;
+}
+.search-box .search-input-wrap .search-clear-btn:hover,
+.search-box .search-input-wrap .search-clear-btn:active{
+  background:#e8ece9 !important;
+  color:#4d564f !important;
+}
+
+/* Interactive touch / press states */
+.brand,
+.menu-toggle,
+nav a,
+.hero-btn,
+.info-card,
+.stat-card,
+.announcement-card,
+.search-card,
+.search-detail-btn,
+.accordion,
+.accordion summary,
+.pedoman-card,
+.service-card,
+.footer-wa,
+.rekom-card,
+.rekom-item,
+.rekom-summary-card,
+.rekom-filter-btn,
+.rekom-reset-btn,
+button,
+a.btn{
+  transition:
+    transform .22s cubic-bezier(.22,1,.36,1),
+    box-shadow .22s cubic-bezier(.22,1,.36,1),
+    background-color .22s ease,
+    border-color .22s ease,
+    color .22s ease,
+    opacity .22s ease;
+  -webkit-tap-highlight-color:transparent;
+}
+.brand:hover,
+.menu-toggle:hover,
+nav a:hover,
+.hero-btn:hover,
+.search-detail-btn:hover,
+.footer-wa:hover{
+  transform:translateY(-1px);
+}
+.info-card:hover,
+.stat-card:hover,
+.announcement-card:hover,
+.search-card:hover,
+.pedoman-card:hover,
+.rekom-card:hover,
+.rekom-item:hover,
+.rekom-summary-card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 22px 46px rgba(16,32,22,.10);
+}
+.press-feedback{
+  transform:scale(.985) translateY(1px) !important;
+}
+.press-glow{
+  box-shadow:0 14px 34px rgba(22,101,52,.12) !important;
+}
+nav a:active,
+.hero-btn:active,
+.menu-toggle:active,
+.search-detail-btn:active,
+.footer-wa:active,
+button:active{
+  transform:scale(.98);
+}
+
+/* Slight card sheen/accent */
+.info-card::before,
+.stat-card::before,
+.announcement-card::before,
+.pedoman-card::before,
+.search-card::before,
+.about-card::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  background:linear-gradient(135deg, rgba(22,101,52,.025), rgba(255,255,255,0) 36%);
+  pointer-events:none;
+}
+.info-card,.stat-card,.announcement-card,.pedoman-card,.search-card,.about-card{position:relative;overflow:hidden;}
+
+@media(max-width:720px){
+  body::before{
+    width:260px;
+    height:260px;
+    top:8%;
+    right:-28%;
+    opacity:.72;
+  }
+  body::after{
+    width:220px;
+    height:220px;
+    top:58%;
+    left:-26%;
+    opacity:.64;
+  }
+  .about-card.apple-card-large,.about-card{
+    gap:12px;
+  }
+  .about-icon{
+    padding-top:0;
+    margin-bottom:2px;
+  }
+  .about-logo{
+    width:64px;
+    height:64px;
+  }
+  .info-card:hover,
+  .stat-card:hover,
+  .announcement-card:hover,
+  .search-card:hover,
+  .pedoman-card:hover,
+  .rekom-card:hover,
+  .rekom-item:hover,
+  .rekom-summary-card:hover{
+    transform:none;
+    box-shadow:var(--shadow-soft);
+  }
+}
