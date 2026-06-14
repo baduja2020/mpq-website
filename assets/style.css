@@ -3623,3 +3623,405 @@ body{
   font-family:var(--font-main) !important;
   letter-spacing:-.03em;
 }
+
+/* =========================================================
+   PATCH v4 — MOBILE POLISH: NAVBAR, PANAH, FILTER CUSTOM
+   Fokus:
+   1) Navbar mobile lebih pendek dan ringan.
+   2) Tombol buka detail diganti plus/minus minimal.
+   3) Filter mobile pakai bottom sheet custom, bukan menu native browser.
+   ========================================================= */
+
+/* ---------- Navbar mobile lebih compact ---------- */
+@media(max-width:768px){
+  .navbar{
+    padding:8px 16px !important;
+    min-height:68px;
+  }
+
+  .brand{
+    gap:10px !important;
+  }
+
+  .brand img{
+    width:46px !important;
+    height:46px !important;
+  }
+
+  .brand strong{
+    font-size:17px !important;
+    line-height:1.08;
+    font-weight:750 !important;
+  }
+
+  .brand span{
+    font-size:12px !important;
+    line-height:1.2;
+  }
+
+  .menu-toggle{
+    width:44px !important;
+    height:44px !important;
+    border-radius:16px !important;
+    font-size:24px !important;
+    background:#eef8f1 !important;
+  }
+
+  .navbar nav{
+    top:72px !important;
+    left:14px !important;
+    right:14px !important;
+    border-radius:20px !important;
+    padding:8px !important;
+  }
+
+  .navbar nav a{
+    padding:13px 14px !important;
+    border-radius:14px !important;
+    font-size:13.5px !important;
+  }
+}
+
+/* ---------- Panah rekom diganti plus/minus minimal ---------- */
+.rekom-row-head > i{
+  right:16px !important;
+  top:auto !important;
+  bottom:13px !important;
+  width:22px !important;
+  height:22px !important;
+  display:grid !important;
+  place-items:center !important;
+  background:transparent !important;
+  border-radius:0 !important;
+  color:#7c8b82 !important;
+  font-size:0 !important;
+  line-height:1 !important;
+  transform:none !important;
+  transition:color .18s ease, transform .18s ease !important;
+}
+
+.rekom-row-head > i::before{
+  content:"+" !important;
+  font-family:var(--font-main) !important;
+  font-size:20px !important;
+  font-weight:420 !important;
+  line-height:1 !important;
+}
+
+.rekom-row.open .rekom-row-head > i{
+  transform:none !important;
+  color:var(--primary) !important;
+}
+
+.rekom-row.open .rekom-row-head > i::before{
+  content:"−" !important;
+  font-size:22px !important;
+}
+
+.rekom-row-head .rekom-indicator-dot{
+  top:14px !important;
+  right:16px !important;
+  width:7px !important;
+  height:7px !important;
+}
+
+.rekom-row-head{
+  padding:14px 52px 14px 16px !important;
+}
+
+@media(max-width:620px){
+  .rekom-row-head{
+    padding:14px 52px 14px 15px !important;
+  }
+
+  .rekom-row-head > i{
+    right:17px !important;
+    bottom:13px !important;
+  }
+
+  .rekom-row-head .rekom-indicator-dot{
+    top:14px !important;
+    right:18px !important;
+  }
+
+  .rekom-student-name{
+    padding-right:0 !important;
+    max-width:100% !important;
+  }
+}
+
+/* ---------- Filter mobile custom ---------- */
+.rekom-mobile-filter-btn{
+  display:none;
+}
+
+@media(max-width:620px){
+  .rekom-toolbar{
+    grid-template-columns:minmax(0,1fr) auto !important;
+    gap:8px !important;
+    padding:10px !important;
+    border-radius:20px !important;
+    background:rgba(255,255,255,.96) !important;
+    box-shadow:0 10px 28px rgba(16,32,22,.055) !important;
+  }
+
+  .rekom-toolbar input{
+    min-height:42px !important;
+    border-radius:15px !important;
+    font-size:13px !important;
+    padding:0 12px !important;
+  }
+
+  .rekom-toolbar select,
+  .rekom-toolbar .rekom-reset-btn{
+    display:none !important;
+  }
+
+  .rekom-mobile-filter-btn{
+    min-height:42px;
+    padding:0 12px;
+    border:1px solid #d6eadc;
+    border-radius:15px;
+    background:#effaf2;
+    color:var(--primary);
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
+    font-family:var(--font-main);
+    font-size:13px;
+    font-weight:720;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+
+  .rekom-mobile-filter-btn i{
+    font-size:17px;
+  }
+
+  .rekom-mobile-filter-btn em{
+    min-width:18px;
+    height:18px;
+    padding:0 5px;
+    display:grid;
+    place-items:center;
+    border-radius:999px;
+    background:#dbece1;
+    color:#557060;
+    font-size:10.5px;
+    font-style:normal;
+    font-weight:800;
+  }
+
+  .rekom-mobile-filter-btn em.active,
+  .rekom-mobile-filter-btn.has-active em{
+    background:var(--primary);
+    color:white;
+  }
+}
+
+.rekom-filter-sheet{
+  position:fixed;
+  inset:0;
+  z-index:1000;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .18s ease;
+}
+
+.rekom-filter-sheet.show{
+  opacity:1;
+  pointer-events:auto;
+}
+
+.rekom-filter-backdrop{
+  position:absolute;
+  inset:0;
+  background:rgba(7,19,12,.34);
+  backdrop-filter:blur(4px);
+}
+
+.rekom-filter-panel{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  max-height:84vh;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  border-radius:28px 28px 0 0;
+  background:#ffffff;
+  box-shadow:0 -20px 55px rgba(7,19,12,.22);
+  transform:translateY(100%);
+  transition:transform .24s ease;
+}
+
+.rekom-filter-sheet.show .rekom-filter-panel{
+  transform:translateY(0);
+}
+
+.rekom-filter-handle{
+  width:44px;
+  height:4px;
+  margin:10px auto 4px;
+  border-radius:999px;
+  background:#d9e6dd;
+}
+
+.rekom-filter-head{
+  padding:12px 18px 14px;
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  border-bottom:1px solid var(--line);
+}
+
+.rekom-filter-head strong{
+  display:block;
+  color:var(--text);
+  font-size:17px;
+  line-height:1.2;
+  letter-spacing:-.025em;
+}
+
+.rekom-filter-head span{
+  display:block;
+  margin-top:3px;
+  color:var(--muted);
+  font-size:12.5px;
+}
+
+.rekom-filter-close{
+  width:38px;
+  height:38px;
+  border:none;
+  border-radius:14px;
+  display:grid;
+  place-items:center;
+  background:var(--primary-soft);
+  color:var(--primary);
+  font-size:20px;
+  cursor:pointer;
+}
+
+.rekom-filter-body{
+  padding:14px 16px 8px;
+  overflow:auto;
+  -webkit-overflow-scrolling:touch;
+}
+
+.rekom-filter-group{
+  padding:0 0 16px;
+}
+
+.rekom-filter-label{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-bottom:9px;
+  color:var(--text);
+  font-size:13px;
+  font-weight:760;
+  letter-spacing:-.015em;
+}
+
+.rekom-filter-label i{
+  color:var(--primary);
+  font-size:16px;
+}
+
+.rekom-filter-options{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+
+.rekom-filter-option{
+  min-height:40px;
+  border:1px solid #dfeae3;
+  border-radius:15px;
+  padding:9px 10px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  background:#fbfdfb;
+  color:#314239;
+  font-family:var(--font-main);
+  font-size:12.8px;
+  font-weight:650;
+  text-align:left;
+  cursor:pointer;
+}
+
+.rekom-filter-option span{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.rekom-filter-option i{
+  width:18px;
+  height:18px;
+  display:grid;
+  place-items:center;
+  border-radius:999px;
+  background:#edf3ef;
+  color:transparent;
+  font-size:13px;
+  flex:0 0 auto;
+}
+
+.rekom-filter-option.active{
+  border-color:#9fd4ad;
+  background:#ebf8ef;
+  color:var(--primary);
+}
+
+.rekom-filter-option.active i{
+  background:var(--primary);
+  color:white;
+}
+
+.rekom-filter-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  padding:12px 16px calc(14px + env(safe-area-inset-bottom));
+  border-top:1px solid var(--line);
+  background:rgba(255,255,255,.96);
+}
+
+.rekom-filter-reset,
+.rekom-filter-apply{
+  min-height:44px;
+  border:none;
+  border-radius:16px;
+  font-family:var(--font-main);
+  font-size:13.5px;
+  font-weight:780;
+  cursor:pointer;
+}
+
+.rekom-filter-reset{
+  background:#f3f7f4;
+  color:#5f6f65;
+}
+
+.rekom-filter-apply{
+  background:var(--primary);
+  color:#ffffff;
+}
+
+body.rekom-filter-is-open{
+  overflow:hidden;
+}
+
+@media(min-width:621px){
+  .rekom-filter-sheet{
+    display:none !important;
+  }
+}
