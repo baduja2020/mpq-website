@@ -2894,7 +2894,7 @@ nav a:hover::after{
 
 .rekom-detail-grid-mini{
   display:grid;
-  grid-template-columns:repeat(5,1fr);
+  grid-template-columns:repeat(var(--rekom-period-count, 3), minmax(0,1fr));
   gap:8px;
   padding-top:13px;
 }
