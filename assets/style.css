@@ -4990,3 +4990,135 @@ nav a::after{display:none !important;}
   .page-title{font-size:32px;}
   .rekom-summary-card{padding:10px 7px;}
 }
+
+
+/* ================= APPLE STYLE V2 POLISH ================= */
+body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+
+.home-page .hero.apple-hero,.home-page .hero{
+  grid-template-columns:1fr;
+  justify-items:center;
+  text-align:center;
+  gap:30px;
+  padding-top:72px;
+  padding-bottom:72px;
+}
+.home-page .hero-text{
+  max-width:960px;
+  width:100%;
+}
+.home-page .hero p{
+  margin-left:auto;
+  margin-right:auto;
+}
+.home-page .hero-inline-logo{
+  display:flex;
+  justify-content:center;
+  margin:26px 0 4px;
+}
+.home-page .hero-inline-logo img{
+  width:clamp(112px,16vw,154px);
+  height:auto;
+  object-fit:contain;
+  filter:drop-shadow(0 12px 22px rgba(0,0,0,.10));
+}
+.home-page .hero-logo-wrap,
+.home-page .hero-device-card{
+  display:none !important;
+}
+.home-page .hero-actions,
+.home-page .hero-mini-stats{
+  justify-content:center;
+  margin-left:auto;
+  margin-right:auto;
+}
+.home-page .hero-mini-stats{
+  max-width:760px;
+}
+
+.about-icon{
+  width:auto;
+  height:auto;
+  border-radius:0;
+  background:transparent;
+  padding:0;
+  box-shadow:none;
+}
+.about-logo{
+  width:88px;
+  height:88px;
+}
+
+.search-input-wrap input{
+  padding-right:58px;
+}
+.search-box .search-input-wrap .search-clear-btn{
+  right:10px !important;
+  width:30px !important;
+  height:30px !important;
+  min-width:30px !important;
+  max-width:30px !important;
+  border:1px solid rgba(17,24,39,.08) !important;
+  background:#f3f5f4 !important;
+  color:#7a7f7b !important;
+  box-shadow:0 8px 18px rgba(15,23,42,.08) !important;
+  transform:translateY(-50%) scale(.92) !important;
+}
+.search-box .search-input-wrap .search-clear-btn.show{
+  transform:translateY(-50%) scale(1) !important;
+}
+.search-box .search-input-wrap .search-clear-btn:hover,
+.search-box .search-input-wrap .search-clear-btn:active{
+  background:#ebefec !important;
+  color:#38413a !important;
+}
+.search-box .search-input-wrap .search-clear-btn i{
+  font-size:15px !important;
+  font-weight:700 !important;
+}
+
+/* Smooth reveal ala Apple */
+.reveal-on-scroll{
+  opacity:0;
+  transform:translate3d(0,36px,0);
+  transition:
+    opacity .86s cubic-bezier(.22,1,.36,1),
+    transform .86s cubic-bezier(.22,1,.36,1);
+  will-change:opacity,transform;
+}
+.reveal-on-scroll.is-visible{
+  opacity:1;
+  transform:translate3d(0,0,0);
+}
+.reveal-delay-1{transition-delay:.06s;}
+.reveal-delay-2{transition-delay:.12s;}
+.reveal-delay-3{transition-delay:.18s;}
+.reveal-delay-4{transition-delay:.24s;}
+
+@media (prefers-reduced-motion: reduce){
+  .reveal-on-scroll{
+    opacity:1 !important;
+    transform:none !important;
+    transition:none !important;
+  }
+}
+
+@media(max-width:720px){
+  .home-page .hero.apple-hero,.home-page .hero{
+    padding-top:46px;
+    padding-bottom:50px;
+  }
+  .home-page .hero-inline-logo{
+    margin:20px 0 2px;
+  }
+  .home-page .hero-inline-logo img{
+    width:124px;
+  }
+  .about-card.apple-card-large,.about-card{
+    gap:18px;
+  }
+  .about-logo{
+    width:72px;
+    height:72px;
+  }
+}
