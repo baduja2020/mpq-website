@@ -1305,9 +1305,50 @@ function getRekomKey(item) {
   return encodeURIComponent(item.kode || item.nama || Math.random().toString(36));
 }
 
+
+function getItemRekomPeriods(item) {
+  const periods = (rekomState.visiblePeriods && rekomState.visiblePeriods.length)
+    ? rekomState.visiblePeriods
+    : REKOM_PERIODS.slice(0, 2);
+
+  return periods.filter((period) => hasRekomPeriodData(item, period));
+}
+
+function getStatusClass(value = "") {
+  const v = normalizeSearchText(value);
+  if (!v || v === "-" || v === "tidak rekom") return "neutral";
+  if (v.includes("belum")) return "danger";
+  if (v.includes("selesai")) return "success";
+  if (v.includes("r") || v.includes("penertiban")) return "warning";
+  return "neutral";
+}
+
+function getSelesaiClass(value = "") {
+  const v = normalizeSearchText(value);
+  if (v.includes("selesai")) return "success";
+  if (v.includes("belum")) return "danger";
+  return "neutral";
+}
+
+
 function renderRekomCard(item) {
   const key = getRekomKey(item);
   const isOpen = rekomState.openedKey === key;
+  const periodItems = getItemRekomPeriods(item);
+  const statusClass = getStatusClass(item.statusRekom);
+  const selesaiClass = getSelesaiClass(item.statusSelesai);
+
+  const periodHtml = periodItems.length
+    ? periodItems.map((period) => renderRekomPeriod(period.label, item[period.alpaKey], item[period.statusKey])).join("")
+    : `
+      <div class="rekom-no-detail">
+        <i class="ri-check-double-line"></i>
+        <div>
+          <strong>Tidak ada tanggungan rekom aktif</strong>
+          <span>Santri ini belum memiliki alpa rekom pada periode yang ditampilkan.</span>
+        </div>
+      </div>
+    `;
 
   return `
     <article class="rekom-row ${isOpen ? "open" : ""}" data-rekom-key="${key}">
@@ -1320,14 +1361,19 @@ function renderRekomCard(item) {
       </button>
 
       <div class="rekom-row-detail">
-        <div class="rekom-detail-grid-mini" style="--rekom-period-count:${Math.min(Math.max(rekomState.visiblePeriods.length, 2), 4)}">
-          ${rekomState.visiblePeriods.map((period) => renderRekomPeriod(period.label, item[period.alpaKey], item[period.statusKey])).join("")}
+        <div class="rekom-detail-title">
+          <span>Detail Rekom</span>
+          <small>Data yang tampil hanya sesi yang memiliki catatan rekom.</small>
+        </div>
+
+        <div class="rekom-detail-grid-mini" style="--rekom-period-count:${Math.min(Math.max(periodItems.length, 1), 3)}">
+          ${periodHtml}
         </div>
 
         <div class="rekom-total-strip">
-          <span>Total Alpa: <strong>${escapeHtml(item.totalAlpa)}</strong></span>
-          <span>Status: <strong>${escapeHtml(item.statusRekom || "-")}</strong></span>
-          <span>Selesai: <strong>${escapeHtml(item.statusSelesai || "-")}</strong></span>
+          <span class="info-total">Total Alpa: <strong>${escapeHtml(item.totalAlpa || "0")}</strong></span>
+          <span class="info-status ${statusClass}">Status: <strong>${escapeHtml(item.statusRekom || "-")}</strong></span>
+          <span class="info-selesai ${selesaiClass}">Selesai: <strong>${escapeHtml(item.statusSelesai || "-")}</strong></span>
         </div>
 
         ${item.keterangan ? `<p class="rekom-note"><strong>Keterangan:</strong> ${escapeHtml(item.keterangan)}</p>` : ""}
@@ -1341,13 +1387,17 @@ function renderRekomPeriod(label, alpa, status) {
   const isDone = statusNorm === "s" || statusNorm === "selesai";
   const alpaNumber = toRekomNumber(alpa);
   const hasAlpa = alpaNumber > 0;
-  const statusText = hasAlpa ? (isDone ? "Selesai" : "Belum") : "-";
+  const statusText = isDone ? "Selesai" : "Belum";
+  const icon = isDone ? "ri-checkbox-circle-line" : "ri-error-warning-line";
 
   return `
-    <div class="rekom-period ${isDone ? "done" : ""} ${!hasAlpa ? "empty" : ""}">
-      <span>${escapeHtml(label)}</span>
+    <div class="rekom-period ${isDone ? "done" : "pending"}">
+      <div class="rekom-period-top">
+        <span>${escapeHtml(label)}</span>
+        <i class="${icon}"></i>
+      </div>
       <strong>${escapeHtml(String(alpaNumber))}</strong>
-      <em>${escapeHtml(statusText)}</em>
+      <em>${hasAlpa ? statusText : "-"}</em>
     </div>
   `;
 }
