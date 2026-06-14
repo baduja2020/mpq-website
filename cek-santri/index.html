@@ -1,161 +1,104 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Cek Data Santri</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cek Data Santri - MPQ Al Falah</title>
   <meta name="description" content="Cek data santri MPQ Al Falah berdasarkan nama, kelas, atau ADNA.">
-
-<link rel="canonical" href="https://www.mpq.my.id/cek-santri/">
-
-<meta property="og:title" content="Cek Data Santri - MPQ Al Falah">
-<meta property="og:description" content="Cek data santri MPQ Al Falah berdasarkan nama, kelas, atau ADNA.">
-<meta property="og:image" content="https://www.mpq.my.id/assets/og-image.png">
-<meta property="og:url" content="https://www.mpq.my.id/cek-santri/">
-<meta property="og:type" content="website">
-<meta property="og:site_name" content="MPQ Al Falah">
-
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Cek Data Santri - MPQ Al Falah">
-<meta name="twitter:description" content="Cek data santri MPQ Al Falah berdasarkan nama, kelas, atau ADNA.">
-<meta name="twitter:image" content="https://www.mpq.my.id/assets/og-image.png">
-<meta name="theme-color" content="#166534">
-
-<link rel="icon" href="/assets/favicon.png">
+  <link rel="canonical" href="https://www.mpq.my.id/cek-santri/">
+  <meta property="og:title" content="Cek Data Santri - MPQ Al Falah">
+  <meta property="og:description" content="Cek data santri MPQ Al Falah berdasarkan nama, kelas, atau ADNA.">
+  <meta property="og:image" content="https://www.mpq.my.id/assets/og-image.png">
+  <meta property="og:url" content="https://www.mpq.my.id/cek-santri/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="MPQ Al Falah">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Cek Data Santri - MPQ Al Falah">
+  <meta name="twitter:description" content="Cek data santri MPQ Al Falah berdasarkan nama, kelas, atau ADNA.">
+  <meta name="twitter:image" content="https://www.mpq.my.id/assets/og-image.png">
+  <meta name="theme-color" content="#f5f5f7">
+  <link rel="icon" href="/assets/favicon.png">
 <link rel="stylesheet" href="/assets/style.css">
-<script src="/assets/script.js"></script>
-
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="/assets/script.js" defer></script>
 <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
 </head>
-
 <body>
-
 <header class="navbar">
   <a href="/" class="brand">
-  <img src="/assets/logo-mpq.png" alt="Logo MPQ">
-  <div>
-    <strong>MPQ Al Falah</strong>
-    <span>Ploso Mojo Kediri</span>
-  </div>
-</a>
+    <img src="/assets/logo-mpq.png" alt="Logo MPQ">
+    <div>
+      <strong>MPQ Al Falah</strong>
+      <span>Ploso Mojo Kediri</span>
+    </div>
+  </a>
 
-  <button class="menu-toggle" id="menuToggle" type="button">
+  <button class="menu-toggle" id="menuToggle" type="button" aria-label="Buka menu navigasi">
     <i class="ri-menu-line"></i>
   </button>
-<nav id="mainNav">
+
+  <nav id="mainNav">
   <a href="/">Beranda</a>
-  <a href="/kurikulum/">Kurikulum</a>
-  <a href="/tata-tertib/">Tata Tertib</a>
+  <a href="/pedoman-mpq/">Pedoman MPQ</a>
   <a href="/cek-santri/" class="active">Cek Santri</a>
   <a href="/faq/">FAQ</a>
 </nav>
 </header>
 
-<main class="page">
+<main class="page search-page">
+  <section class="content-card search-panel">
+    <p class="label green">Cek Santri</p>
+    <h1 class="page-title"><i class="ri-user-search-line"></i>Cek Data Santri</h1>
+    <p>Cari data santri berdasarkan nama, kelas, atau ADNA. Hasil awal dibuat ringkas agar nyaman dibaca di HP.</p>
 
-<div class="content-card">
+    <div class="search-period-info">
+      <i class="ri-calendar-line"></i>
+      <span>Data Tahun Ajaran 2026–2027</span>
+    </div>
 
-<h2 class="page-title">
-<i class="ri-user-search-line"></i>
-Cek Data Santri
-</h2>
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Masukkan nama, kelas, atau ADNA santri">
+      <button id="searchButton"><i class="ri-search-line"></i>Cari</button>
+    </div>
 
-<p>
-Cari data santri berdasarkan Nama, Kelas atau Adna.
-</p>
-  
-<div class="search-period-info">
-  <i class="ri-calendar-line"></i>
-  <span>Data Tahun Ajaran 2026–2027</span>
-</div>
-<div class="search-box">
-
-<input
-type="text"
-id="searchInput"
-placeholder="Masukkan Nama, Kelas atau Adna santri"
-/>
-
-<button id="searchButton">
-<i class="ri-search-line"></i>
-Cari
-</button>
-
-</div>
-
-<div id="result" class="result"></div>
-
-</div>
-
+    <div id="result" class="result"></div>
+  </section>
 </main>
 
 <footer class="footer-pro">
   <strong>MPQ Al Falah</strong>
-
   <span>Portal Informasi dan Layanan Digital Santri</span>
   <span>PP Al Falah Ploso Mojo Kediri</span>
-
-  <a class="footer-wa" target="_blank" href="https://wa.me/6285126031867">
+  <a class="footer-wa" target="_blank" rel="noopener" href="https://wa.me/6285126031867">
     <i class="ri-whatsapp-line"></i>
     Hubungi WA Bot MPQ
   </a>
-
   <small>© 2026 MPQ Al Falah</small>
 </footer>
+
 <div id="modalOverlay" class="modal-overlay">
-
   <div class="modal-card">
-
-    <button id="closeModal" class="modal-close">
+    <button id="closeModal" class="modal-close" type="button" aria-label="Tutup detail">
       <i class="ri-close-line"></i>
     </button>
-
     <div id="modalContent"></div>
-
-  
-
+  </div>
 </div>
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
   const params = new URLSearchParams(window.location.search);
   const keyword = params.get("q");
-
   if (!keyword) return;
-
   const cleanKeyword = keyword.trim();
   if (!cleanKeyword) return;
-
-  const input =
-    document.querySelector("#searchInput") ||
-    document.querySelector("#searchKeyword") ||
-    document.querySelector("input[type='search']") ||
-    document.querySelector("input[placeholder*='Nama']") ||
-    document.querySelector("input[placeholder*='Kelas']") ||
-    document.querySelector("input[placeholder*='Adna']");
-
-  if (!input) {
-    console.warn("Input pencarian tidak ditemukan.");
-    return;
-  }
-
+  const input = document.querySelector("#searchInput") || document.querySelector("#searchKeyword") || document.querySelector("input[type='search']") || document.querySelector("input[placeholder*='Nama']") || document.querySelector("input[placeholder*='Kelas']") || document.querySelector("input[placeholder*='Adna']");
+  if (!input) return;
   input.value = cleanKeyword;
-
   input.dispatchEvent(new Event("input", { bubbles: true }));
   input.dispatchEvent(new Event("change", { bubbles: true }));
-
   setTimeout(function () {
-    const tombolCari =
-      document.querySelector("#searchButton") ||
-      document.querySelector("#btnSearch") ||
-      document.querySelector("button[type='submit']") ||
-      document.querySelector("button");
-
-    if (tombolCari) {
-      tombolCari.click();
-    }
+    const tombolCari = document.querySelector("#searchButton") || document.querySelector("#btnSearch") || document.querySelector("button[type='submit']") || document.querySelector("button");
+    if (tombolCari) tombolCari.click();
   }, 400);
 });
 </script>
