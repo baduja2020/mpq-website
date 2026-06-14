@@ -2706,3 +2706,354 @@ nav a:hover::after{
   }
 }
 
+
+/* ================= PAGE REKOM ================= */
+.rekom-hero-card{
+  position:relative;
+  overflow:hidden;
+  border-radius:28px;
+  padding:28px;
+  margin-bottom:22px;
+  color:white;
+  background:linear-gradient(135deg,#0d1f14,#166534);
+  box-shadow:var(--shadow);
+}
+
+.rekom-hero-card::after{
+  content:"";
+  position:absolute;
+  right:-80px;
+  top:-80px;
+  width:220px;
+  height:220px;
+  border-radius:50%;
+  background:rgba(255,255,255,.10);
+}
+
+.rekom-hero-card .label{
+  color:#bde8c9;
+}
+
+.rekom-hero-card h1{
+  position:relative;
+  font-size:32px;
+  line-height:1.15;
+  letter-spacing:-.04em;
+  margin-bottom:10px;
+}
+
+.rekom-hero-card p{
+  position:relative;
+  max-width:720px;
+  color:#e4f3e9;
+  line-height:1.75;
+}
+
+.rekom-toolbar{
+  display:grid;
+  grid-template-columns:1.4fr repeat(5,1fr) auto;
+  gap:10px;
+  align-items:center;
+  padding:14px;
+  border:1px solid var(--line);
+  border-radius:24px;
+  background:var(--surface);
+  box-shadow:0 12px 30px rgba(16,32,22,.06);
+  margin-bottom:16px;
+}
+
+.rekom-toolbar input,
+.rekom-toolbar select{
+  width:100%;
+  min-height:44px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:0 13px;
+  background:#fbfdfb;
+  color:var(--text);
+  font-family:inherit;
+  font-weight:600;
+  outline:none;
+}
+
+.rekom-toolbar input:focus,
+.rekom-toolbar select:focus{
+  border-color:rgba(22,101,52,.5);
+  box-shadow:0 0 0 4px rgba(22,101,52,.09);
+}
+
+.rekom-reset-btn{
+  min-height:44px;
+  border:none;
+  border-radius:16px;
+  padding:0 16px;
+  background:var(--primary-soft);
+  color:var(--primary);
+  font-family:inherit;
+  font-weight:800;
+  cursor:pointer;
+  white-space:nowrap;
+}
+
+.rekom-summary{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin:12px 2px 14px;
+  color:var(--muted);
+  font-size:14px;
+}
+
+.rekom-summary strong{
+  color:var(--primary);
+}
+
+.rekom-list{
+  display:grid;
+  gap:10px;
+}
+
+.rekom-row{
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:var(--surface);
+  box-shadow:0 10px 24px rgba(16,32,22,.055);
+  overflow:hidden;
+}
+
+.rekom-row-head{
+  position:relative;
+  width:100%;
+  border:none;
+  background:transparent;
+  text-align:left;
+  padding:13px 48px 13px 16px;
+  font-family:inherit;
+  cursor:pointer;
+  display:block;
+}
+
+.rekom-row-head:hover{
+  background:#fbfdfb;
+}
+
+.rekom-student-name{
+  display:block;
+  color:var(--text);
+  font-size:14px;
+  font-weight:800;
+  line-height:1.35;
+  letter-spacing:-.01em;
+}
+
+.rekom-student-meta{
+  display:block;
+  color:var(--muted);
+  font-size:12px;
+  font-weight:600;
+  margin-top:4px;
+}
+
+.rekom-row-head i{
+  position:absolute;
+  right:16px;
+  top:50%;
+  transform:translateY(-50%);
+  width:30px;
+  height:30px;
+  display:grid;
+  place-items:center;
+  border-radius:12px;
+  background:var(--primary-soft);
+  color:var(--primary);
+  font-size:22px;
+  transition:.2s ease;
+}
+
+.rekom-row.open .rekom-row-head i{
+  transform:translateY(-50%) rotate(180deg);
+}
+
+.rekom-row-detail{
+  display:none;
+  padding:0 14px 14px;
+  border-top:1px solid var(--line);
+  background:linear-gradient(180deg,#fbfdfb,#ffffff);
+}
+
+.rekom-row.open .rekom-row-detail{
+  display:block;
+  animation:rekomDetailIn .22s ease;
+}
+
+@keyframes rekomDetailIn{
+  from{opacity:0;transform:translateY(-6px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+.rekom-detail-grid-mini{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:8px;
+  padding-top:13px;
+}
+
+.rekom-period{
+  min-height:76px;
+  padding:10px 8px;
+  border:1px solid #eadfba;
+  border-radius:16px;
+  background:#fff9e7;
+  text-align:center;
+}
+
+.rekom-period.done{
+  border-color:#cce8d2;
+  background:#effaf1;
+}
+
+.rekom-period.empty{
+  border-color:#e5ece7;
+  background:#f7faf7;
+}
+
+.rekom-period span{
+  display:block;
+  color:var(--muted);
+  font-size:11px;
+  font-weight:800;
+}
+
+.rekom-period strong{
+  display:block;
+  color:var(--text);
+  font-size:22px;
+  line-height:1;
+  margin:7px 0 4px;
+}
+
+.rekom-period em{
+  display:block;
+  color:var(--muted);
+  font-size:11px;
+  font-style:normal;
+  font-weight:700;
+}
+
+.rekom-total-strip{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:10px;
+}
+
+.rekom-total-strip span{
+  flex:1 1 140px;
+  padding:10px 12px;
+  border-radius:14px;
+  background:var(--soft);
+  color:var(--muted);
+  font-size:12px;
+  font-weight:700;
+}
+
+.rekom-total-strip strong{
+  color:var(--primary);
+}
+
+.rekom-note{
+  margin-top:10px;
+  padding:11px 12px;
+  border-radius:14px;
+  background:#f8faf8;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.6;
+}
+
+.rekom-empty-card{
+  text-align:center;
+  padding:30px 20px;
+  border:1px dashed var(--line);
+  border-radius:24px;
+  background:var(--surface);
+  color:var(--muted);
+}
+
+.rekom-empty-card i{
+  width:56px;
+  height:56px;
+  display:grid;
+  place-items:center;
+  margin:0 auto 12px;
+  border-radius:18px;
+  background:var(--primary-soft);
+  color:var(--primary);
+  font-size:28px;
+}
+
+.rekom-empty-card h3{
+  color:var(--text);
+  margin-bottom:7px;
+}
+
+.rekom-skeleton-list{
+  display:grid;
+  gap:10px;
+}
+
+.rekom-skeleton-row{
+  padding:14px 16px;
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:var(--surface);
+}
+
+@media (max-width:1050px){
+  .rekom-toolbar{
+    grid-template-columns:1fr 1fr;
+  }
+}
+
+@media (max-width:620px){
+  .rekom-hero-card{
+    padding:22px 20px;
+    border-radius:24px;
+  }
+
+  .rekom-hero-card h1{
+    font-size:26px;
+  }
+
+  .rekom-toolbar{
+    grid-template-columns:1fr;
+    border-radius:22px;
+    padding:12px;
+  }
+
+  .rekom-summary{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+  .rekom-row-head{
+    padding:12px 44px 12px 14px;
+  }
+
+  .rekom-student-name{
+    font-size:13.5px;
+  }
+
+  .rekom-student-meta{
+    font-size:11.5px;
+  }
+
+  .rekom-detail-grid-mini{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .rekom-period{
+    min-height:68px;
+  }
+}
