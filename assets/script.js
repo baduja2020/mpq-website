@@ -1331,6 +1331,19 @@ function getSelesaiClass(value = "") {
 }
 
 
+function isOverallSelesai(item = {}) {
+  const selesai = normalizeSearchText(item.statusSelesai || "");
+  return selesai.includes("selesai") && !selesai.includes("tidak");
+}
+
+function isPeriodMarkedDone(status = "") {
+  const raw = String(status || "").trim().toUpperCase();
+  const norm = normalizeSearchText(raw);
+  return raw === "S" || norm === "s" || norm.includes("selesai");
+}
+
+
+
 function renderRekomCard(item) {
   const key = getRekomKey(item);
   const isOpen = rekomState.openedKey === key;
@@ -1338,8 +1351,10 @@ function renderRekomCard(item) {
   const statusClass = getStatusClass(item.statusRekom);
   const selesaiClass = getSelesaiClass(item.statusSelesai);
 
+  const overallSelesai = isOverallSelesai(item);
+
   const periodHtml = periodItems.length
-    ? periodItems.map((period) => renderRekomPeriod(period.label, item[period.alpaKey], item[period.statusKey])).join("")
+    ? periodItems.map((period) => renderRekomPeriod(period.label, item[period.alpaKey], item[period.statusKey], overallSelesai)).join("")
     : `
       <div class="rekom-no-detail">
         <i class="ri-check-double-line"></i>
@@ -1382,9 +1397,8 @@ function renderRekomCard(item) {
   `;
 }
 
-function renderRekomPeriod(label, alpa, status) {
-  const statusNorm = normalizeSearchText(status);
-  const isDone = statusNorm === "s" || statusNorm === "selesai";
+function renderRekomPeriod(label, alpa, status, overallSelesai = false) {
+  const isDone = isPeriodMarkedDone(status) || overallSelesai;
   const alpaNumber = toRekomNumber(alpa);
   const hasAlpa = alpaNumber > 0;
   const statusText = isDone ? "Selesai" : "Belum";
