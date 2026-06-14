@@ -3405,3 +3405,221 @@ nav a:hover::after{
     padding:4px 8px;
   }
 }
+
+/* =========================================================
+   PATCH v3 — FONT MINIMAL + INDIKATOR POJOK KANAN
+   Tujuan:
+   1) Semua font dibuat lebih simple/elegan dengan system font.
+   2) Bulatan indikator rekom tidak menutupi nama.
+   3) Panah buka/tutup dibuat lebih minimal, tanpa tombol bulat hijau.
+   ========================================================= */
+
+:root{
+  --font-main: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+html,
+body,
+button,
+input,
+select,
+textarea{
+  font-family:var(--font-main) !important;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:geometricPrecision;
+}
+
+body{
+  letter-spacing:-.01em;
+}
+
+.brand strong,
+.hero h1,
+.section-title h2,
+.search-name,
+.rekom-student-name,
+.rekom-hero-card h1{
+  font-family:var(--font-main) !important;
+  letter-spacing:-.025em;
+}
+
+.brand strong{
+  font-weight:750;
+}
+
+.brand span,
+.search-meta,
+.rekom-student-meta,
+.rekom-summary,
+.rekom-detail-title small{
+  font-weight:500;
+  letter-spacing:-.01em;
+}
+
+.search-name,
+.rekom-student-name{
+  font-weight:750 !important;
+}
+
+/* ---------- Kartu hasil pencarian: tetap minimal ---------- */
+.search-card{
+  border-radius:20px;
+}
+
+.search-card.has-rekom-indicator{
+  padding-right:54px !important;
+}
+
+.search-card .rekom-indicator-dot{
+  top:13px !important;
+  right:15px !important;
+}
+
+.search-card.has-rekom-indicator .search-card-top{
+  padding-right:0 !important;
+}
+
+@media(max-width:600px){
+  .search-card{
+    padding:16px 48px 16px 16px !important;
+  }
+
+  .search-card.has-rekom-indicator{
+    padding-right:56px !important;
+  }
+
+  .search-card::after{
+    content:"›";
+    right:18px;
+    font-size:22px;
+    font-weight:300;
+    color:#9fb0a7;
+  }
+
+  .search-card.has-rekom-indicator::after{
+    right:19px;
+    top:64%;
+  }
+
+  .search-card .rekom-indicator-dot{
+    top:13px !important;
+    right:17px !important;
+  }
+
+  .search-card-top .search-name{
+    font-size:14.5px !important;
+    font-weight:750 !important;
+    line-height:1.4;
+    padding-right:0 !important;
+  }
+}
+
+/* ---------- Halaman rekom: indikator hanya di pojok kanan ---------- */
+.rekom-row{
+  border-radius:20px;
+}
+
+.rekom-row-head{
+  padding:14px 48px 14px 16px !important;
+}
+
+.rekom-row-head .rekom-indicator-dot{
+  top:12px !important;
+  right:14px !important;
+  width:8px !important;
+  height:8px !important;
+  border:2px solid #fff !important;
+  box-shadow:0 3px 9px rgba(16,32,22,.22) !important;
+  z-index:5 !important;
+}
+
+.rekom-row-head .rekom-student-name{
+  display:block;
+  max-width:calc(100% - 10px);
+  padding-right:0 !important;
+  font-size:14px;
+  line-height:1.35;
+  font-weight:750 !important;
+  letter-spacing:-.02em;
+}
+
+.rekom-row-head .rekom-student-meta{
+  line-height:1.45;
+}
+
+/* Panah dibuat tipis, tanpa lingkaran hijau */
+.rekom-row-head > i{
+  right:15px !important;
+  top:auto !important;
+  bottom:12px !important;
+  width:auto !important;
+  height:auto !important;
+  display:block !important;
+  background:transparent !important;
+  border-radius:0 !important;
+  color:#7b8b82 !important;
+  font-size:18px !important;
+  line-height:1 !important;
+  transform:none !important;
+  transition:transform .18s ease, color .18s ease !important;
+}
+
+.rekom-row-head > i::before{
+  content:"⌄" !important;
+  font-family:var(--font-main) !important;
+  font-weight:500 !important;
+}
+
+.rekom-row.open .rekom-row-head > i{
+  transform:rotate(180deg) !important;
+  color:var(--primary) !important;
+}
+
+.rekom-row.has-rekom-indicator .rekom-row-head{
+  padding-right:48px !important;
+}
+
+@media(max-width:620px){
+  .rekom-summary{
+    gap:8px;
+    font-size:14px;
+  }
+
+  .rekom-row-head{
+    padding:14px 46px 14px 15px !important;
+  }
+
+  .rekom-row-head .rekom-indicator-dot{
+    top:12px !important;
+    right:14px !important;
+  }
+
+  .rekom-row-head > i{
+    right:16px !important;
+    bottom:12px !important;
+    font-size:17px !important;
+  }
+
+  .rekom-student-name{
+    font-size:14px !important;
+    line-height:1.35;
+  }
+
+  .rekom-student-meta{
+    font-size:12px !important;
+  }
+}
+
+/* Supaya tampilan detail tetap terasa clean */
+.rekom-detail-title span,
+.rekom-period span,
+.rekom-period em,
+.rekom-total-strip span{
+  font-family:var(--font-main) !important;
+  letter-spacing:-.01em;
+}
+
+.rekom-period strong{
+  font-family:var(--font-main) !important;
+  letter-spacing:-.03em;
+}
