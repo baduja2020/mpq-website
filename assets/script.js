@@ -1,1867 +1,5337 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbzh51ITXyvrDz7VkzZhWV5GB4IHrV-usd38wRa49VQuEXhABwgsoNW0m9WA2ztsotS0/exec";
-
-let hasilPencarian = [];
-let searchTimer = null;
-let lastKeyword = "";
-let searchRequestId = 0;
-
-const SEARCH_DELAY = 600;
-const MIN_SEARCH_LENGTH = 2;
-
-const searchCache = new Map();
-const MAX_CACHE_SIZE = 30;
-const ADMIN_WA_NUMBER = "6285745061987";
-document.addEventListener("DOMContentLoaded", function () {
-  setupSearch();
-  setupModal();
-  setupMenu();
-  setupAutoSliders();
-  setupSliderButtons();
-  loadStats();
-  loadPengumuman();
-  setupRekomPage();
-  setupScrollReveal();
-});
-
-
-function setupScrollReveal() {
-  const selector = [
-    '.hero-text',
-    '.hero-inline-logo',
-    '.hero-actions',
-    '.hero-mini-stats',
-    '.about-card',
-    '.section-heading',
-    '.info-card',
-    '.stat-card',
-    '.announcement-card',
-    '.content-card',
-    '.accordion',
-    '.pedoman-card',
-    '.footer-pro',
-    '.search-header-pro',
-    '.search-card',
-    '.search-empty-card',
-    '.rekom-hero-card',
-    '.rekom-summary-card',
-    '.rekom-card',
-    '.rekom-item',
-    '.rekom-shell-card'
-  ].join(',');
-
-  const elements = Array.from(document.querySelectorAll(selector))
-    .filter(el => !el.classList.contains('reveal-on-scroll'));
-
-  if (!elements.length) return;
-
-  elements.forEach((el, index) => {
-    el.classList.add('reveal-on-scroll');
-    el.classList.add(`reveal-delay-${index % 5}`);
-  });
-
-  if (!('IntersectionObserver' in window)) {
-    elements.forEach(el => el.classList.add('is-visible'));
-    return;
-  }
-
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('is-visible');
-        observer.unobserve(entry.target);
-      }
-    });
-  }, {
-    threshold: 0.12,
-    rootMargin: '0px 0px -8% 0px'
-  });
-
-  elements.forEach(el => observer.observe(el));
+:root{
+  --bg:#f7faf7;
+  --surface:#ffffff;
+  --soft:#eef7f1;
+  --text:#102016;
+  --muted:#68766d;
+  --line:#dce8df;
+  --primary:#166534;
+  --primary-2:#15803d;
+  --primary-soft:#e8f6ed;
+  --dark:#0d1f14;
+  --shadow:0 18px 45px rgba(16,32,22,.08);
 }
 
-/* MENU */
-function setupMenu() {
-  const menuToggle = document.getElementById("menuToggle");
-  const mainNav = document.getElementById("mainNav");
-
-  if (!menuToggle || !mainNav) return;
-
-  menuToggle.addEventListener("click", function () {
-    mainNav.classList.toggle("show");
-  });
-
-  mainNav.querySelectorAll("a").forEach((link) => {
-    link.addEventListener("click", function () {
-      mainNav.classList.remove("show");
-    });
-  });
-}
-function getSearchCacheKey(keyword) {
-  return String(keyword || "").trim().toLowerCase();
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
 }
 
-function saveSearchCache(keyword, data) {
-  const key = getSearchCacheKey(keyword);
-
-  if (!key) return;
-
-  if (searchCache.size >= MAX_CACHE_SIZE) {
-    const firstKey = searchCache.keys().next().value;
-    searchCache.delete(firstKey);
-  }
-
-  searchCache.set(key, data);
+html{
+  scroll-behavior:smooth;
 }
 
-function getSearchCache(keyword) {
-  const key = getSearchCacheKey(keyword);
-
-  if (!key) return null;
-
-  return searchCache.has(key) ? searchCache.get(key) : null;
-}
-/* SEARCH */
-function setupSearch() {
-  const button = document.getElementById("searchButton");
-  const input = document.getElementById("searchInput");
-  const result = document.getElementById("result");
-
-  if (!input) return;
-
-  const searchBox = input.closest(".search-box");
-
-  if (searchBox && !document.getElementById("clearSearchButton")) {
-    const wrapper = document.createElement("div");
-    wrapper.className = "search-input-wrap";
-
-    input.parentNode.insertBefore(wrapper, input);
-    wrapper.appendChild(input);
-
-    const clearButton = document.createElement("button");
-    clearButton.type = "button";
-    clearButton.id = "clearSearchButton";
-    clearButton.className = "search-clear-btn";
-    clearButton.innerHTML = `<i class="ri-close-line"></i>`;
-    clearButton.setAttribute("aria-label", "Hapus pencarian");
-
-    wrapper.appendChild(clearButton);
-
-    clearButton.addEventListener("click", function () {
-      input.value = "";
-      hasilPencarian = [];
-      lastKeyword = "";
-      clearTimeout(searchTimer);
-
-      if (result) {
-        result.innerHTML = "";
-        result.style.display = "none";
-      }
-
-      clearButton.classList.remove("show");
-      input.focus();
-    });
-  }
-
-  const clearButton = document.getElementById("clearSearchButton");
-
-  if (button) {
-    button.addEventListener("click", function () {
-      clearTimeout(searchTimer);
-      cekSantri(true);
-    });
-  }
-
-  input.addEventListener("input", function () {
-    const keyword = input.value.trim();
-
-    clearTimeout(searchTimer);
-
-    if (clearButton) {
-      clearButton.classList.toggle("show", keyword.length > 0);
-    }
-
-    if (!result) return;
-
-    if (!keyword) {
-      hasilPencarian = [];
-      lastKeyword = "";
-      result.innerHTML = "";
-      result.style.display = "none";
-      return;
-    }
-
-    if (keyword.length < MIN_SEARCH_LENGTH) {
-      hasilPencarian = [];
-      result.style.display = "block";
-      result.innerHTML = `
-        <div class="empty-state">
-          Ketik minimal ${MIN_SEARCH_LENGTH} huruf untuk mencari santri.
-        </div>
-      `;
-      return;
-    }
-
-    searchTimer = setTimeout(() => {
-      cekSantri(false);
-    }, SEARCH_DELAY);
-  });
-
-  input.addEventListener("keydown", function (event) {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      clearTimeout(searchTimer);
-      cekSantri(true);
-    }
-  });
-}
-async function cekSantri(force = false) {
-  const input = document.getElementById("searchInput");
-  const result = document.getElementById("result");
-
-  if (!input || !result) return;
-
-  const keyword = input.value.trim();
-
-  result.style.display = "block";
-
-  if (!keyword) {
-    hasilPencarian = [];
-    lastKeyword = "";
-    result.innerHTML = `<div class="empty-state">Masukkan kata pencarian terlebih dahulu.</div>`;
-    return;
-  }
-
-  if (!force && keyword.length < MIN_SEARCH_LENGTH) {
-    result.innerHTML = `
-      <div class="empty-state">
-        Ketik minimal ${MIN_SEARCH_LENGTH} huruf untuk mencari santri.
-      </div>
-    `;
-    return;
-  }
-
-  if (!force && keyword === lastKeyword) return;
-
- lastKeyword = keyword;
-
-const cachedResult = getSearchCache(keyword);
-
-if (cachedResult) {
-  hasilPencarian = cachedResult;
-  tampilkanDaftar();
-  scrollToSearchResultMobile();
-  return;
+body{
+  font-family:"Poppins",sans-serif;
+  background:var(--bg);
+  color:var(--text);
 }
 
-const currentRequestId = ++searchRequestId;
+/* ================= NAVBAR ================= */
 
-result.innerHTML = renderSearchSkeleton();
-
-  try {
-    const response = await fetch(`${API_URL}?q=${encodeURIComponent(keyword)}`);
-    const json = await response.json();
-
-    if (currentRequestId !== searchRequestId) return;
-
-    const latestKeyword = input.value.trim();
-
-    if (latestKeyword !== keyword) return;
-
-  if (!json.success || !json.data || json.data.length === 0) {
-  hasilPencarian = [];
-result.innerHTML = renderEmptySearchState(keyword);
-scrollToSearchResultMobile();
-return;
+.navbar{
+  width:100%;
+  padding:14px 8%;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  background:rgba(255,255,255,.96);
+  border-bottom:1px solid var(--line);
+  position:sticky;
+  top:0;
+  z-index:100;
+  backdrop-filter:blur(12px);
 }
 
-    hasilPencarian = json.data;
-saveSearchCache(keyword, json.data);
-tampilkanDaftar();
-scrollToSearchResultMobile();
-  } catch (error) {
-    if (currentRequestId !== searchRequestId) return;
-
-    result.innerHTML = `
-      <div class="empty-state">
-        Gagal mengambil data. Silakan coba kembali.
-      </div>
-    `;
-  }
-}
-function escapeHtml(value) {
-  return String(value || "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
+.brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  text-decoration:none;
 }
 
-function escapeRegExp(value) {
-  return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+.brand img{
+  width:54px;
+  height:54px;
+  object-fit:contain;
 }
 
-function normalizeSearchText(value) {
-  return String(value || "")
-    .toUpperCase()
-    .replace(/\s+/g, " ")
-    .trim();
+.brand strong{
+  display:block;
+  color:var(--primary);
+  font-size:18px;
+  font-weight:800;
 }
 
-function highlightText(value, keyword, mode = "word") {
-  const rawText = String(value || "");
-  const safeText = escapeHtml(rawText);
-  const cleanKeyword = normalizeSearchText(keyword);
-  const cleanText = normalizeSearchText(rawText);
-
-  if (!cleanKeyword || !cleanText) return safeText;
-
-  // Khusus field pendek seperti KELAS dan ADNA:
-  // kalau field cocok dengan query, highlight satu field penuh
-  if (mode === "field") {
-    const keywordParts = cleanKeyword.split(" ").filter(Boolean);
-    const allPartsMatch = keywordParts.every(part => cleanText.includes(part));
-
-    if (cleanText.includes(cleanKeyword) || allPartsMatch) {
-      return `<mark class="search-highlight">${safeText}</mark>`;
-    }
-
-    return safeText;
-  }
-
-  // Untuk nama: highlight kata yang panjangnya minimal 2 huruf
-  const terms = cleanKeyword
-    .split(/\s+/)
-    .filter(term => term.length >= 2)
-    .map(escapeRegExp);
-
-  if (terms.length === 0) return safeText;
-
-  const regex = new RegExp(`(${terms.join("|")})`, "gi");
-
-  return safeText.replace(regex, `<mark class="search-highlight">$1</mark>`);
-}
-function tampilkanDaftar() {
-  const result = document.getElementById("result");
-  const input = document.getElementById("searchInput");
-
-  if (!result) return;
-
-  const keyword = input ? input.value.trim() : "";
-  const isLimited = hasilPencarian.length >= 30;
-
-  result.innerHTML = `
-    <div class="search-header search-header-pro">
-      <strong>Ditemukan ${hasilPencarian.length} santri</strong>
-      ${
-        isLimited
-          ? `<small>Menampilkan maksimal 30 hasil. Perjelas pencarian agar lebih akurat.</small>`
-          : `<small>Ketuk salah satu data untuk melihat detail.</small>`
-      }
-    </div>
-
-    ${hasilPencarian.map((s, index) => {
-      const indicatorTone = getRekomIndicatorTone(s);
-
-      return `
-      <div class="search-card ${indicatorTone ? "has-rekom-indicator" : ""}" onclick="showDetail(${index})">
-        ${renderRekomIndicator(s)}
-
-        <div class="search-card-top">
-          <div class="search-name">
-            ${highlightText(s.nama || "-", keyword, "word")}
-          </div>
-
-          <button 
-            class="search-detail-btn" 
-            type="button"
-            onclick="event.stopPropagation(); showDetail(${index})"
-          >
-            Lihat Detail
-            <i class="ri-arrow-right-s-line"></i>
-          </button>
-        </div>
-
-        <div class="search-meta">
-          <span>
-            <i class="ri-school-line"></i>
-            ${highlightText(s.kelas || "-", keyword, "field")}
-          </span>
-
-          <span>
-            <i class="ri-bookmark-line"></i>
-            ${highlightText(s.adna || "-", keyword, "field")}
-          </span>
-
-          <span>
-            <i class="ri-home-4-line"></i>
-            ${escapeHtml(s.kamar || "-")}
-          </span>
-        </div>
-      </div>
-    `;
-    }).join("")}
-  `;
+.brand span{
+  display:block;
+  color:var(--muted);
+  font-size:13px;
 }
 
-function renderSearchSkeleton() {
-  return `
-    <div class="search-skeleton-wrap">
-      ${Array.from({ length: 3 }).map(() => `
-        <div class="search-skeleton-card">
-          <div class="skeleton-line skeleton-name"></div>
-
-          <div class="skeleton-meta-row">
-            <div class="skeleton-line skeleton-small"></div>
-            <div class="skeleton-line skeleton-small"></div>
-          </div>
-
-          <div class="skeleton-meta-row">
-            <div class="skeleton-line skeleton-small"></div>
-            <div class="skeleton-line skeleton-small"></div>
-          </div>
-        </div>
-      `).join("")}
-    </div>
-  `;
-}
-function scrollToSearchResultMobile() {
-  if (window.innerWidth > 600) return;
-
-  const result = document.getElementById("result");
-  if (!result) return;
-
-  setTimeout(() => {
-    result.scrollIntoView({
-      behavior: "smooth",
-      block: "start"
-    });
-  }, 180);
+nav{
+  display:flex;
+  align-items:center;
+  gap:26px;
 }
 
-function renderEmptySearchState(keyword = "") {
-  return `
-    <div class="search-empty-card">
-      <div class="search-empty-icon">
-        <i class="ri-search-eye-line"></i>
-      </div>
-
-      <h3>Data tidak ditemukan</h3>
-
-      <p>
-        Tidak ada santri yang cocok dengan pencarian
-        <strong>${escapeHtml(keyword)}</strong>.
-      </p>
-
-      <div class="search-empty-tips">
-        <span>Coba cari dengan:</span>
-
-        <div>
-          <small>Nama santri</small>
-          <small>Kelas: 3 IBT G</small>
-          <small>ADNA: A 01</small>
-        </div>
-      </div>
-    </div>
-  `;
+nav a{
+  position:relative;
+  color:var(--text);
+  text-decoration:none;
+  font-size:14px;
+  font-weight:700;
+  white-space:nowrap;
 }
 
-/* MODAL */
-function setupModal() {
-  const closeModal = document.getElementById("closeModal");
-  const modalOverlay = document.getElementById("modalOverlay");
+nav a:hover,
+nav a.active{
+  color:var(--primary);
+}
 
-  if (closeModal) closeModal.addEventListener("click", closeDetailModal);
+nav a.active::after,
+nav a:hover::after{
+  content:"";
+  position:absolute;
+  left:0;
+  bottom:-10px;
+  width:100%;
+  height:2px;
+  background:var(--primary);
+}
 
-  if (modalOverlay) {
-    modalOverlay.addEventListener("click", function (e) {
-      if (e.target.id === "modalOverlay") closeDetailModal();
-    });
+.menu-toggle{
+  display:none;
+  border:none;
+  background:var(--primary-soft);
+  color:var(--primary);
+  width:48px;
+  height:48px;
+  border-radius:16px;
+  font-size:28px;
+  cursor:pointer;
+}
+
+/* ================= HERO ================= */
+
+.hero{
+  min-height:75vh;
+  padding:70px 8%;
+  display:grid;
+  grid-template-columns:.9fr 1.1fr;
+  gap:50px;
+  align-items:center;
+  background:
+    linear-gradient(135deg,rgba(13,31,20,.94),rgba(22,101,52,.86)),
+    radial-gradient(circle at top left,rgba(255,255,255,.14),transparent 36%);
+  color:white;
+}
+
+.hero-logo-wrap{
+  text-align:center;
+}
+
+.hero-logo{
+  width:240px;
+  opacity:0;
+  transform:translateY(20px) scale(.94);
+  animation:logoReveal 1.5s ease forwards;
+  filter:drop-shadow(0 20px 28px rgba(0,0,0,.28));
+}
+
+@keyframes logoReveal{
+  to{
+    opacity:1;
+    transform:translateY(0) scale(1);
   }
 }
 
-function showDetail(index) {
-  const s = hasilPencarian[index];
-
-  const modalOverlay = document.getElementById("modalOverlay");
-  const modalContent = document.getElementById("modalContent");
-
-  if (!s || !modalOverlay || !modalContent) return;
-
-  const detailAlpaHtml = renderDetailAlpa(s);
-  const hasDetailAlpa = detailAlpaHtml.trim() !== "";
-
-  modalContent.innerHTML = `
-    <div class="modal-profile">
-      <h3 class="modal-title">${s.nama || "-"}</h3>
-    </div>
-
-    <div class="compact-detail-grid">
-      <div class="compact-item">
-        <span><i class="ri-id-card-line"></i> Kode</span>
-        <strong>${s.kode || "-"}</strong>
-      </div>
-
-      <div class="compact-item">
-        <span><i class="ri-home-4-line"></i> Kamar</span>
-        <strong>${s.kamar || "-"}</strong>
-      </div>
-
-      <div class="compact-item">
-        <span><i class="ri-school-line"></i> Kelas</span>
-        <strong>${s.kelas || "-"}</strong>
-      </div>
-
-      <div class="compact-item">
-        <span><i class="ri-bookmark-line"></i> ADNA</span>
-        <strong>${s.adna || "-"}</strong>
-      </div>
-    </div>
-
-    <div class="compact-section">
-      <h4>Pembimbing</h4>
-
-      <div class="compact-row">
-        <span><i class="ri-user-star-line"></i> Muallim</span>
-        <strong>${s.muallim || "-"}</strong>
-      </div>
-
-      <div class="compact-row">
-        <span><i class="ri-building-2-line"></i> Ruang</span>
-        <strong>${s.ruang || "-"}</strong>
-      </div>
-    </div>
-
- <div class="compact-section status-detail-section">
-  <h4>Status & Rekom</h4>
-
-  <div class="status-detail-row ${getStatusRowClass(s.statusSantri, "santri")}">
-    <span><i class="ri-user-line"></i> Status Santri</span>
-    ${badgeStatus(s.statusSantri, "santri")}
-  </div>
-
-  <div class="status-detail-row ${getStatusRowClass(s.statusRekom, "rekom")}">
-    <span><i class="ri-flag-line"></i> Tanggungan Rekom</span>
-    ${badgeStatus(s.statusRekom, "rekom")}
-  </div>
-
-  <div class="status-detail-row ${getStatusRowClass(s.statusSelesai, "selesai")}">
-    <span><i class="ri-checkbox-circle-line"></i> Status Selesai</span>
-    ${badgeStatus(s.statusSelesai, "selesai")}
-  </div>
-
-  ${
-    hasDetailAlpa
-      ? `
-      <div class="floating-scroll-hint hidden" id="modalScrollHint">
-        <i class="ri-arrow-down-line"></i>
-        <span>Scroll</span>
-      </div>
-    `
-      : ""
-  }
-</div>
-
-${detailAlpaHtml}
-
-<div class="modal-report-box">
-  <button class="report-data-btn" type="button" onclick="laporkanDataSalah(${index})">
-    <i class="ri-error-warning-line"></i>
-    Laporkan Data Salah
-  </button>
-</div>
-  `;
-
-  modalOverlay.style.display = "flex";
-  document.body.style.overflow = "hidden";
-
-  setupFloatingScrollHint();
-
+.label{
+  color:#bde8c9;
+  font-size:13px;
+  font-weight:800;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  margin-bottom:12px;
 }
 
-function laporkanDataSalah(index) {
-  const s = hasilPencarian[index];
-
-  if (!s) return;
-
-  const pesan = `
-Assalamu'alaikum admin MPQ.
-
-Saya ingin melaporkan data santri berikut:
-
-Nama: ${s.nama || "-"}
-Kode: ${s.kode || "-"}
-Kelas: ${s.kelas || "-"}
-ADNA: ${s.adna || "-"}
-Kamar: ${s.kamar || "-"}
-Muallim: ${s.muallim || "-"}
-Ruang: ${s.ruang || "-"}
-
-Bagian data yang salah:
-(Tulis di sini)
-
-Data yang benar:
-(Tulis di sini)
-
-Terima kasih.
-`.trim();
-
-  const url = `https://wa.me/${ADMIN_WA_NUMBER}?text=${encodeURIComponent(pesan)}`;
-
-  window.open(url, "_blank");
+.label.green{
+  color:var(--primary);
 }
 
-function setupFloatingScrollHint() {
-  const modalCard = document.querySelector(".modal-card");
-  const hint = document.getElementById("modalScrollHint");
-  const detailBox = document.querySelector(".alpa-detail-box");
-
-  if (!modalCard || !hint) return;
-
-  const updateHint = () => {
-    const canScroll = modalCard.scrollHeight > modalCard.clientHeight + 10;
-
-    const nearBottom =
-      modalCard.scrollTop + modalCard.clientHeight >=
-      modalCard.scrollHeight - 30;
-
-    const hasDetailBox = !!detailBox;
-
-    if (!hasDetailBox || !canScroll || nearBottom) {
-      hint.classList.add("hidden");
-    } else {
-      hint.classList.remove("hidden");
-    }
-  };
-
-  modalCard.onscroll = updateHint;
-
-  setTimeout(updateHint, 150);
-}
-function renderDetailAlpa(s) {
-  const statusRekom = String(s.statusRekom || "").trim().toUpperCase();
-  const statusSelesai = String(s.statusSelesai || "").trim().toUpperCase();
-
-  const rincian = Array.isArray(s.rincianTanggungan)
-    ? s.rincianTanggungan
-    : [];
-
-  const isTidakRekom =
-    statusRekom === "TIDAK REKOM" ||
-    statusRekom === "-" ||
-    statusRekom === "";
-
-  const hasRincianValid = rincian.some(item => {
-    const label = String(item.label || "").trim();
-    const alpa = Number(item.alpa || 0);
-
-    return label !== "" && alpa > 0;
-  });
-
-  if (isTidakRekom || !hasRincianValid) {
-    return "";
-  }
-  return `
-    <div class="alpa-detail-box">
-      <button class="alpa-detail-summary" type="button" onclick="toggleAlpaDetail(this)">
-        <div class="alpa-summary-left">
-          <div class="alpa-summary-icon">
-            <i class="ri-file-list-3-line"></i>
-          </div>
-
-          <div class="alpa-summary-text">
-            <h4>Detail Alpa & Tanggungan</h4>
-            <p>Ringkasan alpa dan status rekom</p>
-          </div>
-        </div>
-
-        <span class="alpa-summary-badge">Rincian</span>
-      </button>
-
-      <div class="alpa-detail-content">
-        <div class="total-alpa-box">
-          <span>Total Alpa</span>
-          <strong>${s.totalAlpa || 0}</strong>
-        </div>
-
-        <div class="rekom-detail-list">
-          ${rincian.map(item => {
-            const selesai = isPeriodMarkedDone(item.status) || isOverallSelesai(s);
-
-            return `
-              <div class="rekom-detail-item ${selesai ? "is-done" : "is-pending"}">
-                <div>
-                  <strong>${item.label}</strong>
-                  <span>Alpa: ${item.alpa}</span>
-                </div>
-
-                <em>${selesai ? "Selesai" : "Belum"}</em>
-              </div>
-            `;
-          }).join("")}
-        </div>
-      </div>
-    </div>
-  `;
+.hero h1{
+  font-size:48px;
+  line-height:1.1;
+  font-weight:800;
+  letter-spacing:-.04em;
+  margin-bottom:12px;
 }
 
-function toggleAlpaDetail(button) {
-  const box = button.closest(".alpa-detail-box");
-  if (!box) return;
-
-  const content = box.querySelector(".alpa-detail-content");
-  const badge = box.querySelector(".alpa-summary-badge");
-  const modalCard = button.closest(".modal-card");
-
-  if (!content) return;
-
-  const isOpen = box.classList.contains("open");
-  const duration = 450;
-
-  if (isOpen) {
-    content.style.maxHeight = content.scrollHeight + "px";
-
-    requestAnimationFrame(() => {
-      content.style.maxHeight = "0px";
-    });
-
-    if (badge) badge.textContent = "Rincian";
-
-    setTimeout(() => {
-      box.classList.remove("open");
-    }, duration);
-
-    return;
-  }
-
-  content.style.maxHeight = "0px";
-  box.classList.add("open");
-
-  requestAnimationFrame(() => {
-    content.style.maxHeight = content.scrollHeight + "px";
-  });
-
-  if (badge) badge.textContent = "Tutup";
-
-  if (modalCard && window.innerWidth <= 600) {
-    setTimeout(() => {
-      modalCard.scrollTo({
-        top: box.offsetTop + 240,
-        behavior: "smooth"
-      });
-    }, 220);
-  }
+.hero h2{
+  font-size:22px;
+  font-weight:700;
+  color:#e9f7ee;
+  margin-bottom:18px;
 }
 
-function closeDetailModal() {
-  const modalOverlay = document.getElementById("modalOverlay");
-
-  if (modalOverlay) modalOverlay.style.display = "none";
-
-  document.body.style.overflow = "";
+.hero p{
+  max-width:640px;
+  color:#d8eadf;
+  line-height:1.8;
+  font-size:16px;
 }
 
-function statusTone(value, context = "default") {
-  const raw = String(value || "-").trim().toUpperCase();
-  const norm = normalizeSearchText(raw).toLowerCase();
-
-  const isEmpty = !norm || norm === "-";
-  const isNoRekom = norm === "tidak rekom" || norm === "tidak ada rekom";
-  const isInactive = ["pindah", "boyong", "nonaktif"].includes(norm);
-  const hasBelum = norm.includes("belum") || raw === "B";
-  const hasSelesai = (raw === "S" || norm === "s" || norm.includes("selesai")) && !hasBelum && !norm.includes("tidak");
-  const isAttention = norm.includes("perlu") || norm.includes("ralat") || norm.includes("cek");
-  const isRekomAktif = norm.includes("r1") || norm.includes("r2") || norm.includes("r3") || norm.includes("r4") || norm.includes("rekom") || norm.includes("penertiban");
-
-  if (isEmpty || isNoRekom || isInactive) return "neutral";
-  if (context === "selesai") {
-    if (hasSelesai) return "success";
-    if (hasBelum) return "warning";
-    return "neutral";
-  }
-
-  if (raw === "AKTIF" || hasSelesai) return "success";
-  if (isAttention) return "danger";
-  if (hasBelum || isRekomAktif) return "warning";
-
-  return "neutral";
+.hero-mini-stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+  margin-top:26px;
+  max-width:560px;
 }
 
-function statusToneToBadgeClass(tone) {
-  if (tone === "success") return "badge-green";
-  if (tone === "warning") return "badge-yellow";
-  if (tone === "danger") return "badge-red";
-  return "badge-gray";
+.hero-mini-stats div{
+  padding:16px 10px;
+  border-radius:20px;
+  text-align:center;
+  background:rgba(255,255,255,.10);
+  border:1px solid rgba(255,255,255,.15);
+  backdrop-filter:blur(10px);
 }
 
-function getStatusRowClass(value, context = "default") {
-  return `status-row-${statusTone(value, context)}`;
+.hero-mini-stats strong{
+  font-size:34px;
+  font-weight:800;
+  display:block;
+  color:white;
 }
 
-function badgeStatus(value, context = "default") {
-  const text = String(value || "-").trim().toUpperCase();
-  const color = statusToneToBadgeClass(statusTone(text, context));
-  return `<strong class="status-badge ${color}">${text}</strong>`;
+.hero-mini-stats span{
+  font-size:13px;
+  color:#d8eadf;
 }
 
-function toIndicatorNumber(value) {
-  const parsed = Number(String(value ?? "0").replace(",", "."));
-  return Number.isFinite(parsed) ? parsed : 0;
+/* ================= SECTION ================= */
+
+.section{
+  padding:75px 8%;
 }
 
-function hasAnyRekomDetail(item = {}) {
-  const rincian = Array.isArray(item.rincianTanggungan) ? item.rincianTanggungan : [];
-  const hasRincian = rincian.some((row) => {
-    const label = String(row?.label || "").trim();
-    const alpa = toIndicatorNumber(row?.alpa);
-    return label !== "" && alpa > 0;
-  });
-
-  const periodKeys = [
-    "alpaPenertiban",
-    "alpa1",
-    "alpa2",
-    "alpa3",
-    "alpa4",
-    "ALPA !!!",
-    "ALPA_!!!",
-    "ALPA 1",
-    "ALPA_1",
-    "ALPA 2",
-    "ALPA_2",
-    "ALPA 3",
-    "ALPA_3",
-    "ALPA 4",
-    "ALPA_4",
-  ];
-
-  const hasPeriodAlpa = periodKeys.some((key) => toIndicatorNumber(item?.[key]) > 0);
-
-  const statusNorm = normalizeSearchText(item?.statusRekom || item?.["STATUS REKOM"] || item?.["STATUS_REKOM"] || "");
-  const hasRekomStatus = Boolean(statusNorm) &&
-    statusNorm !== "-" &&
-    statusNorm !== "TIDAK REKOM" &&
-    statusNorm !== "TIDAK ADA REKOM" &&
-    (statusNorm.includes("REKOM") ||
-      statusNorm.includes("R1") ||
-      statusNorm.includes("R2") ||
-      statusNorm.includes("R3") ||
-      statusNorm.includes("R4") ||
-      statusNorm.includes("PENERTIBAN"));
-
-  return hasRincian || hasPeriodAlpa || hasRekomStatus;
+.soft-section{
+  background:var(--soft);
 }
 
-function getRekomIndicatorTone(item = {}) {
-  const statusRekomText = item?.statusRekom || item?.["STATUS REKOM"] || item?.["STATUS_REKOM"] || "";
-  const statusSelesaiText = getOverallSelesaiText(item);
-
-  if (isNoRekomStatus(statusRekomText) || isNoRekomStatus(statusSelesaiText)) return "";
-  if (isOverallSelesai(item)) return "done";
-  if (isOverallBelum(item)) return "active";
-  if (!hasAnyRekomDetail(item)) return "";
-
-  return "active";
+.section-heading{
+  text-align:center;
+  margin-bottom:36px;
 }
 
-function renderRekomIndicator(item = {}) {
-  const tone = getRekomIndicatorTone(item);
-  if (!tone) return "";
-
-  const label = tone === "done" ? "Rekom selesai" : "Masih rekom";
-  return `<span class="rekom-indicator-dot ${tone}" title="${label}" aria-label="${label}"></span>`;
-}
-function animateCounter(element, endValue, duration = 1600) {
-  if (!element) return;
-
-  const finalValue = Number(endValue) || 0;
-  const startValue = 0;
-  const startTime = performance.now();
-
-  function updateCounter(currentTime) {
-    const elapsed = currentTime - startTime;
-    const progress = Math.min(elapsed / duration, 1);
-
-    // animasi halus
-    const easeOut = 1 - Math.pow(1 - progress, 3);
-    const currentValue = Math.floor(
-      startValue + (finalValue - startValue) * easeOut
-    );
-
-    element.textContent = currentValue;
-
-    if (progress < 1) {
-      requestAnimationFrame(updateCounter);
-    } else {
-      element.textContent = finalValue;
-    }
-  }
-
-  requestAnimationFrame(updateCounter);
-}
-/* STATS */
-async function loadStats() {
-  const statSantri = document.getElementById("statSantri");
-  const statMuallim = document.getElementById("statMuallim");
-  const statRuang = document.getElementById("statRuang");
-  const statRekom = document.getElementById("statRekom");
-
-  const statPindah = document.getElementById("statPindah");
-  const statBoyong = document.getElementById("statBoyong");
-  const statNonaktif = document.getElementById("statNonaktif");
-
-  const heroSantri = document.getElementById("heroSantri");
-  const heroMuallim = document.getElementById("heroMuallim");
-  const heroRekom = document.getElementById("heroRekom");
-
-  if (!statSantri && !heroSantri) return;
-
-  try {
-    const response = await fetch(`${API_URL}?mode=stats`);
-    const data = await response.json();
-
-    if (!data.success) return;
-
-    animateCounter(statSantri, data.santriAktif);
-    animateCounter(statMuallim, data.totalMuallim);
-    animateCounter(statRuang, data.totalRuang);
-    animateCounter(statRekom, data.rekomAktif);
-
-    animateCounter(heroSantri, data.santriAktif);
-    animateCounter(heroMuallim, data.totalMuallim);
-    animateCounter(heroRekom, data.rekomAktif);
-
-    animateCounter(statPindah, data.santriPindah);
-    animateCounter(statBoyong, data.santriBoyong);
-    animateCounter(statNonaktif, data.santriNonaktif);
-
-  } catch (error) {
-    console.log("Gagal load statistik");
-  }
-}
-/* PENGUMUMAN */
-async function loadPengumuman() {
-  const container = document.getElementById("pengumumanList");
-
-  if (!container) return;
-
-  try {
-    const response = await fetch(`${API_URL}?mode=pengumuman`);
-    const json = await response.json();
-
-   if (!json.success || !json.data || json.data.length === 0) {
-  container.innerHTML = renderPengumumanKosong();
-  return;
+.section-heading p{
+  color:var(--primary);
+  font-size:13px;
+  font-weight:800;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  margin-bottom:8px;
 }
 
-    container.innerHTML = json.data.map(item => `
-      <article class="announcement-card">
-        <i class="ri-megaphone-line"></i>
-        <small>${formatTanggal(item.tanggal)}</small>
-        <h3>${item.judul}</h3>
-        <p>${item.isi}</p>
-      </article>
-    `).join("");
-  } catch (error) {
-    container.innerHTML = `<div class="empty-state">Gagal memuat pengumuman.</div>`;
-  }
-}
-function renderPengumumanKosong() {
-  return `
-    <div class="announcement-empty-card">
-      <div class="announcement-empty-icon">
-        <i class="ri-megaphone-line"></i>
-      </div>
-
-      <h3>Belum Ada Pengumuman</h3>
-      <p>
-        Saat ini belum ada pengumuman dari <br>
-        MPQ Al Falah.
-      </p>
-    </div>
-  `;
+.section-heading h2{
+  font-size:34px;
+  line-height:1.2;
+  font-weight:800;
+  letter-spacing:-.03em;
 }
 
-function formatTanggal(value) {
-  if (!value) return "-";
-
-  const date = new Date(value);
-
-  if (isNaN(date)) return value;
-
-  return date.toLocaleDateString("id-ID", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric"
-  });
-}
-function setupAutoSliders() {
-  const sliders = document.querySelectorAll("[data-auto-slider]");
-
-  sliders.forEach((slider) => {
-    const cards = slider.querySelectorAll(".info-card");
-
-    if (cards.length <= 1) return;
-
-    let timer = null;
-    const delay = 4600;
-
-    const isScrollable = () => {
-      return slider.scrollWidth > slider.clientWidth + 20;
-    };
-
-    const getStep = () => {
-      const firstCard = cards[0];
-      const gap = parseFloat(getComputedStyle(slider).gap || 0);
-
-      return firstCard.offsetWidth + gap;
-    };
-
-    const autoMove = () => {
-      if (!isScrollable()) return;
-
-      const maxScroll = slider.scrollWidth - slider.clientWidth;
-      const currentLeft = slider.scrollLeft;
-      const step = getStep();
-
-      // Kalau posisi sekarang sudah kanan, balik ke awal
-      if (currentLeft >= maxScroll - 15) {
-        slider.scrollTo({
-          left: 0,
-          behavior: "smooth"
-        });
-        return;
-      }
-
-      slider.scrollTo({
-        left: Math.min(currentLeft + step, maxScroll),
-        behavior: "smooth"
-      });
-    };
-
-    const start = () => {
-      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-      stop();
-
-      if (!isScrollable()) return;
-
-      timer = setInterval(autoMove, delay);
-    };
-
-    const stop = () => {
-      if (timer) {
-        clearInterval(timer);
-        timer = null;
-      }
-    };
-
-    slider.addEventListener("mouseenter", stop);
-    slider.addEventListener("mouseleave", start);
-
-    slider.addEventListener("touchstart", stop, { passive: true });
-    slider.addEventListener("touchend", start, { passive: true });
-
-    window.addEventListener("resize", start);
-
-    start();
-  });
-}
-function setupSliderButtons() {
-  const sliders = document.querySelectorAll("[data-auto-slider]");
-
-  sliders.forEach((slider) => {
-    const shell = slider.closest(".slider-shell");
-    const name = slider.dataset.autoSlider;
-
-    const prevBtn = document.querySelector(`[data-slider-prev="${name}"]`);
-    const nextBtn = document.querySelector(`[data-slider-next="${name}"]`);
-
-    const isScrollable = () => {
-      return slider.scrollWidth > slider.clientWidth + 20;
-    };
-
-    const updateButtonState = () => {
-      if (!shell) return;
-
-      if (!isScrollable()) {
-        shell.classList.add("slider-static");
-      } else {
-        shell.classList.remove("slider-static");
-      }
-    };
-
-    const getStep = () => {
-      const card = slider.querySelector(".info-card");
-      if (!card) return 320;
-
-      const gap = parseFloat(getComputedStyle(slider).gap || 0);
-      return card.offsetWidth + gap;
-    };
-
-    function next() {
-      const maxScroll = slider.scrollWidth - slider.clientWidth;
-
-      if (maxScroll <= 20) return;
-
-      const currentLeft = slider.scrollLeft;
-      const step = getStep();
-
-      // Kalau posisi SEKARANG sudah di kanan, baru balik ke awal
-      if (currentLeft >= maxScroll - 15) {
-        slider.scrollTo({
-          left: 0,
-          behavior: "smooth"
-        });
-        return;
-      }
-
-      // Kalau belum mentok, geser ke kanan.
-      // Kalau step terlalu besar, langsung ke posisi paling kanan.
-      slider.scrollTo({
-        left: Math.min(currentLeft + step, maxScroll),
-        behavior: "smooth"
-      });
-    }
-
-    function prev() {
-      const maxScroll = slider.scrollWidth - slider.clientWidth;
-
-      if (maxScroll <= 20) return;
-
-      const currentLeft = slider.scrollLeft;
-      const step = getStep();
-
-      // Kalau posisi SEKARANG masih di kiri, klik kiri muter ke akhir
-      if (currentLeft <= 15) {
-        slider.scrollTo({
-          left: maxScroll,
-          behavior: "smooth"
-        });
-        return;
-      }
-
-      slider.scrollTo({
-        left: Math.max(currentLeft - step, 0),
-        behavior: "smooth"
-      });
-    }
-
-    if (nextBtn) nextBtn.addEventListener("click", next);
-    if (prevBtn) prevBtn.addEventListener("click", prev);
-
-    updateButtonState();
-    window.addEventListener("resize", updateButtonState);
-  });
+.slide-hint{
+  display:none;
+  text-align:center;
+  color:var(--muted);
+  font-size:13px;
+  margin-top:-18px;
+  margin-bottom:18px;
 }
 
-/* ================= REKOM PAGE ================= */
-const rekomState = {
-  data: [],
-  filtered: [],
-  loaded: false,
-  openedKey: null,
-  visiblePeriods: [],
-  filterOpenGroup: null,
-};
-
-function setupRekomPage() {
-  const app = document.getElementById("rekomApp");
-  if (!app) return;
-
-  const searchInput = document.getElementById("rekomSearchInput");
-  const kelasFilter = document.getElementById("rekomKelasFilter");
-  const adnaFilter = document.getElementById("rekomAdnaFilter");
-  const kamarFilter = document.getElementById("rekomKamarFilter");
-  const statusFilter = document.getElementById("rekomStatusFilter");
-  const selesaiFilter = document.getElementById("rekomSelesaiFilter");
-  const resetButton = document.getElementById("rekomResetButton");
-
-  [searchInput, kelasFilter, adnaFilter, kamarFilter, statusFilter, selesaiFilter].forEach((el) => {
-    if (!el) return;
-    el.addEventListener("input", applyRekomFilters);
-    el.addEventListener("change", applyRekomFilters);
-  });
-
-  if (resetButton) {
-    resetButton.addEventListener("click", function () {
-      if (searchInput) searchInput.value = "";
-      [kelasFilter, adnaFilter, kamarFilter, statusFilter, selesaiFilter].forEach((el) => {
-        if (el) el.value = "";
-      });
-      rekomState.openedKey = null;
-      rekomState.filterOpenGroup = null;
-      applyRekomFilters();
-      updateRekomUrl(false);
-      buildRekomFilterPanelOptions();
-      syncRekomFilterPanel();
-    });
-  }
-
-  loadRekomData();
+.slide-hint i{
+  color:var(--primary);
+  margin-right:4px;
 }
 
-async function loadRekomData() {
-  const list = document.getElementById("rekomList");
-  const summary = document.getElementById("rekomSummary");
+/* ================= ABOUT ================= */
 
-  if (list) list.innerHTML = renderRekomSkeleton();
-  if (summary) summary.textContent = "Memuat data rekom...";
+.about-card{
+  max-width:1080px;
+  margin:0 auto;
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:28px;
+  padding:36px;
+  display:grid;
+  grid-template-columns:90px 1fr;
+  gap:26px;
+  align-items:start;
+  box-shadow:var(--shadow);
+}
 
-  try {
-    const response = await fetch(`${API_URL}?mode=rekom`);
-    const json = await response.json();
+.about-icon{
+  width:76px;
+  height:76px;
+  border-radius:22px;
+  background:var(--primary-soft);
+  color:var(--primary);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:38px;
+}
 
-    if (!json.success || !Array.isArray(json.data)) {
-      throw new Error(json.message || "Data rekom tidak tersedia.");
-    }
+.about-card h2{
+  font-size:30px;
+  line-height:1.25;
+  margin-bottom:14px;
+  color:var(--text);
+}
 
-    rekomState.data = json.data
-      .map(normalizeRekomRow)
-      .filter((item) => normalizeSearchText(item.statusSantri) === "AKTIF");
+.about-card p{
+  color:var(--muted);
+  line-height:1.8;
+}
 
-    rekomState.loaded = true;
-    populateRekomFilters(rekomState.data);
-    applyRekomParamsFromUrl();
-    setupRekomFilterPanel();
-    applyRekomFilters();
-    syncRekomFilterPanel();
-  } catch (error) {
-    if (summary) summary.textContent = "Gagal memuat data rekom.";
-    if (list) {
-      list.innerHTML = `
-        <div class="rekom-empty-card">
-          <i class="ri-error-warning-line"></i>
-          <h3>Data rekom belum bisa dimuat</h3>
-          <p>
-            Pastikan Apps Script website sudah mendukung <strong>mode=rekom</strong>
-            dan sheet <strong>DATA_REKOM_AKTIF</strong> tersedia.
-          </p>
-        </div>
-      `;
-    }
+/* ================= INFO CARDS ================= */
+
+.info-grid{
+  max-width:1080px;
+  margin:0 auto;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:22px;
+  align-items:stretch;
+}
+
+.info-card{
+  height:100%;
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:24px;
+  padding:30px;
+  box-shadow:var(--shadow);
+  transition:.25s ease;
+}
+
+.info-card:hover{
+  transform:translateY(-5px);
+  border-color:#b8dec4;
+  box-shadow:0 15px 40px rgba(0,0,0,.08);
+}
+
+.info-card i{
+  width:56px;
+  height:56px;
+  border-radius:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:var(--primary-soft);
+  color:var(--primary);
+  font-size:30px;
+  margin-bottom:20px;
+}
+
+.info-card h3{
+  font-size:20px;
+  margin-bottom:10px;
+}
+
+.info-card p{
+  color:var(--muted);
+  line-height:1.7;
+  font-size:14px;
+  margin-bottom:18px;
+}
+
+.info-card a{
+  color:var(--primary);
+  text-decoration:none;
+  font-weight:800;
+}
+
+/* ================= STATISTICS ================= */
+
+.stat-grid{
+  max-width:1080px;
+  margin:0 auto;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:18px;
+}
+
+.stat-card{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:22px;
+  padding:26px;
+  text-align:center;
+  box-shadow:var(--shadow);
+}
+
+.stat-card i{
+  width:52px;
+  height:52px;
+  margin:0 auto 14px;
+  border-radius:16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:var(--primary-soft);
+  color:var(--primary);
+  font-size:28px;
+}
+
+.stat-card strong{
+  display:block;
+  color:var(--primary);
+  font-size:30px;
+  font-weight:800;
+  margin-bottom:4px;
+}
+
+.stat-card span{
+  color:var(--muted);
+  font-size:14px;
+  font-weight:700;
+}
+
+/* ================= ANNOUNCEMENT ================= */
+
+.announcement-grid{
+  max-width:1080px;
+  margin:0 auto;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:22px;
+}
+
+.announcement-card{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:24px;
+  padding:26px;
+  box-shadow:var(--shadow);
+}
+
+.announcement-card i{
+  width:52px;
+  height:52px;
+  border-radius:16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:var(--primary-soft);
+  color:var(--primary);
+  font-size:26px;
+  margin-bottom:18px;
+}
+
+.announcement-card small{
+  display:block;
+  color:var(--primary);
+  font-weight:800;
+  margin-bottom:8px;
+}
+
+.announcement-card h3{
+  font-size:19px;
+  line-height:1.35;
+  margin-bottom:10px;
+}
+
+.announcement-card p{
+  color:var(--muted);
+  line-height:1.7;
+  font-size:14px;
+}
+
+/* ================= PAGE ================= */
+
+.page{
+  max-width:900px;
+  margin:auto;
+  padding:70px 20px;
+}
+
+.content-card{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:26px;
+  padding:36px;
+  box-shadow:var(--shadow);
+}
+
+.page-title{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  color:var(--primary);
+  font-size:30px;
+  font-weight:800;
+  margin-bottom:18px;
+}
+
+.page-title i{
+  font-size:34px;
+}
+
+.page p,
+.page li{
+  color:var(--muted);
+  line-height:1.8;
+}
+
+.info-box{
+  background:var(--soft);
+  border:1px solid var(--line);
+  border-radius:20px;
+  padding:24px;
+  margin:24px 0;
+}
+
+.info-box h3{
+  margin-bottom:10px;
+}
+
+.info-box ul{
+  margin-left:20px;
+}
+
+/* ================= ACCORDION ================= */
+
+.accordion{
+  background:#ffffff;
+  border:1px solid var(--line);
+  border-radius:18px;
+  margin-bottom:14px;
+  overflow:hidden;
+  box-shadow:0 10px 30px rgba(16,32,22,.05);
+}
+
+.accordion summary{
+  list-style:none;
+  cursor:pointer;
+  padding:18px 20px;
+  font-weight:800;
+  color:var(--text);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.accordion summary::-webkit-details-marker{
+  display:none;
+}
+
+.accordion summary::after{
+  content:"+";
+  width:28px;
+  height:28px;
+  border-radius:50%;
+  background:var(--primary-soft);
+  color:var(--primary);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:18px;
+  font-weight:800;
+  flex-shrink:0;
+}
+
+.accordion[open] summary{
+  color:var(--primary);
+}
+
+.accordion[open] summary::after{
+  content:"−";
+  background:var(--primary);
+  color:white;
+}
+
+.accordion ul{
+  padding:0 22px 20px 42px;
+  color:var(--muted);
+}
+
+.accordion li{
+  margin-bottom:9px;
+  line-height:1.7;
+}
+
+/* ================= BUTTON ================= */
+
+.btn{
+  display:inline-flex;
+  justify-content:center;
+  align-items:center;
+  gap:8px;
+  width:100%;
+  padding:15px 18px;
+  margin-top:14px;
+  background:var(--primary);
+  color:white;
+  border:none;
+  border-radius:14px;
+  text-decoration:none;
+  font-weight:800;
+  cursor:pointer;
+  transition:.2s ease;
+}
+
+.btn:hover{
+  background:var(--primary-2);
+}
+
+/* ================= SEARCH ================= */
+
+.search-box{
+  display:flex;
+  gap:12px;
+  margin:24px 0 16px;
+}
+
+.search-box input{
+  flex:1;
+  padding:15px 16px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  outline:none;
+  font-size:14px;
+  background:white;
+  color:var(--text);
+}
+
+.search-box input:focus{
+  border-color:var(--primary);
+  box-shadow:0 0 0 4px rgba(22,101,52,.12);
+}
+
+.search-box button{
+  padding:15px 24px;
+  border:none;
+  border-radius:14px;
+  background:var(--primary);
+  color:white;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.result{
+  margin-top:18px;
+}
+
+.search-header{
+  color:var(--primary);
+  font-weight:800;
+  margin-bottom:12px;
+}
+
+.search-card{
+  position:relative;
+  background:white;
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:16px;
+  margin-bottom:10px;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.search-card:hover{
+  background:var(--primary-soft);
+  border-color:var(--primary);
+}
+
+.rekom-indicator-dot{
+  position:absolute;
+  top:12px;
+  right:12px;
+  width:10px;
+  height:10px;
+  border-radius:999px;
+  border:2px solid #ffffff;
+  box-shadow:0 4px 12px rgba(16,32,22,.22);
+  z-index:4;
+}
+
+.rekom-indicator-dot.active{
+  background:#ef4444;
+}
+
+.rekom-indicator-dot.done{
+  background:#16a34a;
+}
+
+.search-card.has-rekom-indicator .search-card-top{
+  padding-right:18px;
+}
+
+.search-name{
+  font-weight:800;
+  color:var(--text);
+  margin-bottom:6px;
+}
+
+.search-meta{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-top:7px;
+  color:var(--muted);
+  font-size:13px;
+}
+
+.search-meta span{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+}
+
+.search-meta i{
+  color:var(--primary);
+}
+
+.empty-state,
+.loading{
+  background:var(--primary-soft);
+  color:var(--primary);
+  border-radius:14px;
+  padding:18px;
+  text-align:center;
+  font-weight:800;
+}
+.search-period-info{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+
+  margin:8px 0 10px;
+  padding:8px 12px;
+
+  border-radius:999px;
+  background:#f1f7f3;
+  color:#166534;
+
+  font-size:12px;
+  font-weight:800;
+}
+
+.search-period-info i{
+  font-size:15px;
+}
+
+@media(max-width:600px){
+  .search-period-info{
+    margin:6px 0 18px;
+    font-size:11px;
+    padding:7px 10px;
   }
 }
 
-function normalizeRekomRow(row = {}) {
-  const get = (...keys) => {
-    for (const key of keys) {
-      if (row[key] !== undefined && row[key] !== null && String(row[key]).trim() !== "") {
-        return String(row[key]).trim();
-      }
-    }
-    return "";
-  };
+/* ================= MODAL DETAIL ================= */
 
-  const num = (...keys) => {
-    const value = get(...keys);
-    const parsed = Number(String(value || "0").replace(",", "."));
-    return Number.isFinite(parsed) ? parsed : 0;
-  };
-
-  return {
-    kode: get("kode", "KODE"),
-    nama: get("nama", "NAMA"),
-    kamar: get("kamar", "KAMAR"),
-    kelas: get("kelas", "KELAS"),
-    adna: get("adna", "ADNA"),
-    alpaPenertiban: num("alpaPenertiban", "ALPA !!!", "ALPA_!!!", "PENERTIBAN"),
-    sPenertiban: get("sPenertiban", "S !!!", "S_!!!", "S PENERTIBAN"),
-    alpa1: num("alpa1", "ALPA 1", "ALPA_1"),
-    s1: get("s1", "S 1", "S_1"),
-    alpa2: num("alpa2", "ALPA 2", "ALPA_2"),
-    s2: get("s2", "S 2", "S_2"),
-    alpa3: num("alpa3", "ALPA 3", "ALPA_3"),
-    s3: get("s3", "S 3", "S_3"),
-    alpa4: num("alpa4", "ALPA 4", "ALPA_4"),
-    s4: get("s4", "S 4", "S_4"),
-    totalAlpa: num("totalAlpa", "TOTAL ALPA", "TOTAL_ALPA"),
-    statusRekom: get("statusRekom", "STATUS REKOM", "STATUS_REKOM") || "TIDAK REKOM",
-    statusSelesai: get("statusSelesai", "STATUS SELESAI", "STATUS_SELESAI"),
-    statusSantri: get("statusSantri", "STATUS SANTRI", "STATUS_SANTRI") || "AKTIF",
-    keterangan: get("keterangan", "KETERANGAN", "KET"),
-  };
+.modal-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.56);
+  backdrop-filter:blur(6px);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+  z-index:9999;
 }
 
-function populateRekomFilters(data) {
-  fillSelect("rekomKelasFilter", uniqueSorted(data.map((item) => item.kelas)), "Semua Kelas");
-  fillSelect("rekomAdnaFilter", uniqueSorted(data.map((item) => item.adna)), "Semua ADNA");
-  fillSelect("rekomKamarFilter", uniqueSorted(data.map((item) => item.kamar)), "Semua Kamar");
-  fillSelect("rekomStatusFilter", uniqueSorted(data.map((item) => item.statusRekom)), "Semua");
-  fillSelect("rekomSelesaiFilter", uniqueSorted(data.map((item) => item.statusSelesai)), "Semua");
+.modal-card{
+  width:100%;
+  max-width:680px;
+  max-height:88vh;
+  overflow-y:auto;
+  background:#fff;
+  border-radius:24px;
+  padding:28px;
+  position:relative;
+  box-shadow:0 25px 80px rgba(0,0,0,.25);
+  animation:modalShow .25s ease;
 }
 
-function fillSelect(id, items, defaultText) {
-  const select = document.getElementById(id);
-  if (!select) return;
-
-  const current = select.value;
-  select.innerHTML = `<option value="">${defaultText}</option>` +
-    items.map((item) => `<option value="${escapeHtml(item)}">${escapeHtml(item)}</option>`).join("");
-
-  if (items.includes(current)) select.value = current;
-}
-
-function uniqueSorted(items) {
-  return [...new Set(items.map((item) => String(item || "").trim()).filter(Boolean))]
-    .sort((a, b) => a.localeCompare(b, "id-ID", { numeric: true }));
-}
-
-const REKOM_FILTER_FIELDS = [
-  { id: "rekomKelasFilter", label: "Kelas", short: "Kelas", icon: "ri-school-line", placeholder: "Cari kelas...", searchable: true },
-  { id: "rekomKamarFilter", label: "Kamar", short: "Kamar", icon: "ri-home-4-line", placeholder: "Cari kamar...", searchable: true },
-  { id: "rekomAdnaFilter", label: "ADNA", short: "ADNA", icon: "ri-book-open-line", placeholder: "Cari ADNA...", searchable: true },
-  { id: "rekomStatusFilter", label: "Status Rekom", short: "Status", icon: "ri-flag-line", searchable: false },
-  { id: "rekomSelesaiFilter", label: "Status Selesai", short: "Selesai", icon: "ri-checkbox-circle-line", searchable: false },
-];
-
-function setupRekomFilterPanel() {
-  const toolbar = document.querySelector(".rekom-toolbar");
-  if (!toolbar) return;
-
-  let trigger = document.getElementById("rekomMobileFilterButton");
-  if (!trigger) {
-    trigger = document.createElement("button");
-    trigger.id = "rekomMobileFilterButton";
-    trigger.className = "rekom-mobile-filter-btn";
-    trigger.type = "button";
-    trigger.setAttribute("aria-haspopup", "dialog");
-    trigger.setAttribute("aria-controls", "rekomFilterSheet");
-    trigger.innerHTML = `
-      <i class="ri-equalizer-2-line"></i>
-      <span>Filter</span>
-      <em id="rekomMobileFilterCount">0</em>
-    `;
-
-    const searchInput = document.getElementById("rekomSearchInput");
-    if (searchInput && searchInput.nextSibling) {
-      toolbar.insertBefore(trigger, searchInput.nextSibling);
-    } else {
-      toolbar.appendChild(trigger);
-    }
+@keyframes modalShow{
+  from{
+    opacity:0;
+    transform:translateY(16px);
   }
-
-  let sheet = document.getElementById("rekomFilterSheet");
-  if (!sheet) {
-    sheet = document.createElement("section");
-    sheet.id = "rekomFilterSheet";
-    sheet.className = "rekom-filter-sheet";
-    sheet.setAttribute("aria-hidden", "true");
-    sheet.innerHTML = `
-      <div class="rekom-filter-backdrop" data-rekom-filter-close></div>
-      <div class="rekom-filter-panel" role="dialog" aria-modal="true" aria-label="Filter data rekom">
-        <div class="rekom-filter-handle"></div>
-        <div class="rekom-filter-head">
-          <div>
-            <strong>Filter Data</strong>
-            <span>Buka kategori, cari pilihan, lalu terapkan</span>
-          </div>
-          <button type="button" class="rekom-filter-close" data-rekom-filter-close aria-label="Tutup filter">
-            <i class="ri-close-line"></i>
-          </button>
-        </div>
-        <div class="rekom-filter-body" id="rekomFilterBody"></div>
-        <div class="rekom-filter-actions">
-          <button type="button" class="rekom-filter-reset" id="rekomFilterSheetReset">Reset</button>
-          <button type="button" class="rekom-filter-apply" data-rekom-filter-close>Terapkan</button>
-        </div>
-      </div>
-    `;
-    document.body.appendChild(sheet);
-
-    sheet.addEventListener("click", function (event) {
-      if (event.target.closest("[data-rekom-filter-close]")) {
-        closeRekomFilterPanel();
-      }
-    });
-  }
-
-  trigger.onclick = openRekomFilterPanel;
-
-  const sheetReset = document.getElementById("rekomFilterSheetReset");
-  if (sheetReset) {
-    sheetReset.onclick = function () {
-      const searchInput = document.getElementById("rekomSearchInput");
-      if (searchInput) searchInput.value = "";
-      REKOM_FILTER_FIELDS.forEach((field) => {
-        const select = document.getElementById(field.id);
-        if (select) select.value = "";
-      });
-      rekomState.openedKey = null;
-      rekomState.filterOpenGroup = null;
-      applyRekomFilters();
-      updateRekomUrl(false);
-      buildRekomFilterPanelOptions();
-      syncRekomFilterPanel();
-    };
-  }
-
-  buildRekomFilterPanelOptions();
-  syncRekomFilterPanel();
-}
-
-function openRekomFilterPanel() {
-  buildRekomFilterPanelOptions();
-  syncRekomFilterPanel();
-
-  const sheet = document.getElementById("rekomFilterSheet");
-  if (!sheet) return;
-
-  sheet.classList.add("show");
-  sheet.setAttribute("aria-hidden", "false");
-  document.body.classList.add("rekom-filter-is-open");
-}
-
-function closeRekomFilterPanel() {
-  const sheet = document.getElementById("rekomFilterSheet");
-  if (!sheet) return;
-
-  sheet.classList.remove("show");
-  sheet.setAttribute("aria-hidden", "true");
-  document.body.classList.remove("rekom-filter-is-open");
-}
-
-function buildRekomFilterPanelOptions() {
-  const body = document.getElementById("rekomFilterBody");
-  if (!body) return;
-
-  body.innerHTML = REKOM_FILTER_FIELDS.map((field) => {
-    const select = document.getElementById(field.id);
-    if (!select) return "";
-
-    const selectedOption = select.options[select.selectedIndex];
-    const selectedLabel = selectedOption ? selectedOption.textContent : "Semua";
-    const hasValue = !!select.value;
-    const isOpen = rekomState.filterOpenGroup === field.id;
-
-    const buttons = Array.from(select.options).map((option) => {
-      const value = option.value || "";
-      const label = option.textContent || "Semua";
-      const labelKey = normalizeSearchText(label);
-      return `
-        <button type="button" class="rekom-filter-option" data-filter-target="${field.id}" data-filter-value="${escapeHtml(value)}" data-filter-label="${escapeHtml(labelKey)}">
-          <span>${escapeHtml(label)}</span>
-          <i class="ri-check-line"></i>
-        </button>
-      `;
-    }).join("");
-
-    return `
-      <div class="rekom-filter-group ${isOpen ? "open" : ""} ${hasValue ? "has-value" : ""} ${field.searchable ? "is-searchable" : "no-search"}" data-filter-group="${field.id}">
-        <button type="button" class="rekom-filter-group-toggle" data-filter-toggle="${field.id}" aria-expanded="${isOpen ? "true" : "false"}">
-          <span class="rekom-filter-category-icon"><i class="${field.icon}"></i></span>
-          <span class="rekom-filter-category-text">
-            <strong>${field.label}</strong>
-            <em>${escapeHtml(selectedLabel || "Semua")}</em>
-          </span>
-          <span class="rekom-filter-category-arrow"><i class="ri-arrow-down-s-line"></i></span>
-        </button>
-        <div class="rekom-filter-group-panel">
-          ${field.searchable ? `
-          <label class="rekom-filter-search">
-            <i class="ri-search-line"></i>
-            <input type="search" inputmode="search" placeholder="${escapeHtml(field.placeholder || `Cari ${field.label}...`)}" data-filter-search="${field.id}">
-          </label>` : ""}
-          <div class="rekom-filter-options">
-            ${buttons}
-          </div>
-          <p class="rekom-filter-empty">Tidak ada pilihan yang cocok.</p>
-        </div>
-      </div>
-    `;
-  }).join("");
-
-  body.querySelectorAll(".rekom-filter-group-toggle").forEach((button) => {
-    button.addEventListener("click", function () {
-      const targetId = this.dataset.filterToggle;
-      rekomState.filterOpenGroup = rekomState.filterOpenGroup === targetId ? null : targetId;
-      buildRekomFilterPanelOptions();
-      syncRekomFilterPanel();
-      const field = REKOM_FILTER_FIELDS.find((item) => item.id === targetId);
-      const activeInput = document.querySelector(`.rekom-filter-search input[data-filter-search="${targetId}"]`);
-      if (field?.searchable && activeInput && rekomState.filterOpenGroup === targetId) {
-        setTimeout(() => activeInput.focus({ preventScroll: true }), 60);
-      }
-    });
-  });
-
-  body.querySelectorAll(".rekom-filter-search input").forEach((input) => {
-    input.addEventListener("input", function () {
-      const group = this.closest(".rekom-filter-group");
-      if (!group) return;
-
-      const keyword = normalizeSearchText(this.value || "");
-      let visibleCount = 0;
-
-      group.querySelectorAll(".rekom-filter-option").forEach((button) => {
-        const label = button.dataset.filterLabel || normalizeSearchText(button.textContent || "");
-        const isVisible = !keyword || label.includes(keyword);
-        button.classList.toggle("is-hidden", !isVisible);
-        if (isVisible) visibleCount += 1;
-      });
-
-      const empty = group.querySelector(".rekom-filter-empty");
-      if (empty) empty.classList.toggle("show", visibleCount === 0);
-    });
-  });
-
-  body.querySelectorAll(".rekom-filter-option").forEach((button) => {
-    button.addEventListener("click", function () {
-      const targetId = this.dataset.filterTarget;
-      const value = this.dataset.filterValue || "";
-      const select = document.getElementById(targetId);
-      if (!select) return;
-
-      select.value = value;
-      rekomState.openedKey = null;
-      applyRekomFilters();
-      buildRekomFilterPanelOptions();
-      syncRekomFilterPanel();
-    });
-  });
-}
-
-function syncRekomFilterPanel() {
-  const countEl = document.getElementById("rekomMobileFilterCount");
-  const activeFilters = REKOM_FILTER_FIELDS.filter((field) => {
-    const select = document.getElementById(field.id);
-    return select && select.value;
-  });
-
-  if (countEl) {
-    countEl.textContent = String(activeFilters.length);
-    countEl.classList.toggle("active", activeFilters.length > 0);
-  }
-
-  const trigger = document.getElementById("rekomMobileFilterButton");
-  if (trigger) {
-    trigger.classList.toggle("has-active", activeFilters.length > 0);
-    trigger.setAttribute("aria-label", activeFilters.length ? `${activeFilters.length} filter aktif` : "Buka filter data rekom");
-  }
-
-  document.querySelectorAll(".rekom-filter-option").forEach((button) => {
-    const targetId = button.dataset.filterTarget;
-    const value = button.dataset.filterValue || "";
-    const select = document.getElementById(targetId);
-    button.classList.toggle("active", !!select && select.value === value);
-  });
-}
-
-function applyRekomParamsFromUrl() {
-  const params = new URLSearchParams(window.location.search);
-  const setValue = (id, key) => {
-    const el = document.getElementById(id);
-    const value = params.get(key);
-    if (el && value) el.value = value;
-  };
-
-  setValue("rekomSearchInput", "q");
-  setValue("rekomKelasFilter", "kelas");
-  setValue("rekomAdnaFilter", "adna");
-  setValue("rekomKamarFilter", "kamar");
-  setValue("rekomStatusFilter", "status");
-  setValue("rekomSelesaiFilter", "selesai");
-}
-
-function updateRekomUrl(push = true) {
-  const params = new URLSearchParams();
-  const add = (key, id) => {
-    const el = document.getElementById(id);
-    if (el && el.value) params.set(key, el.value);
-  };
-
-  add("q", "rekomSearchInput");
-  add("kelas", "rekomKelasFilter");
-  add("adna", "rekomAdnaFilter");
-  add("kamar", "rekomKamarFilter");
-  add("status", "rekomStatusFilter");
-  add("selesai", "rekomSelesaiFilter");
-
-  const nextUrl = `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ""}`;
-  if (push) window.history.replaceState({}, "", nextUrl);
-}
-
-function applyRekomFilters() {
-  if (!rekomState.loaded) return;
-
-  const keyword = normalizeSearchText(document.getElementById("rekomSearchInput")?.value || "");
-  const kelas = normalizeSearchText(document.getElementById("rekomKelasFilter")?.value || "");
-  const adna = normalizeSearchText(document.getElementById("rekomAdnaFilter")?.value || "");
-  const kamar = normalizeSearchText(document.getElementById("rekomKamarFilter")?.value || "");
-  const status = normalizeSearchText(document.getElementById("rekomStatusFilter")?.value || "");
-  const selesai = normalizeSearchText(document.getElementById("rekomSelesaiFilter")?.value || "");
-
-  rekomState.filtered = rekomState.data.filter((item) => {
-    const searchable = normalizeSearchText([
-      item.kode,
-      item.nama,
-      item.kelas,
-      item.kamar,
-      item.adna,
-    ].join(" "));
-
-    if (keyword && !searchable.includes(keyword)) return false;
-    if (kelas && normalizeSearchText(item.kelas) !== kelas) return false;
-    if (adna && normalizeSearchText(item.adna) !== adna) return false;
-    if (kamar && normalizeSearchText(item.kamar) !== kamar) return false;
-    if (status && normalizeSearchText(item.statusRekom) !== status) return false;
-    if (selesai && normalizeSearchText(item.statusSelesai) !== selesai) return false;
-    return true;
-  });
-
-  rekomState.visiblePeriods = getVisibleRekomPeriods(rekomState.filtered);
-
-  renderRekomList();
-  updateRekomSummary();
-  syncRekomFilterPanel();
-  updateRekomUrl();
-}
-
-function updateRekomSummary() {
-  const summary = document.getElementById("rekomSummary");
-  if (!summary) return;
-
-  const total = rekomState.filtered.length;
-
-  /*
-    Ringkasan harus mengikuti status akhir dari sheet, bukan sekadar ada angka alpa.
-    Sebab ada santri yang punya catatan/alpa lama tetapi status akhirnya TIDAK REKOM.
-    Kalau dihitung dari angka alpa, jumlah "Belum" bisa membengkak.
-  */
-  const selesai = rekomState.filtered.filter((item) => isOverallSelesai(item)).length;
-  const belum = rekomState.filtered.filter((item) => isOverallBelum(item)).length;
-
-  summary.innerHTML = `
-    <div class="rekom-summary-card total">
-      <span>Menampilkan</span>
-      <strong>${total}</strong>
-      <em>santri aktif</em>
-    </div>
-    <div class="rekom-summary-card done">
-      <span>Selesai</span>
-      <strong>${selesai}</strong>
-      <em>rekom tuntas</em>
-    </div>
-    <div class="rekom-summary-card pending">
-      <span>Belum</span>
-      <strong>${belum}</strong>
-      <em>rekom belum</em>
-    </div>
-  `;
-}
-
-
-const REKOM_PERIODS = [
-  { label: "Penertiban", alpaKey: "alpaPenertiban", statusKey: "sPenertiban" },
-  { label: "Rekom 1", alpaKey: "alpa1", statusKey: "s1" },
-  { label: "Rekom 2", alpaKey: "alpa2", statusKey: "s2" },
-  { label: "Rekom 3", alpaKey: "alpa3", statusKey: "s3" },
-  { label: "Rekom 4", alpaKey: "alpa4", statusKey: "s4" },
-];
-
-function toRekomNumber(value) {
-  const raw = String(value ?? "").replace(",", ".").trim();
-  const num = Number(raw);
-  return Number.isFinite(num) ? num : 0;
-}
-
-function hasRekomPeriodData(item, period) {
-  const alpa = toRekomNumber(item?.[period.alpaKey]);
-  const status = normalizeSearchText(item?.[period.statusKey] || "");
-  return alpa > 0 || status === "S" || status === "SELESAI";
-}
-
-function getVisibleRekomPeriods(data = []) {
-  let maxIndex = -1;
-
-  data.forEach((item) => {
-    REKOM_PERIODS.forEach((period, index) => {
-      if (hasRekomPeriodData(item, period)) {
-        maxIndex = Math.max(maxIndex, index);
-      }
-    });
-  });
-
-  /*
-    Tampilan detail bersifat timeline.
-    Jika Rekom 2 sudah pernah terisi pada data manapun, maka tampil:
-    Penertiban, Rekom 1, Rekom 2.
-    Rekom 3/4 disembunyikan sampai benar-benar ada datanya.
-  */
-  const minimumIndex = 1; // Penertiban + Rekom 1 sebagai tampilan minimum.
-  const visibleUntil = Math.max(maxIndex, minimumIndex);
-
-  return REKOM_PERIODS.slice(0, visibleUntil + 1);
-}
-
-
-function renderRekomList() {
-  const list = document.getElementById("rekomList");
-  if (!list) return;
-
-  if (rekomState.filtered.length === 0) {
-    list.innerHTML = `
-      <div class="rekom-empty-card">
-        <i class="ri-search-eye-line"></i>
-        <h3>Data tidak ditemukan</h3>
-        <p>Coba ubah filter kelas, ADNA, kamar, status, atau kata pencarian.</p>
-      </div>
-    `;
-    return;
-  }
-
-  list.innerHTML = rekomState.filtered.map((item) => renderRekomCard(item)).join("");
-}
-
-function getRekomKey(item) {
-  return encodeURIComponent(item.kode || item.nama || Math.random().toString(36));
-}
-
-
-function getItemRekomPeriods(item) {
-  const periods = (rekomState.visiblePeriods && rekomState.visiblePeriods.length)
-    ? rekomState.visiblePeriods
-    : REKOM_PERIODS.slice(0, 2);
-
-  return periods.filter((period) => hasRekomPeriodData(item, period));
-}
-
-function getStatusClass(value = "") {
-  return statusTone(value, "rekom");
-}
-
-function getSelesaiClass(value = "") {
-  return statusTone(value, "selesai");
-}
-
-
-function getOverallSelesaiText(item = {}) {
-  return String(
-    item.statusSelesai || item["STATUS SELESAI"] || item["STATUS_SELESAI"] || ""
-  ).trim();
-}
-
-function isOverallSelesai(item = {}) {
-  return statusTone(getOverallSelesaiText(item), "selesai") === "success";
-}
-
-function isOverallBelum(item = {}) {
-  const raw = getOverallSelesaiText(item).toUpperCase();
-  const norm = normalizeSearchText(raw).toLowerCase();
-
-  if (!raw) return false;
-  if (raw === "B" || raw === "BLM" || raw === "BELUM") return true;
-  return norm.includes("belum") && !norm.includes("tidak");
-}
-
-function isNoRekomStatus(value = "") {
-  const norm = normalizeSearchText(value);
-  return norm === "-" || norm === "TIDAK REKOM" || norm === "TIDAK ADA REKOM";
-}
-
-function isPeriodMarkedDone(status = "") {
-  const raw = String(status || "").trim().toUpperCase();
-  const norm = normalizeSearchText(raw).toLowerCase();
-  return raw === "S" || norm === "s" || (norm.includes("selesai") && !norm.includes("belum") && !norm.includes("tidak"));
-}
-
-
-
-function renderRekomCard(item) {
-  const key = getRekomKey(item);
-  const isOpen = rekomState.openedKey === key;
-  const periodItems = getItemRekomPeriods(item);
-  const statusClass = getStatusClass(item.statusRekom);
-  const selesaiClass = getSelesaiClass(item.statusSelesai);
-  const indicatorTone = getRekomIndicatorTone(item);
-
-  const overallSelesai = isOverallSelesai(item);
-
-  const periodHtml = periodItems.length
-    ? periodItems.map((period) => renderRekomPeriod(period.label, item[period.alpaKey], item[period.statusKey], overallSelesai)).join("")
-    : `
-      <div class="rekom-no-detail">
-        <i class="ri-check-double-line"></i>
-        <div>
-          <strong>Tidak ada tanggungan rekom aktif</strong>
-          <span>Santri ini belum memiliki alpa rekom pada periode yang ditampilkan.</span>
-        </div>
-      </div>
-    `;
-
-  return `
-    <article class="rekom-row ${isOpen ? "open" : ""} ${indicatorTone ? "has-rekom-indicator" : ""}" data-rekom-key="${key}">
-      <button class="rekom-row-head" type="button" onclick="toggleRekomRow('${key}')">
-        ${renderRekomIndicator(item)}
-        <span class="rekom-student-name">${escapeHtml(item.nama || "-")}</span>
-        <span class="rekom-student-meta">
-          ${escapeHtml(item.kelas || "-")} • Kamar ${escapeHtml(item.kamar || "-")} • ${escapeHtml(item.adna || "-")}
-        </span>
-        <i class="ri-arrow-down-s-line"></i>
-      </button>
-
-      <div class="rekom-row-detail">
-        <div class="rekom-detail-title">
-          <span>Detail Rekom</span>
-          <small>Data yang tampil hanya sesi yang memiliki catatan rekom.</small>
-        </div>
-
-        <div class="rekom-detail-grid-mini" style="--rekom-period-count:${Math.min(Math.max(periodItems.length, 1), 3)}">
-          ${periodHtml}
-        </div>
-
-        <div class="rekom-total-strip">
-          <span class="info-total">Total Alpa: <strong>${escapeHtml(item.totalAlpa || "0")}</strong></span>
-          <span class="info-status ${statusClass}">Status: <strong>${escapeHtml(item.statusRekom || "-")}</strong></span>
-          <span class="info-selesai ${selesaiClass}">Selesai: <strong>${escapeHtml(item.statusSelesai || "-")}</strong></span>
-        </div>
-
-        ${item.keterangan ? `<p class="rekom-note"><strong>Keterangan:</strong> ${escapeHtml(item.keterangan)}</p>` : ""}
-      </div>
-    </article>
-  `;
-}
-
-function renderRekomPeriod(label, alpa, status, overallSelesai = false) {
-  const isDone = isPeriodMarkedDone(status) || overallSelesai;
-  const alpaNumber = toRekomNumber(alpa);
-  const hasAlpa = alpaNumber > 0;
-  const statusText = isDone ? "Selesai" : "Belum";
-  const icon = isDone ? "ri-checkbox-circle-line" : "ri-error-warning-line";
-
-  return `
-    <div class="rekom-period ${isDone ? "done" : "pending"}">
-      <div class="rekom-period-top">
-        <span>${escapeHtml(label)}</span>
-        <i class="${icon}"></i>
-      </div>
-      <strong>${escapeHtml(String(alpaNumber))}</strong>
-      <em>${hasAlpa ? statusText : "-"}</em>
-    </div>
-  `;
-}
-
-function toggleRekomRow(key) {
-  rekomState.openedKey = rekomState.openedKey === key ? null : key;
-  renderRekomList();
-
-  if (rekomState.openedKey && window.innerWidth <= 700) {
-    setTimeout(() => {
-      const row = document.querySelector(`[data-rekom-key="${key}"]`);
-      if (row) row.scrollIntoView({ behavior: "smooth", block: "center" });
-    }, 80);
+  to{
+    opacity:1;
+    transform:translateY(0);
   }
 }
 
-function renderRekomSkeleton() {
-  return `
-    <div class="rekom-skeleton-list">
-      ${Array.from({ length: 6 }).map(() => `
-        <div class="rekom-skeleton-row">
-          <div class="skeleton-line skeleton-name"></div>
-          <div class="skeleton-line skeleton-small"></div>
-        </div>
-      `).join("")}
-    </div>
-  `;
+.modal-close{
+  position:absolute;
+  top:14px;
+  right:14px;
+  width:40px;
+  height:40px;
+  border:none;
+  border-radius:50%;
+  background:#eef7f1;
+  color:var(--primary);
+  cursor:pointer;
+  font-size:20px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.modal-title{
+  color:var(--primary);
+  font-size:22px;
+  line-height:1.35;
+  margin:0 48px 20px 0;
+}
+
+.detail-section{
+  margin-top:18px;
+}
+
+.detail-section h4{
+  font-size:14px;
+  color:var(--primary);
+  margin-bottom:10px;
+  font-weight:800;
+}
+
+.detail-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+
+.detail-item{
+  padding:14px;
+  border:1px solid #edf3ee;
+  border-radius:16px;
+  background:#fbfdfb;
+}
+
+.detail-item span{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  color:var(--muted);
+  font-size:13px;
+  margin-bottom:6px;
+}
+
+.detail-item span i{
+  color:var(--primary);
+  font-size:17px;
+}
+
+.detail-item strong{
+  color:var(--text);
+  font-size:15px;
+}
+
+.status-area{
+  margin-top:16px;
+  padding-top:16px;
+  border-top:1px solid var(--line);
+}
+
+.status-badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:7px 12px;
+  border-radius:999px;
+  font-size:13px;
+  font-weight:800;
+  letter-spacing:.02em;
+}
+
+.badge-green{
+  background:#e8f6ed;
+  color:#166534;
+}
+
+.badge-yellow{
+  background:#fff7d6;
+  color:#9a6700;
+}
+
+.badge-red{
+  background:#fdecec;
+  color:#b42318;
+}
+
+.badge-gray{
+  background:#f1f5f9;
+  color:#475569;
+}
+
+/* ================= FOOTER ================= */
+
+.footer-pro{
+  width:100%;
+  background:#f7faf7;
+  color:var(--muted);
+  padding:42px 20px;
+  text-align:center;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+}
+
+.footer-pro strong{
+  display:block;
+  color:var(--primary);
+  font-size:19px;
+  font-weight:800;
+}
+
+.footer-pro span{
+  display:block;
+  color:var(--muted);
+  font-size:14px;
+}
+
+.footer-pro small{
+  display:block;
+  width:100%;
+  color:var(--muted);
+  font-size:13px;
+  margin-top:10px;
+  text-align:center;
+}
+
+.footer-wa{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+
+  width:auto;
+  max-width:90%;
+  margin:14px auto 6px;
+  padding:12px 20px;
+
+  border-radius:999px;
+  background:var(--primary);
+  color:white;
+
+  text-decoration:none;
+  font-weight:800;
+  font-size:14px;
+}
+
+.footer-wa i{
+  font-size:18px;
+}
+
+.footer-wa:hover{
+  background:var(--primary-2);
+}
+
+/* ================= MOBILE ================= */
+
+@media(max-width:768px){
+
+  .navbar{
+    padding:14px 18px;
+    flex-direction:row;
+    align-items:center;
+  }
+
+  .brand img{
+    width:58px;
+    height:58px;
+  }
+
+  .brand strong{
+    font-size:19px;
+  }
+
+  .brand span{
+    font-size:13px;
+  }
+
+  .menu-toggle{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin-left:auto;
+  }
+
+  .navbar nav{
+    position:absolute;
+    top:88px;
+    left:18px;
+    right:18px;
+    display:none;
+    flex-direction:column;
+    gap:0;
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:10px;
+    box-shadow:var(--shadow);
+    z-index:200;
+  }
+
+  .navbar nav.show{
+    display:flex;
+  }
+
+  .navbar nav a{
+    padding:14px;
+    border-radius:12px;
+    font-size:14px;
+  }
+
+  .navbar nav a:hover,
+  .navbar nav a.active{
+    background:var(--primary-soft);
+  }
+
+  .navbar nav a::after{
+    display:none;
+  }
+
+  .hero{
+    min-height:auto;
+    grid-template-columns:1fr;
+    text-align:center;
+    padding:46px 20px 58px;
+    gap:26px;
+  }
+
+  .hero-logo{
+    width:170px;
+  }
+
+  .hero h1{
+    font-size:38px;
+    line-height:1.1;
+  }
+
+  .hero h2{
+    font-size:19px;
+    line-height:1.35;
+  }
+
+  .hero p{
+    font-size:16px;
+    line-height:1.8;
+  }
+
+  .hero-mini-stats{
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+    max-width:100%;
+  }
+
+  .hero-mini-stats div{
+    padding:14px 8px;
+  }
+
+  .hero-mini-stats strong{
+    font-size:30px;
+  }
+
+  .hero-mini-stats span{
+    font-size:12px;
+  }
+
+  .section{
+    padding:52px 18px;
+  }
+
+  .soft-section{
+    padding-top:52px;
+    padding-bottom:60px;
+  }
+
+  .section-heading{
+    margin-bottom:24px;
+  }
+
+  .section-heading p{
+    font-size:12px;
+    letter-spacing:.12em;
+  }
+
+  .section-heading h2{
+    font-size:28px;
+    line-height:1.25;
+  }
+
+  .slide-hint{
+    display:block;
+    margin-top:-8px;
+    margin-bottom:18px;
+    font-size:13px;
+  }
+
+  .about-card{
+    grid-template-columns:1fr;
+    padding:26px;
+  }
+
+  .about-card h2{
+    font-size:24px;
+  }
+
+  .info-grid{
+    grid-template-columns:1fr;
+  }
+
+  .stat-grid{
+    display:flex;
+    overflow-x:auto;
+    gap:16px;
+    padding:4px 0 18px;
+    scroll-snap-type:x mandatory;
+    -webkit-overflow-scrolling:touch;
+  }
+
+  .stat-grid::-webkit-scrollbar{
+    display:none;
+  }
+
+  .stat-card{
+    min-width:210px;
+    scroll-snap-align:start;
+  }
+
+  .announcement-grid{
+    display:flex;
+    overflow-x:auto;
+    gap:16px;
+    padding:4px 0 18px;
+    scroll-snap-type:x mandatory;
+    -webkit-overflow-scrolling:touch;
+  }
+
+  .announcement-grid::-webkit-scrollbar{
+    display:none;
+  }
+
+  .announcement-card{
+    min-width:82%;
+    padding:24px;
+    scroll-snap-align:start;
+  }
+
+  .announcement-card h3{
+    font-size:20px;
+    line-height:1.35;
+  }
+
+  .announcement-card p{
+    font-size:15px;
+    line-height:1.7;
+  }
+
+  .page{
+    padding:56px 18px;
+  }
+
+  .content-card{
+    padding:24px;
+  }
+
+  .page-title{
+    font-size:25px;
+  }
+
+  .search-box{
+    flex-direction:column;
+  }
+
+  .search-box button{
+    width:100%;
+  }
+}
+
+@media(max-width:600px){
+
+  .modal-overlay{
+    align-items:flex-end;
+    padding:0;
+  }
+
+  .modal-card{
+    max-height:88vh;
+    padding:22px 18px;
+    border-radius:24px 24px 0 0;
+  }
+
+  .modal-title{
+    font-size:21px;
+    line-height:1.25;
+    margin-bottom:18px;
+  }
+
+  .detail-section{
+    margin-top:16px;
+  }
+
+  .detail-section h4{
+    font-size:16px;
+    margin-bottom:10px;
+  }
+
+  .modal-card .detail-grid{
+    grid-template-columns:1fr;
+    gap:10px;
+  }
+
+  .modal-card .detail-item{
+    padding:13px 15px;
+    border-radius:16px;
+  }
+
+  .modal-card .detail-item span{
+    font-size:13px;
+    margin-bottom:6px;
+  }
+
+  .modal-card .detail-item strong{
+    font-size:15px;
+  }
+
+  .status-badge{
+    font-size:13px;
+    padding:7px 12px;
+  }
+}
+
+@media(max-width:420px){
+
+  .hero h1{
+    font-size:34px;
+  }
+
+  .hero-mini-stats strong{
+    font-size:26px;
+  }
+
+  .hero-mini-stats span{
+    font-size:11px;
+  }
+
+  .stat-card{
+    min-width:200px;
+  }
+
+  .announcement-card{
+    min-width:86%;
+  }
+}
+/* ================= STATUS DETAIL IN MODAL ================= */
+
+.status-detail-section{
+  background:#fbfdfb;
+  border:1px solid #edf3ee;
+  border-radius:18px;
+  padding:16px;
+}
+
+.status-detail-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:12px 0;
+  border-bottom:1px solid #edf3ee;
+}
+
+.status-detail-row:last-child{
+  border-bottom:none;
+}
+
+.status-detail-row span{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  color:var(--muted);
+  font-size:13px;
+  font-weight:600;
+}
+
+.status-detail-row span i{
+  color:var(--primary);
+  font-size:17px;
+}
+
+.status-note{
+  margin-top:12px;
+  padding:12px;
+  background:var(--primary-soft);
+  border-radius:14px;
+}
+
+.status-note span{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  color:var(--primary);
+  font-size:13px;
+  font-weight:800;
+  margin-bottom:6px;
+}
+
+.status-note p{
+  color:var(--text);
+  font-size:14px;
+  line-height:1.6;
+}
+
+@media(max-width:420px){
+  .status-detail-row{
+    align-items:flex-start;
+    flex-direction:column;
+    gap:6px;
+  }
+}
+/* ================= FIX POPUP SANTRI COMPACT ================= */
+
+.modal-chip-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:10px;
+  margin-bottom:18px;
+  padding-right:48px;
+}
+
+.compact-detail-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-bottom:18px;
+}
+
+.compact-item{
+  background:#fbfdfb;
+  border:1px solid #edf3ee;
+  border-radius:16px;
+  padding:14px;
+}
+
+.compact-item span{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  color:var(--muted);
+  font-size:13px;
+  margin-bottom:6px;
+}
+
+.compact-item span i{
+  color:var(--primary);
+  font-size:17px;
+}
+
+.compact-item strong{
+  display:block;
+  color:var(--text);
+  font-size:15px;
+  font-weight:800;
+}
+
+.compact-section{
+  margin-top:18px;
+  padding-top:16px;
+  border-top:1px solid var(--line);
+}
+
+.compact-section h4{
+  color:var(--primary);
+  font-size:17px;
+  font-weight:800;
+  margin-bottom:12px;
+}
+
+.compact-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  padding:12px 0;
+  border-bottom:1px solid #edf3ee;
+}
+
+.compact-row:last-child{
+  border-bottom:none;
+}
+
+.compact-row span{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  color:var(--muted);
+  font-size:13px;
+}
+
+.compact-row span i{
+  color:var(--primary);
+  font-size:17px;
+}
+
+.compact-row strong{
+  color:var(--text);
+  font-size:14px;
+  font-weight:800;
+  text-align:right;
+}
+
+/* Status & rekom tetap informatif */
+.status-detail-section{
+  background:#fbfdfb;
+  border:1px solid #edf3ee;
+  border-radius:18px;
+  padding:16px;
+}
+
+.status-detail-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:12px 0;
+  border-bottom:1px solid #edf3ee;
+}
+
+.status-detail-row:last-child{
+  border-bottom:none;
+}
+
+.status-detail-row span{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  color:var(--muted);
+  font-size:13px;
+  font-weight:700;
+}
+
+.status-detail-row span i{
+  color:var(--primary);
+  font-size:17px;
+}
+
+/* Mobile */
+@media(max-width:420px){
+  .compact-detail-grid{
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+  }
+
+  .compact-item{
+    padding:12px;
+  }
+
+  .compact-item span{
+    font-size:12px;
+  }
+
+  .compact-item strong{
+    font-size:14px;
+  }
+
+  .status-detail-row{
+    align-items:flex-start;
+    flex-direction:column;
+    gap:6px;
+  }
+}
+.about-logo{
+  width:70px;
+  height:70px;
+  object-fit:contain;
+}
+/* ================= DETAIL ALPA & TANGGUNGAN ================= */
+
+.alpa-detail-box{
+  margin-top:18px;
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:#fbfdfb;
+  overflow:hidden;
+}
+
+.alpa-detail-box summary{
+  list-style:none;
+  cursor:pointer;
+  padding:16px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  font-weight:800;
+  color:var(--primary);
+}
+
+.alpa-detail-box summary::-webkit-details-marker{
+  display:none;
+}
+
+.alpa-detail-box summary span{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.alpa-detail-box summary small{
+  color:var(--muted);
+  font-size:12px;
+  font-weight:700;
+}
+
+.total-alpa-box{
+  margin:0 16px 14px;
+  padding:16px;
+  border-radius:16px;
+
+  background:linear-gradient(135deg, #eef6ff, #f8fbff);
+  border:1px solid #cfe3ff;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+
+  box-sizing:border-box;
+}
+
+.total-alpa-box span{
+  color:#1e3a8a;
+  font-weight:900;
+  font-size:13px;
+}
+
+.total-alpa-box strong{
+  min-width:36px;
+  height:36px;
+  padding:0 12px;
+
+  border-radius:999px;
+  background:#dbeafe;
+  color:#1d4ed8;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-size:16px;
+  font-weight:900;
+}
+
+/* Biar box rincian sejajar dengan Total Alpa */
+.rekom-detail-list{
+  padding:0 16px 16px;
+  display:grid;
+  gap:10px;
+  box-sizing:border-box;
+}
+
+.rekom-detail-item{
+  width:100%;
+  box-sizing:border-box;
+  padding:16px;
+  border-radius:16px;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+.rekom-detail-item{
+  padding:12px 14px;
+  border-radius:14px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  border:1px solid transparent;
+}
+
+.rekom-detail-item strong{
+  display:block;
+  font-size:14px;
+  color:var(--text);
+}
+
+.rekom-detail-item span{
+  display:block;
+  font-size:12px;
+  color:var(--muted);
+  margin-top:3px;
+}
+
+.rekom-detail-item em{
+  font-style:normal;
+  font-size:12px;
+  font-weight:900;
+  padding:7px 10px;
+  border-radius:999px;
+  white-space:nowrap;
+}
+
+.rekom-detail-item.is-done{
+  background:#eefaf2;
+  border-color:#cdebd6;
+}
+
+.rekom-detail-item.is-done em{
+  background:#dff5e7;
+  color:#166534;
+}
+
+.rekom-detail-item.is-pending{
+  background:#fff7ed;
+  border-color:#fed7aa;
+}
+
+.rekom-detail-item.is-pending em{
+  background:#ffedd5;
+  color:#c2410c;
+}
+
+@media(max-width:480px){
+  .rekom-detail-item{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+}
+/* ================= DETAIL ALPA HEADER POLISH ================= */
+
+.alpa-detail-summary{
+  list-style:none;
+  cursor:pointer;
+  padding:16px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+}
+
+.alpa-detail-summary::-webkit-details-marker{
+  display:none;
+}
+
+.alpa-summary-left{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  min-width:0;
+  flex:1;
+}
+
+.alpa-summary-icon{
+  width:42px;
+  height:42px;
+  border-radius:14px;
+  background:var(--primary-soft);
+  color:var(--primary);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:20px;
+  flex-shrink:0;
+}
+
+.alpa-summary-text{
+  min-width:0;
+}
+
+.alpa-summary-text h4{
+  margin:0;
+  color:var(--primary);
+  font-size:17px;
+  line-height:1.25;
+  font-weight:900;
+}
+
+.alpa-summary-text p{
+  margin:4px 0 0;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.35;
+  font-weight:600;
+}
+
+.alpa-summary-badge{
+  flex-shrink:0;
+  padding:8px 12px;
+  border-radius:999px;
+  background:var(--primary-soft);
+  color:var(--primary);
+  font-size:12px;
+  font-weight:900;
+  white-space:nowrap;
+}
+
+.alpa-detail-box[open] .alpa-summary-badge{
+  background:var(--primary);
+  color:white;
+}
+
+@media(max-width:420px){
+  .alpa-detail-summary{
+    align-items:flex-start;
+    gap:10px;
+  }
+
+  .alpa-summary-icon{
+    width:38px;
+    height:38px;
+    font-size:18px;
+  }
+
+  .alpa-summary-text h4{
+    font-size:15px;
+  }
+
+  .alpa-summary-text p{
+    font-size:11px;
+  }
+
+  .alpa-summary-badge{
+    padding:7px 10px;
+    font-size:11px;
+  }
+}
+/* ================= SMOOTH DETAIL ALPA ================= */
+
+.alpa-detail-box{
+  margin-top:18px;
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:#fbfdfb;
+  overflow:hidden;
+}
+
+.alpa-detail-summary{
+  width:100%;
+  border:none;
+  background:transparent;
+  cursor:pointer;
+  padding:16px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  text-align:left;
+}
+
+.alpa-detail-content{
+  max-height:0;
+  overflow:hidden;
+  opacity:0;
+  transform:translateY(-6px);
+  transition:
+    max-height .45s ease,
+    opacity .45s ease,
+    transform .45s ease;
+}
+
+.alpa-detail-box.open .alpa-detail-content{
+  border-top:1px solid #edf3ee;
+  opacity:1;
+  transform:translateY(0);
+}
+
+.alpa-detail-box.open .alpa-summary-badge{
+  background:var(--primary);
+  color:white;
+}
+
+.alpa-detail-box.open .alpa-summary-icon{
+  transform:scale(1.05);
+}
+
+.alpa-summary-icon{
+  transition:.25s ease;
+}
+.santri-modal-content{
+  position: relative;
+}
+
+.santri-modal-scroll-hint{
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 2px;
+  padding: 28px 12px 10px;
+  background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0.96));
+  pointer-events: none;
+  transition: opacity .25s ease, transform .25s ease;
+  z-index: 5;
+}
+
+/* Default: desktop/tablet disembunyikan */
+.floating-scroll-hint{
+  display: none;
+}
+
+/* Khusus mobile */
+@media (max-width: 600px){
+  .status-detail-section{
+    position: relative;
+    overflow: hidden;
+  }
+
+  .floating-scroll-hint{
+    position: absolute;
+    left: 50%;
+    bottom: 22px;
+    transform: translateX(-50%);
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.45);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 8px 24px rgba(0,0,0,.06);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    opacity: .38;
+    pointer-events: none;
+    z-index: 10;
+    animation: floatingScroll 1.4s ease-in-out infinite;
+  }
+
+  .floating-scroll-hint i{
+    font-size: 30px;
+    color: #0b7a3b;
+    line-height: 1;
+  }
+
+  .floating-scroll-hint span{
+    font-size: 11px;
+    font-weight: 700;
+    color: #0b7a3b;
+  }
+
+  .floating-scroll-hint.hidden{
+    opacity: 0;
+  }
+}
+
+@keyframes floatingScroll{
+  0%, 100%{
+    transform: translateX(-50%) translateY(0);
+  }
+  50%{
+    transform: translateX(-50%) translateY(8px);
+  }
+}
+/* ===== TOMBOL X KECIL DI INPUT PENCARIAN ===== */
+
+.search-input-wrap{
+  position:relative;
+  flex:1;
+  width:100%;
+  display:flex;
+}
+
+.search-input-wrap input{
+  width:100%;
+  padding-right:42px;
+}
+
+.search-box .search-input-wrap .search-clear-btn{
+  position:absolute !important;
+  top:50% !important;
+  right:14px !important;
+  transform:translateY(-50%) scale(.9) !important;
+
+  width:24px !important;
+  height:24px !important;
+  min-width:24px !important;
+  max-width:24px !important;
+
+  padding:0 !important;
+  margin:0 !important;
+
+  border:none !important;
+  border-radius:50% !important;
+
+  background:rgba(22,101,52,.10) !important;
+  color:var(--primary) !important;
+
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+
+  font-size:14px !important;
+  line-height:1 !important;
+  font-weight:800 !important;
+
+  cursor:pointer;
+  opacity:0;
+  visibility:hidden;
+
+  box-shadow:none !important;
+
+  transition:
+    opacity .18s ease,
+    visibility .18s ease,
+    transform .18s ease,
+    background .18s ease;
+}
+
+.search-box .search-input-wrap .search-clear-btn.show{
+  opacity:1;
+  visibility:visible;
+  transform:translateY(-50%) scale(1) !important;
+}
+
+.search-box .search-input-wrap .search-clear-btn:hover,
+.search-box .search-input-wrap .search-clear-btn:active{
+  background:rgba(22,101,52,.16) !important;
+  color:var(--primary) !important;
+}
+
+.search-box .search-input-wrap .search-clear-btn i{
+  font-size:16px !important;
+  line-height:1 !important;
+}
+/* ================= SKELETON LOADING SEARCH ================= */
+
+.search-skeleton-wrap{
+  display:grid;
+  gap:12px;
+  margin-top:12px;
+}
+
+.search-skeleton-card{
+  background:#ffffff;
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:16px;
+  overflow:hidden;
+}
+
+.skeleton-line{
+  position:relative;
+  overflow:hidden;
+  background:#eef3ef;
+  border-radius:999px;
+}
+
+.skeleton-line::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  transform:translateX(-100%);
+  background:linear-gradient(
+    90deg,
+    transparent,
+    rgba(255,255,255,.7),
+    transparent
+  );
+  animation:skeletonShimmer 1.15s infinite;
+}
+
+.skeleton-name{
+  width:62%;
+  height:16px;
+  margin-bottom:14px;
+}
+
+.skeleton-meta-row{
+  display:flex;
+  gap:12px;
+  margin-top:10px;
+}
+
+.skeleton-small{
+  width:34%;
+  height:12px;
+}
+
+@keyframes skeletonShimmer{
+  100%{
+    transform:translateX(100%);
+  }
+}
+
+@media(max-width:600px){
+  .search-skeleton-card{
+    padding:15px;
+    border-radius:15px;
+  }
+
+  .skeleton-name{
+    width:72%;
+  }
+
+  .skeleton-small{
+    width:42%;
+  }
+}
+/* ================= HIGHLIGHT HASIL PENCARIAN ================= */
+
+.search-highlight{
+  background:#fff7d6;
+  color:#9a6700;
+  padding:0 3px;
+  border-radius:5px;
+  font-weight:900;
+}
+/* ================= TOMBOL LIHAT DETAIL SEARCH ================= */
+
+.search-card-top{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:14px;
+  margin-bottom:6px;
+}
+
+.search-card-top .search-name{
+  flex:1;
+  margin-bottom:0;
+}
+
+.search-detail-btn{
+  flex-shrink:0;
+  border:none;
+  border-radius:999px;
+  padding:8px 12px;
+
+  background:var(--primary-soft);
+  color:var(--primary);
+
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+
+  font-size:12px;
+  font-weight:900;
+  cursor:pointer;
+
+  transition:
+    background .2s ease,
+    color .2s ease,
+    transform .2s ease;
+}
+
+.search-detail-btn i{
+  font-size:16px;
+  line-height:1;
+}
+
+.search-detail-btn:hover{
+  background:var(--primary);
+  color:white;
+  transform:translateX(2px);
+}
+
+@media(max-width:600px){
+  .search-card-top{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:10px;
+  }
+
+  .search-detail-btn{
+    width:100%;
+    padding:10px 12px;
+  }
+}
+/* ================= MOBILE MINIMAL SEARCH RESULT ================= */
+
+@media(max-width:600px){
+
+  .search-header{
+    font-size:14px;
+    font-weight:800;
+    margin:18px 0 12px;
+    color:var(--primary);
+  }
+
+  .search-card{
+    position:relative;
+    padding:18px 46px 18px 18px;
+    border-radius:18px;
+    margin-bottom:12px;
+
+    background:#ffffff;
+    border:1px solid #e5eee8;
+    box-shadow:0 8px 24px rgba(16,32,22,.04);
+  }
+
+  .search-card:hover{
+    background:#ffffff;
+    border-color:#d7e7dc;
+    transform:none;
+  }
+
+  .search-card::after{
+    content:"›";
+    position:absolute;
+    right:18px;
+    top:50%;
+    transform:translateY(-50%);
+
+    font-size:28px;
+    font-weight:400;
+    color:#b7c5bd;
+  }
+
+  .search-card-top{
+    display:block;
+    margin-bottom:10px;
+  }
+
+  .search-card-top .search-name{
+    font-size:15px;
+    line-height:1.45;
+    font-weight:900;
+    letter-spacing:-.02em;
+    color:#102016;
+  }
+
+  /* Tombol detail disembunyikan di mobile */
+  .search-detail-btn{
+    display:none;
+  }
+
+  .search-meta{
+    gap:12px;
+    margin-top:7px;
+    font-size:12px;
+    color:#6f7d74;
+  }
+
+  .search-meta span{
+    gap:5px;
+  }
+
+  .search-meta i{
+    font-size:14px;
+    color:#176d3a;
+  }
+
+ .search-highlight{
+  background:#f6ead2;
+  color:#7a4f00;
+  padding:0 4px;
+  border-radius:5px;
+}
+}
+/* ================= EMPTY SEARCH STATE MINIMAL ================= */
+
+.search-empty-card{
+  margin-top:18px;
+  padding:28px 22px;
+  border-radius:22px;
+
+  background:#ffffff;
+  border:1px solid #e5eee8;
+  box-shadow:0 10px 30px rgba(16,32,22,.04);
+
+  text-align:center;
+}
+
+.search-empty-icon{
+  width:58px;
+  height:58px;
+  margin:0 auto 14px;
+
+  border-radius:18px;
+  background:#f1f7f3;
+  color:var(--primary);
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-size:28px;
+}
+
+.search-empty-card h3{
+  color:#102016;
+  font-size:18px;
+  font-weight:900;
+  margin-bottom:8px;
+}
+
+.search-empty-card p{
+  max-width:420px;
+  margin:0 auto;
+  color:#6f7d74;
+  font-size:14px;
+  line-height:1.7;
+}
+
+.search-empty-card p strong{
+  color:var(--primary);
+  font-weight:900;
+}
+
+.search-empty-tips{
+  margin-top:18px;
+  padding-top:16px;
+  border-top:1px solid #edf3ee;
+}
+
+.search-empty-tips span{
+  display:block;
+  color:#6f7d74;
+  font-size:13px;
+  font-weight:700;
+  margin-bottom:10px;
+}
+
+.search-empty-tips div{
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:8px;
+}
+
+.search-empty-tips small{
+  padding:7px 10px;
+  border-radius:999px;
+  background:#f7faf7;
+  border:1px solid #e5eee8;
+
+  color:#166534;
+  font-size:12px;
+  font-weight:800;
+}
+
+@media(max-width:600px){
+  .search-empty-card{
+    padding:24px 18px;
+    border-radius:20px;
+    margin-top:16px;
+  }
+
+  .search-empty-icon{
+    width:52px;
+    height:52px;
+    font-size:25px;
+  }
+
+  .search-empty-card h3{
+    font-size:17px;
+  }
+
+  .search-empty-card p{
+    font-size:13px;
+  }
+
+  .search-empty-tips div{
+    justify-content:flex-start;
+  }
+
+  .search-empty-tips small{
+    font-size:11px;
+  }
+}
+/* ================= SEARCH HEADER INFO ================= */
+
+.search-header-pro{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  margin:18px 0 14px;
+}
+
+.search-header-pro strong{
+  color:var(--primary);
+  font-size:17px;
+  font-weight:900;
+}
+
+.search-header-pro small{
+  color:#6f7d74;
+  font-size:12px;
+  font-weight:600;
+  line-height:1.5;
+}
+
+@media(max-width:600px){
+  .search-header-pro{
+    margin:16px 0 12px;
+    gap:3px;
+  }
+
+  .search-header-pro strong{
+    font-size:14px;
+  }
+
+  .search-header-pro small{
+    font-size:11px;
+  }
+}
+/* ================= LAPORKAN DATA SALAH ================= */
+
+.modal-report-box{
+  margin-top:18px;
+  padding-top:16px;
+  border-top:1px solid #edf3ee;
+}
+
+.report-data-btn{
+  width:100%;
+  border:none;
+  border-radius:16px;
+  padding:13px 16px;
+
+  background:#fff7ed;
+  color:#c2410c;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+
+  font-size:13px;
+  font-weight:900;
+  cursor:pointer;
+
+  transition:
+    background .2s ease,
+    transform .2s ease;
+}
+
+.report-data-btn i{
+  font-size:18px;
+}
+
+.report-data-btn:hover{
+  background:#ffedd5;
+  transform:translateY(-1px);
+}
+
+@media(max-width:600px){
+  .modal-report-box{
+    margin-top:16px;
+  }
+
+  .report-data-btn{
+    padding:13px 14px;
+    border-radius:15px;
+    font-size:13px;
+  }
+}
+/* ================= PENGUMUMAN KOSONG ================= */
+
+.announcement-empty-card{
+  max-width:460px;
+  margin:0 auto;
+  padding:32px 24px;
+
+  background:#ffffff;
+  border:1px solid #e5eee8;
+  border-radius:24px;
+
+  text-align:center;
+  box-shadow:0 12px 35px rgba(16,32,22,.05);
+}
+
+.announcement-empty-icon{
+  width:64px;
+  height:64px;
+  margin:0 auto 16px;
+
+  border-radius:20px;
+  background:#f1f7f3;
+  color:var(--primary);
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-size:30px;
+}
+
+.announcement-empty-card h3{
+  color:#102016;
+  font-size:20px;
+  font-weight:900;
+  margin-bottom:8px;
+}
+
+.announcement-empty-card p{
+  max-width:340px;
+  margin:0 auto;
+
+  color:#6f7d74;
+  font-size:14px;
+  line-height:1.7;
+}
+
+@media(max-width:600px){
+  .announcement-empty-card{
+    padding:26px 20px;
+    border-radius:22px;
+  }
+
+  .announcement-empty-icon{
+    width:56px;
+    height:56px;
+    font-size:26px;
+  }
+
+  .announcement-empty-card h3{
+    font-size:18px;
+  }
+
+  .announcement-empty-card p{
+    font-size:13px;
+  }
+}
+/* ================= SLIDER CARD SECTION FIX ================= */
+
+.slider-shell{
+  width:min(1180px, calc(100% - 40px));
+  margin:0 auto;
+  position:relative;
+}
+
+.info-slider{
+  display:flex;
+  gap:22px;
+
+  overflow-x:auto;
+  overflow-y:hidden;
+
+  scroll-snap-type:x mandatory;
+  scroll-behavior:smooth;
+  -webkit-overflow-scrolling:touch;
+
+  padding:6px 4px 26px;
+
+  scrollbar-width:none;
+}
+
+.info-slider::-webkit-scrollbar{
+  display:none;
+}
+
+.info-slider .info-card{
+  flex:0 0 calc((100% - 44px) / 3);
+  min-width:0;
+  min-height:260px;
+
+  scroll-snap-align:start;
+}
+
+/* Tombol desktop */
+.slider-btn{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  z-index:10;
+
+  width:44px;
+  height:44px;
+
+  border:none;
+  border-radius:50%;
+
+  background:#ffffff;
+  color:var(--primary);
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-size:26px;
+  cursor:pointer;
+
+  border:1px solid #e5eee8;
+  box-shadow:0 12px 30px rgba(16,32,22,.13);
+
+  transition:.2s ease;
+}
+
+.slider-btn:hover{
+  background:var(--primary);
+  color:white;
+}
+
+.slider-prev{
+  left:-22px;
+}
+
+.slider-next{
+  right:-22px;
+}
+
+/* Hint */
+.section .slide-hint{
+  margin:0 auto 16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+
+  color:#6f7d74;
+  font-size:13px;
+  font-weight:700;
+}
+
+.section .slide-hint i{
+  color:var(--primary);
+  font-size:17px;
+}
+
+/* Tablet */
+@media(max-width:1000px){
+  .info-slider .info-card{
+    flex:0 0 calc((100% - 22px) / 2);
+  }
+}
+
+/* Mobile */
+@media(max-width:700px){
+  .slider-shell{
+    width:100%;
+    overflow:hidden;
+  }
+
+  .info-slider{
+    gap:14px;
+    padding:6px 0 22px;
+
+    scroll-padding-inline:0;
+  }
+
+  .info-slider::before,
+  .info-slider::after{
+    content:"";
+    flex:0 0 7%;
+  }
+
+  .info-slider .info-card{
+    flex:0 0 86%;
+    min-height:auto;
+
+    scroll-snap-align:center;
+  }
+
+  .slider-btn{
+    display:none;
+  }
+
+  .section .slide-hint{
+    padding:0 24px;
+    justify-content:center;
+    text-align:center;
+    font-size:12px;
+    margin-bottom:12px;
+  }
+}
+/* ================= SLIDER BUTTON DESKTOP ================= */
+
+.slider-shell{
+  position:relative;
+}
+
+.slider-btn{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  z-index:5;
+
+  width:44px;
+  height:44px;
+  border:none;
+  border-radius:50%;
+
+  background:#ffffff;
+  color:var(--primary);
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-size:26px;
+  cursor:pointer;
+
+  box-shadow:0 12px 30px rgba(16,32,22,.12);
+  border:1px solid #e5eee8;
+
+  transition:
+    background .2s ease,
+    color .2s ease,
+    transform .2s ease,
+    opacity .2s ease;
+}
+
+.slider-btn:hover{
+  background:var(--primary);
+  color:white;
+  transform:translateY(-50%) scale(1.06);
+}
+
+.slider-prev{
+  left:-22px;
+}
+
+.slider-next{
+  right:-22px;
+}
+
+@media(max-width:700px){
+  .slider-btn{
+    display:none;
+  }
+}
+/* Slider yang tidak perlu digeser: tombol disembunyikan */
+.slider-shell.slider-static .slider-btn{
+  display:none;
+}
+
+/* Desktop: kalau card tidak overflow, tetap tampil rapi */
+.slider-shell.slider-static .info-slider{
+  justify-content:center;
+}
+/* ================= POLISHING SLIDER CARD ================= */
+
+/* Card slider dibuat tinggi rata dan lebih rapi */
+.info-slider .info-card{
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
+
+  min-height:250px;
+  padding:34px 32px;
+}
+
+/* Link di card rata bawah agar semua card terlihat sejajar */
+.info-slider .info-card a{
+  margin-top:auto;
+  width:max-content;
+}
+
+/* Icon card lebih konsisten */
+.info-slider .info-card > i{
+  width:58px;
+  height:58px;
+  border-radius:18px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  margin-bottom:28px;
+}
+
+/* Judul card */
+.info-slider .info-card h3{
+  margin-bottom:12px;
+  line-height:1.35;
+}
+
+/* Paragraf card */
+.info-slider .info-card p{
+  line-height:1.75;
+}
+
+/* Tombol slider dibuat lebih soft */
+.slider-btn{
+  width:42px;
+  height:42px;
+
+  background:rgba(255,255,255,.92);
+  backdrop-filter:blur(10px);
+
+  box-shadow:0 14px 34px rgba(16,32,22,.10);
+}
+
+.slider-btn i{
+  font-size:26px;
+}
+
+.slider-prev{
+  left:-16px;
+}
+
+.slider-next{
+  right:-16px;
+}
+
+/* Hover lebih elegan */
+.slider-btn:hover{
+  background:var(--primary);
+  color:#ffffff;
+  transform:translateY(-50%) scale(1.04);
+}
+
+/* Jarak bawah slider biar tidak terlalu mepet */
+.info-slider{
+  padding-bottom:30px;
+}
+
+/* Mobile tetap compact dan minimal */
+@media(max-width:700px){
+  .info-slider .info-card{
+    min-height:240px;
+    padding:30px 28px;
+  }
+
+  .info-slider .info-card > i{
+    width:54px;
+    height:54px;
+    border-radius:17px;
+    margin-bottom:26px;
+  }
+
+  .info-slider .info-card h3{
+    font-size:20px;
+  }
+
+  .info-slider .info-card p{
+    font-size:14px;
+    line-height:1.8;
+  }
+
+  .info-slider .info-card a{
+    margin-top:18px;
+  }
+}
+/* ================= SLIDE HINT HANYA MOBILE ================= */
+
+/* Desktop/tablet besar: sembunyikan tulisan geser */
+.section .slide-hint{
+  display:none !important;
+}
+
+/* Mobile: tampilkan lagi */
+@media(max-width:700px){
+  .section .slide-hint{
+    display:flex !important;
+  }
+}
+
+
+/* ================= PAGE REKOM ================= */
+.rekom-hero-card{
+  position:relative;
+  overflow:hidden;
+  border-radius:28px;
+  padding:28px;
+  margin-bottom:22px;
+  color:white;
+  background:linear-gradient(135deg,#0d1f14,#166534);
+  box-shadow:var(--shadow);
+}
+
+.rekom-hero-card::after{
+  content:"";
+  position:absolute;
+  right:-80px;
+  top:-80px;
+  width:220px;
+  height:220px;
+  border-radius:50%;
+  background:rgba(255,255,255,.10);
+}
+
+.rekom-hero-card .label{
+  color:#bde8c9;
+}
+
+.rekom-hero-card h1{
+  position:relative;
+  font-size:32px;
+  line-height:1.15;
+  letter-spacing:-.04em;
+  margin-bottom:10px;
+}
+
+.rekom-hero-card p{
+  position:relative;
+  max-width:720px;
+  color:#e4f3e9;
+  line-height:1.75;
+}
+
+.rekom-toolbar{
+  display:grid;
+  grid-template-columns:1.4fr repeat(5,1fr) auto;
+  gap:10px;
+  align-items:center;
+  padding:14px;
+  border:1px solid var(--line);
+  border-radius:24px;
+  background:var(--surface);
+  box-shadow:0 12px 30px rgba(16,32,22,.06);
+  margin-bottom:16px;
+}
+
+.rekom-toolbar input,
+.rekom-toolbar select{
+  width:100%;
+  min-height:44px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:0 13px;
+  background:#fbfdfb;
+  color:var(--text);
+  font-family:inherit;
+  font-weight:600;
+  outline:none;
+}
+
+.rekom-toolbar input:focus,
+.rekom-toolbar select:focus{
+  border-color:rgba(22,101,52,.5);
+  box-shadow:0 0 0 4px rgba(22,101,52,.09);
+}
+
+.rekom-reset-btn{
+  min-height:44px;
+  border:none;
+  border-radius:16px;
+  padding:0 16px;
+  background:var(--primary-soft);
+  color:var(--primary);
+  font-family:inherit;
+  font-weight:800;
+  cursor:pointer;
+  white-space:nowrap;
+}
+
+.rekom-summary{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin:12px 2px 14px;
+  color:var(--muted);
+  font-size:14px;
+}
+
+.rekom-summary strong{
+  color:var(--primary);
+}
+
+.rekom-list{
+  display:grid;
+  gap:10px;
+}
+
+.rekom-row{
+  position:relative;
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:var(--surface);
+  box-shadow:0 10px 24px rgba(16,32,22,.055);
+  overflow:hidden;
+}
+
+.rekom-row-head{
+  position:relative;
+  width:100%;
+  border:none;
+  background:transparent;
+  text-align:left;
+  padding:13px 48px 13px 16px;
+  font-family:inherit;
+  cursor:pointer;
+  display:block;
+}
+
+.rekom-row-head .rekom-indicator-dot{
+  top:14px;
+  right:42px;
+}
+
+.rekom-row-head:hover{
+  background:#fbfdfb;
+}
+
+.rekom-student-name{
+  display:block;
+  color:var(--text);
+  font-size:14px;
+  font-weight:800;
+  line-height:1.35;
+  letter-spacing:-.01em;
+}
+
+.rekom-student-meta{
+  display:block;
+  color:var(--muted);
+  font-size:12px;
+  font-weight:600;
+  margin-top:4px;
+}
+
+.rekom-row-head i{
+  position:absolute;
+  right:16px;
+  top:50%;
+  transform:translateY(-50%);
+  width:30px;
+  height:30px;
+  display:grid;
+  place-items:center;
+  border-radius:12px;
+  background:var(--primary-soft);
+  color:var(--primary);
+  font-size:22px;
+  transition:.2s ease;
+}
+
+.rekom-row.open .rekom-row-head i{
+  transform:translateY(-50%) rotate(180deg);
+}
+
+.rekom-row-detail{
+  display:none;
+  padding:0 14px 14px;
+  border-top:1px solid var(--line);
+  background:linear-gradient(180deg,#fbfdfb,#ffffff);
+}
+
+.rekom-row.open .rekom-row-detail{
+  display:block;
+  animation:rekomDetailIn .22s ease;
+}
+
+@keyframes rekomDetailIn{
+  from{opacity:0;transform:translateY(-6px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+.rekom-detail-grid-mini{
+  display:grid;
+  grid-template-columns:repeat(var(--rekom-period-count, 2), minmax(0,1fr));
+  gap:8px;
+}
+
+.rekom-period{
+  min-height:78px;
+  padding:10px 11px;
+  border:1px solid #eadfba;
+  border-radius:16px;
+  background:#fff9e7;
+  text-align:left;
+}
+
+.rekom-period.done{
+  border-color:#cce8d2;
+  background:#effaf1;
+}
+
+.rekom-period.empty{
+  border-color:#e5ece7;
+  background:#f7faf7;
+}
+
+.rekom-period span{
+  display:block;
+  color:var(--muted);
+  font-size:11px;
+  font-weight:800;
+}
+
+.rekom-period strong{
+  display:block;
+  color:var(--text);
+  font-size:24px;
+  line-height:1;
+  margin:8px 0 4px;
+}
+
+.rekom-period em{
+  display:block;
+  color:var(--muted);
+  font-size:11px;
+  font-style:normal;
+  font-weight:700;
+}
+
+.rekom-total-strip{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:10px;
+}
+
+.rekom-total-strip span{
+  flex:1 1 140px;
+  padding:10px 12px;
+  border-radius:14px;
+  background:var(--soft);
+  color:var(--muted);
+  font-size:12px;
+  font-weight:700;
+}
+
+.rekom-total-strip strong{
+  color:var(--primary);
+}
+
+.rekom-note{
+  margin-top:10px;
+  padding:11px 12px;
+  border-radius:14px;
+  background:#f8faf8;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.6;
+}
+
+
+
+.rekom-detail-title{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  padding-top:13px;
+  margin-bottom:10px;
+}
+
+.rekom-detail-title span{
+  color:var(--text);
+  font-size:13px;
+  font-weight:900;
+}
+
+.rekom-detail-title small{
+  color:var(--muted);
+  font-size:11px;
+  font-weight:600;
+  text-align:right;
+  line-height:1.45;
+}
+
+.rekom-period-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+}
+
+.rekom-period-top i{
+  font-size:17px;
+}
+
+.rekom-period.pending{
+  border-color:#f3c77a;
+  background:linear-gradient(180deg,#fff8e6,#fff3cd);
+}
+
+.rekom-period.pending .rekom-period-top i,
+.rekom-period.pending em{
+  color:#a15c00;
+}
+
+.rekom-period.done{
+  border-color:#b8e2c3;
+  background:linear-gradient(180deg,#f1fbf3,#e8f8ee);
+}
+
+.rekom-period.done .rekom-period-top i,
+.rekom-period.done em{
+  color:#0f7a3b;
+}
+
+.rekom-no-detail{
+  grid-column:1/-1;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:14px;
+  border:1px solid #d9e7df;
+  border-radius:16px;
+  background:#f7faf7;
+  color:var(--muted);
+}
+
+.rekom-no-detail i{
+  width:38px;
+  height:38px;
+  display:grid;
+  place-items:center;
+  border-radius:14px;
+  background:var(--primary-soft);
+  color:var(--primary);
+  font-size:22px;
+  flex:0 0 auto;
+}
+
+.rekom-no-detail strong{
+  display:block;
+  color:var(--text);
+  font-size:13px;
+  margin-bottom:3px;
+}
+
+.rekom-no-detail span{
+  display:block;
+  font-size:11.5px;
+  line-height:1.45;
+}
+
+.rekom-total-strip span.info-status.warning{
+  background:#fff5d9;
+  color:#8a5a00;
+}
+
+.rekom-total-strip span.info-status.danger,
+.rekom-total-strip span.info-selesai.danger{
+  background:#fff1f0;
+  color:#b42318;
+}
+
+.rekom-total-strip span.info-status.success,
+.rekom-total-strip span.info-selesai.success{
+  background:#eaf8ee;
+  color:#0f7a3b;
+}
+
+.rekom-total-strip span.info-status.neutral,
+.rekom-total-strip span.info-selesai.neutral{
+  background:#eef5f1;
+  color:var(--muted);
+}
+
+.rekom-total-strip span.info-status strong,
+.rekom-total-strip span.info-selesai strong{
+  color:inherit;
+}
+
+@media (max-width:620px){
+  .rekom-detail-title{
+    display:block;
+  }
+
+  .rekom-detail-title small{
+    display:block;
+    text-align:left;
+    margin-top:4px;
+  }
+}
+
+.rekom-empty-card{
+  text-align:center;
+  padding:30px 20px;
+  border:1px dashed var(--line);
+  border-radius:24px;
+  background:var(--surface);
+  color:var(--muted);
+}
+
+.rekom-empty-card i{
+  width:56px;
+  height:56px;
+  display:grid;
+  place-items:center;
+  margin:0 auto 12px;
+  border-radius:18px;
+  background:var(--primary-soft);
+  color:var(--primary);
+  font-size:28px;
+}
+
+.rekom-empty-card h3{
+  color:var(--text);
+  margin-bottom:7px;
+}
+
+.rekom-skeleton-list{
+  display:grid;
+  gap:10px;
+}
+
+.rekom-skeleton-row{
+  padding:14px 16px;
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:var(--surface);
+}
+
+@media (max-width:1050px){
+  .rekom-toolbar{
+    grid-template-columns:1fr 1fr;
+  }
+}
+
+@media (max-width:620px){
+  .rekom-hero-card{
+    padding:22px 20px;
+    border-radius:24px;
+  }
+
+  .rekom-hero-card h1{
+    font-size:26px;
+  }
+
+  .rekom-toolbar{
+    grid-template-columns:1fr;
+    border-radius:22px;
+    padding:12px;
+  }
+
+  .rekom-summary{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+  .rekom-row-head{
+    padding:12px 44px 12px 14px;
+  }
+
+  .rekom-student-name{
+    font-size:13.5px;
+  }
+
+  .rekom-student-meta{
+    font-size:11.5px;
+  }
+
+  .rekom-detail-grid-mini{
+    grid-template-columns:1fr;
+  }
+
+  .rekom-period{
+    min-height:68px;
+  }
+}
+
+
+
+/* V4: warna status lebih informatif */
+.rekom-period.done{
+  border-color:#9ed9b0 !important;
+  background:linear-gradient(180deg,#ecfbf0,#dcf7e5) !important;
+}
+
+.rekom-period.done strong,
+.rekom-period.done .rekom-period-top i,
+.rekom-period.done em{
+  color:#08743a !important;
+}
+
+.rekom-period.pending{
+  border-color:#f2c66d !important;
+  background:linear-gradient(180deg,#fff8e7,#fff1c9) !important;
+}
+
+.rekom-period.pending strong,
+.rekom-period.pending .rekom-period-top i,
+.rekom-period.pending em{
+  color:#985700 !important;
+}
+
+.rekom-total-strip span.info-selesai.success{
+  background:#dcf7e5 !important;
+  color:#08743a !important;
+  border:1px solid #a4ddb5;
+}
+
+.rekom-total-strip span.info-selesai.danger{
+  background:#fff1c9 !important;
+  color:#985700 !important;
+  border:1px solid #f2c66d;
+}
+
+.rekom-total-strip span.info-status.warning{
+  background:#eef7ff !important;
+  color:#075985 !important;
+  border:1px solid #bae6fd;
+}
+
+.rekom-note{
+  border:1px solid #e2e8f0;
+  background:#f8fafc;
+}
+
+
+
+/* ================= REKOM STATUS COLOR PATCH ================= */
+.status-detail-row{
+  padding:11px 12px;
+  border:1px solid transparent;
+  border-radius:14px;
+  margin-top:8px;
+  border-bottom:1px solid transparent;
+}
+
+.status-detail-row:first-of-type{
+  margin-top:0;
+}
+
+.status-detail-row:last-child{
+  border-bottom:1px solid transparent;
+}
+
+.status-detail-row.status-row-success{
+  background:#effaf1;
+  border-color:#b8e2c3;
+}
+
+.status-detail-row.status-row-warning{
+  background:#fff8e6;
+  border-color:#f3c77a;
+}
+
+.status-detail-row.status-row-danger{
+  background:#fff1f0;
+  border-color:#fecaca;
+}
+
+.status-detail-row.status-row-neutral{
+  background:#f8fafc;
+  border-color:#e2e8f0;
+}
+
+.status-detail-row.status-row-success span i{
+  color:#0f7a3b;
+}
+
+.status-detail-row.status-row-warning span i{
+  color:#a15c00;
+}
+
+.status-detail-row.status-row-danger span i{
+  color:#b42318;
+}
+
+.rekom-head-tags{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin-top:9px;
+  padding-right:8px;
+}
+
+.rekom-mini-tag{
+  display:inline-flex;
+  align-items:center;
+  min-height:24px;
+  padding:4px 9px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:900;
+  line-height:1;
+  border:1px solid transparent;
+  white-space:nowrap;
+}
+
+.rekom-mini-tag.total,
+.rekom-total-strip span.info-total{
+  background:#eef5ff;
+  color:#1d4ed8;
+  border-color:#bfdbfe;
+}
+
+.rekom-mini-tag.success{
+  background:#eaf8ee;
+  color:#0f7a3b;
+  border-color:#b8e2c3;
+}
+
+.rekom-mini-tag.warning{
+  background:#fff5d9;
+  color:#8a5a00;
+  border-color:#f3c77a;
+}
+
+.rekom-mini-tag.danger{
+  background:#fff1f0;
+  color:#b42318;
+  border-color:#fecaca;
+}
+
+.rekom-mini-tag.neutral{
+  background:#eef5f1;
+  color:#64748b;
+  border-color:#dbe7df;
+}
+
+.rekom-total-strip span.info-total strong{
+  color:inherit;
+}
+
+.rekom-total-strip span.info-selesai.warning{
+  background:#fff5d9;
+  color:#8a5a00;
+}
+
+.rekom-note{
+  border:1px solid #e9d5ff;
+  background:#faf5ff;
+  color:#6b21a8;
+}
+
+.rekom-note strong{
+  color:inherit;
+}
+
+@media(max-width:520px){
+  .rekom-row-head{
+    padding-right:44px;
+  }
+
+  .rekom-head-tags{
+    gap:5px;
+  }
+
+  .rekom-mini-tag{
+    font-size:10.5px;
+    padding:4px 8px;
+  }
+}
+
+/* =========================================================
+   PATCH v3 — FONT MINIMAL + INDIKATOR POJOK KANAN
+   Tujuan:
+   1) Semua font dibuat lebih simple/elegan dengan system font.
+   2) Bulatan indikator rekom tidak menutupi nama.
+   3) Panah buka/tutup dibuat lebih minimal, tanpa tombol bulat hijau.
+   ========================================================= */
+
+:root{
+  --font-main: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+html,
+body,
+button,
+input,
+select,
+textarea{
+  font-family:var(--font-main) !important;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:geometricPrecision;
+}
+
+body{
+  letter-spacing:-.01em;
+}
+
+.brand strong,
+.hero h1,
+.section-title h2,
+.search-name,
+.rekom-student-name,
+.rekom-hero-card h1{
+  font-family:var(--font-main) !important;
+  letter-spacing:-.025em;
+}
+
+.brand strong{
+  font-weight:750;
+}
+
+.brand span,
+.search-meta,
+.rekom-student-meta,
+.rekom-summary,
+.rekom-detail-title small{
+  font-weight:500;
+  letter-spacing:-.01em;
+}
+
+.search-name,
+.rekom-student-name{
+  font-weight:750 !important;
+}
+
+/* ---------- Kartu hasil pencarian: tetap minimal ---------- */
+.search-card{
+  border-radius:20px;
+}
+
+.search-card.has-rekom-indicator{
+  padding-right:54px !important;
+}
+
+.search-card .rekom-indicator-dot{
+  top:13px !important;
+  right:15px !important;
+}
+
+.search-card.has-rekom-indicator .search-card-top{
+  padding-right:0 !important;
+}
+
+@media(max-width:600px){
+  .search-card{
+    padding:16px 48px 16px 16px !important;
+  }
+
+  .search-card.has-rekom-indicator{
+    padding-right:56px !important;
+  }
+
+  .search-card::after{
+    content:"›";
+    right:18px;
+    font-size:22px;
+    font-weight:300;
+    color:#9fb0a7;
+  }
+
+  .search-card.has-rekom-indicator::after{
+    right:19px;
+    top:64%;
+  }
+
+  .search-card .rekom-indicator-dot{
+    top:13px !important;
+    right:17px !important;
+  }
+
+  .search-card-top .search-name{
+    font-size:14.5px !important;
+    font-weight:750 !important;
+    line-height:1.4;
+    padding-right:0 !important;
+  }
+}
+
+/* ---------- Halaman rekom: indikator hanya di pojok kanan ---------- */
+.rekom-row{
+  border-radius:20px;
+}
+
+.rekom-row-head{
+  padding:14px 48px 14px 16px !important;
+}
+
+.rekom-row-head .rekom-indicator-dot{
+  top:12px !important;
+  right:14px !important;
+  width:8px !important;
+  height:8px !important;
+  border:2px solid #fff !important;
+  box-shadow:0 3px 9px rgba(16,32,22,.22) !important;
+  z-index:5 !important;
+}
+
+.rekom-row-head .rekom-student-name{
+  display:block;
+  max-width:calc(100% - 10px);
+  padding-right:0 !important;
+  font-size:14px;
+  line-height:1.35;
+  font-weight:750 !important;
+  letter-spacing:-.02em;
+}
+
+.rekom-row-head .rekom-student-meta{
+  line-height:1.45;
+}
+
+/* Panah dibuat tipis, tanpa lingkaran hijau */
+.rekom-row-head > i{
+  right:15px !important;
+  top:auto !important;
+  bottom:12px !important;
+  width:auto !important;
+  height:auto !important;
+  display:block !important;
+  background:transparent !important;
+  border-radius:0 !important;
+  color:#7b8b82 !important;
+  font-size:18px !important;
+  line-height:1 !important;
+  transform:none !important;
+  transition:transform .18s ease, color .18s ease !important;
+}
+
+.rekom-row-head > i::before{
+  content:"⌄" !important;
+  font-family:var(--font-main) !important;
+  font-weight:500 !important;
+}
+
+.rekom-row.open .rekom-row-head > i{
+  transform:rotate(180deg) !important;
+  color:var(--primary) !important;
+}
+
+.rekom-row.has-rekom-indicator .rekom-row-head{
+  padding-right:48px !important;
+}
+
+@media(max-width:620px){
+  .rekom-summary{
+    gap:8px;
+    font-size:14px;
+  }
+
+  .rekom-row-head{
+    padding:14px 46px 14px 15px !important;
+  }
+
+  .rekom-row-head .rekom-indicator-dot{
+    top:12px !important;
+    right:14px !important;
+  }
+
+  .rekom-row-head > i{
+    right:16px !important;
+    bottom:12px !important;
+    font-size:17px !important;
+  }
+
+  .rekom-student-name{
+    font-size:14px !important;
+    line-height:1.35;
+  }
+
+  .rekom-student-meta{
+    font-size:12px !important;
+  }
+}
+
+/* Supaya tampilan detail tetap terasa clean */
+.rekom-detail-title span,
+.rekom-period span,
+.rekom-period em,
+.rekom-total-strip span{
+  font-family:var(--font-main) !important;
+  letter-spacing:-.01em;
+}
+
+.rekom-period strong{
+  font-family:var(--font-main) !important;
+  letter-spacing:-.03em;
+}
+
+/* =========================================================
+   PATCH v4 — MOBILE POLISH: NAVBAR, PANAH, FILTER CUSTOM
+   Fokus:
+   1) Navbar mobile lebih pendek dan ringan.
+   2) Tombol buka detail diganti plus/minus minimal.
+   3) Filter mobile pakai bottom sheet custom, bukan menu native browser.
+   ========================================================= */
+
+/* ---------- Navbar mobile lebih compact ---------- */
+@media(max-width:768px){
+  .navbar{
+    padding:8px 16px !important;
+    min-height:68px;
+  }
+
+  .brand{
+    gap:10px !important;
+  }
+
+  .brand img{
+    width:46px !important;
+    height:46px !important;
+  }
+
+  .brand strong{
+    font-size:17px !important;
+    line-height:1.08;
+    font-weight:750 !important;
+  }
+
+  .brand span{
+    font-size:12px !important;
+    line-height:1.2;
+  }
+
+  .menu-toggle{
+    width:44px !important;
+    height:44px !important;
+    border-radius:16px !important;
+    font-size:24px !important;
+    background:#eef8f1 !important;
+  }
+
+  .navbar nav{
+    top:72px !important;
+    left:14px !important;
+    right:14px !important;
+    border-radius:20px !important;
+    padding:8px !important;
+  }
+
+  .navbar nav a{
+    padding:13px 14px !important;
+    border-radius:14px !important;
+    font-size:13.5px !important;
+  }
+}
+
+/* ---------- Panah rekom diganti plus/minus minimal ---------- */
+.rekom-row-head > i{
+  right:16px !important;
+  top:auto !important;
+  bottom:13px !important;
+  width:22px !important;
+  height:22px !important;
+  display:grid !important;
+  place-items:center !important;
+  background:transparent !important;
+  border-radius:0 !important;
+  color:#7c8b82 !important;
+  font-size:0 !important;
+  line-height:1 !important;
+  transform:none !important;
+  transition:color .18s ease, transform .18s ease !important;
+}
+
+.rekom-row-head > i::before{
+  content:"+" !important;
+  font-family:var(--font-main) !important;
+  font-size:20px !important;
+  font-weight:420 !important;
+  line-height:1 !important;
+}
+
+.rekom-row.open .rekom-row-head > i{
+  transform:none !important;
+  color:var(--primary) !important;
+}
+
+.rekom-row.open .rekom-row-head > i::before{
+  content:"−" !important;
+  font-size:22px !important;
+}
+
+.rekom-row-head .rekom-indicator-dot{
+  top:14px !important;
+  right:16px !important;
+  width:7px !important;
+  height:7px !important;
+}
+
+.rekom-row-head{
+  padding:14px 52px 14px 16px !important;
+}
+
+@media(max-width:620px){
+  .rekom-row-head{
+    padding:14px 52px 14px 15px !important;
+  }
+
+  .rekom-row-head > i{
+    right:17px !important;
+    bottom:13px !important;
+  }
+
+  .rekom-row-head .rekom-indicator-dot{
+    top:14px !important;
+    right:18px !important;
+  }
+
+  .rekom-student-name{
+    padding-right:0 !important;
+    max-width:100% !important;
+  }
+}
+
+/* ---------- Filter mobile custom ---------- */
+.rekom-mobile-filter-btn{
+  display:none;
+}
+
+@media(max-width:620px){
+  .rekom-toolbar{
+    grid-template-columns:minmax(0,1fr) auto !important;
+    gap:8px !important;
+    padding:10px !important;
+    border-radius:20px !important;
+    background:rgba(255,255,255,.96) !important;
+    box-shadow:0 10px 28px rgba(16,32,22,.055) !important;
+  }
+
+  .rekom-toolbar input{
+    min-height:42px !important;
+    border-radius:15px !important;
+    font-size:13px !important;
+    padding:0 12px !important;
+  }
+
+  .rekom-toolbar select,
+  .rekom-toolbar .rekom-reset-btn{
+    display:none !important;
+  }
+
+  .rekom-mobile-filter-btn{
+    min-height:42px;
+    padding:0 12px;
+    border:1px solid #d6eadc;
+    border-radius:15px;
+    background:#effaf2;
+    color:var(--primary);
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
+    font-family:var(--font-main);
+    font-size:13px;
+    font-weight:720;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+
+  .rekom-mobile-filter-btn i{
+    font-size:17px;
+  }
+
+  .rekom-mobile-filter-btn em{
+    min-width:18px;
+    height:18px;
+    padding:0 5px;
+    display:grid;
+    place-items:center;
+    border-radius:999px;
+    background:#dbece1;
+    color:#557060;
+    font-size:10.5px;
+    font-style:normal;
+    font-weight:800;
+  }
+
+  .rekom-mobile-filter-btn em.active,
+  .rekom-mobile-filter-btn.has-active em{
+    background:var(--primary);
+    color:white;
+  }
+}
+
+.rekom-filter-sheet{
+  position:fixed;
+  inset:0;
+  z-index:1000;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .18s ease;
+}
+
+.rekom-filter-sheet.show{
+  opacity:1;
+  pointer-events:auto;
+}
+
+.rekom-filter-backdrop{
+  position:absolute;
+  inset:0;
+  background:rgba(7,19,12,.34);
+  backdrop-filter:blur(4px);
+}
+
+.rekom-filter-panel{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  max-height:84vh;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  border-radius:28px 28px 0 0;
+  background:#ffffff;
+  box-shadow:0 -20px 55px rgba(7,19,12,.22);
+  transform:translateY(100%);
+  transition:transform .24s ease;
+}
+
+.rekom-filter-sheet.show .rekom-filter-panel{
+  transform:translateY(0);
+}
+
+.rekom-filter-handle{
+  width:44px;
+  height:4px;
+  margin:10px auto 4px;
+  border-radius:999px;
+  background:#d9e6dd;
+}
+
+.rekom-filter-head{
+  padding:12px 18px 14px;
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  border-bottom:1px solid var(--line);
+}
+
+.rekom-filter-head strong{
+  display:block;
+  color:var(--text);
+  font-size:17px;
+  line-height:1.2;
+  letter-spacing:-.025em;
+}
+
+.rekom-filter-head span{
+  display:block;
+  margin-top:3px;
+  color:var(--muted);
+  font-size:12.5px;
+}
+
+.rekom-filter-close{
+  width:38px;
+  height:38px;
+  border:none;
+  border-radius:14px;
+  display:grid;
+  place-items:center;
+  background:var(--primary-soft);
+  color:var(--primary);
+  font-size:20px;
+  cursor:pointer;
+}
+
+.rekom-filter-body{
+  padding:14px 16px 8px;
+  overflow:auto;
+  -webkit-overflow-scrolling:touch;
+}
+
+.rekom-filter-group{
+  padding:0 0 16px;
+}
+
+.rekom-filter-label{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-bottom:9px;
+  color:var(--text);
+  font-size:13px;
+  font-weight:760;
+  letter-spacing:-.015em;
+}
+
+.rekom-filter-label i{
+  color:var(--primary);
+  font-size:16px;
+}
+
+.rekom-filter-options{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+
+.rekom-filter-option{
+  min-height:40px;
+  border:1px solid #dfeae3;
+  border-radius:15px;
+  padding:9px 10px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  background:#fbfdfb;
+  color:#314239;
+  font-family:var(--font-main);
+  font-size:12.8px;
+  font-weight:650;
+  text-align:left;
+  cursor:pointer;
+}
+
+.rekom-filter-option span{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.rekom-filter-option i{
+  width:18px;
+  height:18px;
+  display:grid;
+  place-items:center;
+  border-radius:999px;
+  background:#edf3ef;
+  color:transparent;
+  font-size:13px;
+  flex:0 0 auto;
+}
+
+.rekom-filter-option.active{
+  border-color:#9fd4ad;
+  background:#ebf8ef;
+  color:var(--primary);
+}
+
+.rekom-filter-option.active i{
+  background:var(--primary);
+  color:white;
+}
+
+.rekom-filter-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  padding:12px 16px calc(14px + env(safe-area-inset-bottom));
+  border-top:1px solid var(--line);
+  background:rgba(255,255,255,.96);
+}
+
+.rekom-filter-reset,
+.rekom-filter-apply{
+  min-height:44px;
+  border:none;
+  border-radius:16px;
+  font-family:var(--font-main);
+  font-size:13.5px;
+  font-weight:780;
+  cursor:pointer;
+}
+
+.rekom-filter-reset{
+  background:#f3f7f4;
+  color:#5f6f65;
+}
+
+.rekom-filter-apply{
+  background:var(--primary);
+  color:#ffffff;
+}
+
+body.rekom-filter-is-open{
+  overflow:hidden;
+}
+
+@media(min-width:621px){
+  .rekom-filter-sheet{
+    display:none !important;
+  }
+}
+
+/* =========================================================
+   PATCH v5 — FILTER BY CATEGORY + SEARCH
+   Fokus:
+   1) Filter tidak lagi membuka semua pilihan sekaligus.
+   2) Setiap kategori bisa dibuka/tutup sendiri.
+   3) Ada search bar per kategori.
+   4) Desktop tidak memakai dropdown native browser.
+   ========================================================= */
+
+/* Toolbar filter: desktop & mobile sama-sama pakai tombol filter custom */
+.rekom-toolbar{
+  grid-template-columns:minmax(260px,1fr) auto auto !important;
+  align-items:center !important;
+}
+
+.rekom-toolbar select{
+  display:none !important;
+}
+
+.rekom-mobile-filter-btn{
+  min-height:44px;
+  padding:0 15px;
+  border:1px solid #d6eadc;
+  border-radius:16px;
+  background:#effaf2;
+  color:var(--primary);
+  display:inline-flex !important;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  font-family:var(--font-main, inherit);
+  font-size:13.5px;
+  font-weight:760;
+  cursor:pointer;
+  white-space:nowrap;
+}
+
+.rekom-mobile-filter-btn i{
+  font-size:17px;
+}
+
+.rekom-mobile-filter-btn em{
+  min-width:19px;
+  height:19px;
+  padding:0 6px;
+  display:grid;
+  place-items:center;
+  border-radius:999px;
+  background:#dbece1;
+  color:#557060;
+  font-size:10.5px;
+  font-style:normal;
+  font-weight:800;
+}
+
+.rekom-mobile-filter-btn em.active,
+.rekom-mobile-filter-btn.has-active em{
+  background:var(--primary);
+  color:white;
+}
+
+.rekom-filter-sheet{
+  display:block !important;
+}
+
+/* kategori filter */
+.rekom-filter-body{
+  padding:14px 16px 8px !important;
+  overflow:auto !important;
+  -webkit-overflow-scrolling:touch;
+}
+
+.rekom-filter-group{
+  padding:0 !important;
+  margin:0 0 10px !important;
+  border:1px solid #deebe3;
+  border-radius:18px;
+  background:#fbfdfb;
+  overflow:hidden;
+}
+
+.rekom-filter-group.has-value{
+  border-color:#aedabb;
+  background:#f8fdfa;
+}
+
+.rekom-filter-group-toggle{
+  width:100%;
+  min-height:58px;
+  border:0;
+  background:transparent;
+  padding:11px 12px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  text-align:left;
+  font-family:var(--font-main, inherit);
+  cursor:pointer;
+}
+
+.rekom-filter-category-icon{
+  width:34px;
+  height:34px;
+  border-radius:13px;
+  display:grid;
+  place-items:center;
+  background:#edf8f1;
+  color:var(--primary);
+  flex:0 0 auto;
+}
+
+.rekom-filter-category-icon i{
+  font-size:17px;
+}
+
+.rekom-filter-category-text{
+  min-width:0;
+  flex:1 1 auto;
+}
+
+.rekom-filter-category-text strong{
+  display:block;
+  color:var(--text);
+  font-size:13.5px;
+  line-height:1.2;
+  font-weight:780;
+  letter-spacing:-.015em;
+}
+
+.rekom-filter-category-text em{
+  display:block;
+  margin-top:3px;
+  color:var(--muted);
+  font-size:12.2px;
+  line-height:1.2;
+  font-style:normal;
+  font-weight:620;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.rekom-filter-group.has-value .rekom-filter-category-text em{
+  color:var(--primary);
+  font-weight:760;
+}
+
+.rekom-filter-category-arrow{
+  width:28px;
+  height:28px;
+  border-radius:999px;
+  display:grid;
+  place-items:center;
+  background:#f0f6f2;
+  color:#738177;
+  flex:0 0 auto;
+  transition:transform .18s ease, background .18s ease, color .18s ease;
+}
+
+.rekom-filter-category-arrow i{
+  font-size:18px;
+}
+
+.rekom-filter-group.open .rekom-filter-category-arrow{
+  transform:rotate(180deg);
+  background:var(--primary);
+  color:#fff;
+}
+
+.rekom-filter-group-panel{
+  display:none;
+  padding:0 12px 12px;
+  border-top:1px solid #e5eee8;
+}
+
+.rekom-filter-group.open .rekom-filter-group-panel{
+  display:block;
+}
+
+.rekom-filter-search{
+  height:40px;
+  margin:12px 0 10px;
+  padding:0 11px;
+  border:1px solid #dcebe2;
+  border-radius:14px;
+  background:#fff;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.rekom-filter-search i{
+  color:#7f9287;
+  font-size:16px;
+}
+
+.rekom-filter-search input{
+  min-width:0;
+  width:100%;
+  height:100%;
+  border:0;
+  outline:0;
+  background:transparent;
+  color:var(--text);
+  font-family:var(--font-main, inherit);
+  font-size:13px;
+  font-weight:650;
+}
+
+.rekom-filter-search input::placeholder{
+  color:#8a9a90;
+  font-weight:600;
+}
+
+.rekom-filter-options{
+  display:grid !important;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  max-height:280px;
+  overflow:auto;
+  padding:1px 1px 2px;
+  -webkit-overflow-scrolling:touch;
+}
+
+.rekom-filter-option.is-hidden{
+  display:none !important;
+}
+
+.rekom-filter-empty{
+  display:none;
+  margin:10px 0 2px;
+  padding:12px;
+  border-radius:14px;
+  background:#f6faf7;
+  color:#718077;
+  font-size:12.5px;
+  font-weight:650;
+  text-align:center;
+}
+
+.rekom-filter-empty.show{
+  display:block;
+}
+
+/* Desktop: panel filter jadi modal yang rapi, bukan bottom sheet */
+@media(min-width:621px){
+  .rekom-filter-panel{
+    left:50% !important;
+    right:auto !important;
+    bottom:auto !important;
+    top:50% !important;
+    width:min(760px, calc(100vw - 48px));
+    max-height:min(78vh, 760px) !important;
+    border-radius:28px !important;
+    transform:translate(-50%, calc(-50% + 24px)) scale(.98) !important;
+    box-shadow:0 28px 80px rgba(7,19,12,.25) !important;
+  }
+
+  .rekom-filter-sheet.show .rekom-filter-panel{
+    transform:translate(-50%, -50%) scale(1) !important;
+  }
+
+  .rekom-filter-backdrop{
+    background:rgba(7,19,12,.28) !important;
+    backdrop-filter:blur(5px) !important;
+  }
+
+  .rekom-filter-body{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    align-content:start;
+    padding:16px !important;
+  }
+
+  .rekom-filter-group{
+    margin:0 !important;
+  }
+
+  .rekom-filter-group.open{
+    grid-column:1 / -1;
+  }
+
+  .rekom-filter-group.open .rekom-filter-options{
+    grid-template-columns:repeat(4, minmax(0,1fr));
+    max-height:250px;
+  }
+
+  .rekom-filter-actions{
+    padding:14px 18px 16px !important;
+  }
+}
+
+@media(max-width:620px){
+  .rekom-toolbar{
+    grid-template-columns:minmax(0,1fr) auto !important;
+  }
+
+  .rekom-toolbar .rekom-reset-btn{
+    display:none !important;
+  }
+
+  .rekom-mobile-filter-btn{
+    min-height:42px !important;
+    padding:0 12px !important;
+    border-radius:15px !important;
+    font-size:13px !important;
+  }
+
+  .rekom-filter-panel{
+    max-height:82vh !important;
+  }
+
+  .rekom-filter-options{
+    max-height:260px;
+  }
+
+  .rekom-filter-option{
+    min-height:38px !important;
+    border-radius:14px !important;
+    font-size:12.5px !important;
+  }
+}
+
+/* =========================================================
+   PATCH v6 — FILTER LEBIH NYAMAN + RINGKASAN LEBIH RAPI
+   1) Status Rekom & Status Selesai tidak memakai search bar.
+   2) Ringkasan jumlah santri dibuat card compact.
+   3) Panel filter tetap kategori-first dan tidak melelahkan saat scroll.
+   ========================================================= */
+
+.rekom-summary{
+  display:grid !important;
+  grid-template-columns:repeat(3, minmax(0, 1fr));
+  gap:10px !important;
+  margin:12px 0 16px !important;
+  align-items:stretch !important;
+  justify-content:initial !important;
+  color:inherit !important;
+}
+
+.rekom-summary-card{
+  min-width:0;
+  border:1px solid #deebe3;
+  border-radius:18px;
+  background:#ffffff;
+  padding:12px 14px;
+  box-shadow:0 10px 22px rgba(16,32,22,.045);
+  display:grid;
+  gap:3px;
+}
+
+.rekom-summary-card span{
+  color:#607167;
+  font-size:12.5px;
+  font-weight:650;
+  line-height:1.2;
+}
+
+.rekom-summary-card strong{
+  color:var(--primary) !important;
+  font-size:22px;
+  line-height:1;
+  font-weight:820;
+  letter-spacing:-.035em;
+}
+
+.rekom-summary-card em{
+  color:#7a8a80;
+  font-size:11.5px;
+  line-height:1.2;
+  font-style:normal;
+  font-weight:620;
+}
+
+.rekom-summary-card.done{
+  background:#f2fbf5;
+  border-color:#ccebd7;
+}
+
+.rekom-summary-card.pending{
+  background:#fff9ed;
+  border-color:#f3dfae;
+}
+
+.rekom-summary-card.pending strong{
+  color:#9a6511 !important;
+}
+
+.rekom-filter-group.no-search .rekom-filter-group-panel{
+  padding-top:10px !important;
+}
+
+.rekom-filter-group.no-search .rekom-filter-options{
+  max-height:none !important;
+}
+
+.rekom-filter-group.no-search .rekom-filter-option{
+  min-height:42px !important;
+}
+
+.rekom-filter-group.no-search .rekom-filter-empty{
+  display:none !important;
+}
+
+@media(min-width:621px){
+  .rekom-summary{
+    max-width:720px;
+  }
+
+  .rekom-filter-group.no-search.open{
+    grid-column:auto !important;
+  }
+
+  .rekom-filter-group.no-search.open .rekom-filter-options{
+    grid-template-columns:1fr 1fr !important;
+  }
+}
+
+@media(max-width:620px){
+  .rekom-summary{
+    grid-template-columns:repeat(3, minmax(0, 1fr)) !important;
+    gap:7px !important;
+    margin:10px 0 12px !important;
+  }
+
+  .rekom-summary-card{
+    border-radius:15px;
+    padding:10px 8px;
+    gap:4px;
+    text-align:left;
+    box-shadow:0 8px 16px rgba(16,32,22,.035);
+  }
+
+  .rekom-summary-card span{
+    font-size:10.8px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  .rekom-summary-card strong{
+    font-size:20px;
+  }
+
+  .rekom-summary-card em{
+    font-size:10.2px;
+    min-height:24px;
+  }
+
+  .rekom-filter-group.no-search .rekom-filter-options{
+    grid-template-columns:1fr 1fr !important;
+    gap:8px !important;
+  }
+}
+
+
+/* =========================================================
+   APPLE STYLE REDESIGN v1 — MPQ
+   Fokus: clean, minimal, mobile-first, navbar ringkas, Pedoman MPQ.
+   ========================================================= */
+
+:root{
+  --bg:#f5f5f7;
+  --surface:#ffffff;
+  --surface-2:#fbfbfd;
+  --soft:#f0f7f2;
+  --text:#1d1d1f;
+  --muted:#6e6e73;
+  --line:#e5e5ea;
+  --primary:#0f7a3b;
+  --primary-2:#166534;
+  --primary-soft:#eaf7ee;
+  --dark:#111827;
+  --shadow:0 20px 55px rgba(0,0,0,.07);
+  --shadow-soft:0 8px 24px rgba(0,0,0,.045);
+  --radius-xl:34px;
+  --radius-lg:24px;
+  --radius-md:18px;
+  --font-main:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+
+*{-webkit-tap-highlight-color:transparent;}
+html{scroll-behavior:smooth;background:var(--bg);}
+html,body,button,input,select,textarea{font-family:var(--font-main) !important;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  letter-spacing:-.015em;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+
+/* Navbar dibuat seperti bar tipis yang ringan */
+.navbar{
+  min-height:58px;
+  padding:8px max(22px, calc((100vw - 1180px) / 2));
+  background:rgba(245,245,247,.82);
+  border-bottom:1px solid rgba(0,0,0,.06);
+  backdrop-filter:saturate(180%) blur(22px);
+  -webkit-backdrop-filter:saturate(180%) blur(22px);
+}
+.brand{gap:9px;}
+.brand img{width:34px;height:34px;}
+.brand strong{font-size:14px;font-weight:700;letter-spacing:-.02em;color:#1d1d1f;}
+.brand span{font-size:11px;font-weight:500;color:#777;letter-spacing:-.01em;}
+nav{gap:4px;}
+nav a{
+  padding:8px 12px;
+  border-radius:999px;
+  font-size:13px;
+  font-weight:600;
+  color:#3f3f46;
+  letter-spacing:-.01em;
+}
+nav a:hover,
+nav a.active{
+  color:var(--primary);
+  background:rgba(15,122,59,.08);
+}
+nav a::after{display:none !important;}
+.menu-toggle{
+  width:38px;
+  height:38px;
+  border-radius:999px;
+  background:rgba(15,122,59,.08);
+  color:var(--primary);
+  font-size:22px;
+}
+
+/* Hero: clean, besar, tidak terlalu ramai */
+.hero.apple-hero,
+.hero{
+  min-height:auto;
+  padding:86px max(22px, calc((100vw - 1180px) / 2)) 78px;
+  grid-template-columns:minmax(0,1.05fr) minmax(280px,.95fr);
+  gap:46px;
+  background:
+    radial-gradient(circle at 82% 18%, rgba(15,122,59,.16), transparent 34%),
+    linear-gradient(180deg,#ffffff,#f5f5f7 82%);
+  color:var(--text);
+}
+.hero-logo-wrap{order:2;}
+.hero-text{order:1;}
+.label{
+  color:var(--primary) !important;
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:.12em;
+}
+.hero h1{
+  max-width:820px;
+  color:#1d1d1f;
+  font-size:clamp(42px,7vw,82px);
+  line-height:.98;
+  font-weight:760;
+  letter-spacing:-.065em;
+  margin:0 0 18px;
+}
+.hero h2{
+  color:#48484a;
+  font-size:clamp(20px,2.2vw,28px);
+  line-height:1.2;
+  font-weight:650;
+  letter-spacing:-.035em;
+  margin-bottom:14px;
+}
+.hero p{
+  max-width:650px;
+  color:#6e6e73;
+  font-size:17px;
+  line-height:1.65;
+  font-weight:450;
+}
+.hero-actions{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:28px;
+}
+.hero-btn{
+  min-height:44px;
+  padding:0 20px;
+  border-radius:999px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  text-decoration:none;
+  font-size:15px;
+  font-weight:650;
+  transition:transform .18s ease, background .18s ease, color .18s ease;
+}
+.hero-btn.primary{background:var(--primary);color:#fff;}
+.hero-btn.ghost{background:#fff;color:var(--primary);border:1px solid rgba(15,122,59,.18);}
+.hero-btn:hover{transform:translateY(-1px);}
+.hero-device-card{
+  width:min(420px,100%);
+  aspect-ratio:1/1;
+  margin:0 auto;
+  border-radius:46px;
+  background:rgba(255,255,255,.78);
+  border:1px solid rgba(0,0,0,.06);
+  box-shadow:0 30px 90px rgba(0,0,0,.10);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:18px;
+  padding:36px;
+}
+.hero-logo{width:min(230px,70%);filter:drop-shadow(0 18px 30px rgba(0,0,0,.12));}
+.hero-device-card span{
+  color:#515154;
+  font-size:13px;
+  font-weight:650;
+  text-align:center;
+}
+.hero-mini-stats{
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  max-width:560px;
+  gap:10px;
+  margin-top:30px;
+}
+.hero-mini-stats div{
+  padding:16px 12px;
+  border-radius:22px;
+  background:rgba(255,255,255,.78);
+  border:1px solid rgba(0,0,0,.06);
+  box-shadow:var(--shadow-soft);
+  backdrop-filter:blur(12px);
+}
+.hero-mini-stats strong{color:#1d1d1f;font-size:30px;font-weight:760;letter-spacing:-.045em;}
+.hero-mini-stats span{color:#6e6e73;font-size:12px;font-weight:600;}
+
+/* Section dan card */
+.section{padding:72px max(22px, calc((100vw - 1180px) / 2));}
+.soft-section{background:transparent;}
+.section-heading{max-width:780px;margin:0 auto 28px;text-align:center;}
+.section-heading p{font-size:12px;font-weight:700;letter-spacing:.12em;color:var(--primary);}
+.section-heading h2{
+  font-size:clamp(30px,4.5vw,56px);
+  line-height:1.04;
+  font-weight:760;
+  letter-spacing:-.055em;
+  color:#1d1d1f;
+}
+.about-card,
+.content-card,
+.info-card,
+.stat-card,
+.announcement-card,
+.search-card,
+.rekom-row,
+.rekom-summary-card{
+  border:1px solid rgba(0,0,0,.06) !important;
+  box-shadow:var(--shadow-soft) !important;
+}
+.about-card.apple-card-large,
+.about-card{
+  max-width:980px;
+  grid-template-columns:80px minmax(0,1fr);
+  border-radius:var(--radius-xl);
+  padding:34px;
+  background:rgba(255,255,255,.86);
+}
+.about-icon{background:#f2f7f4;border-radius:24px;}
+.about-card h2{font-size:clamp(26px,4vw,44px);line-height:1.06;font-weight:740;letter-spacing:-.05em;}
+.about-card p{font-size:16px;line-height:1.7;color:var(--muted);}
+
+.info-slider{gap:18px;padding:8px 4px 34px;}
+.info-slider .info-card,
+.info-card{
+  border-radius:30px;
+  padding:32px;
+  background:#fff;
+  min-height:250px;
+}
+.info-card:hover{transform:translateY(-3px);border-color:rgba(15,122,59,.18) !important;}
+.info-card > i,
+.stat-card i,
+.announcement-card i{
+  background:#f1f7f3;
+  color:var(--primary);
+  border-radius:18px;
+}
+.info-card h3{font-size:23px;line-height:1.13;font-weight:720;letter-spacing:-.04em;color:#1d1d1f;}
+.info-card p{color:var(--muted);font-size:14.5px;line-height:1.65;}
+.info-card a{
+  color:var(--primary);
+  font-size:14px;
+  font-weight:650;
+}
+.info-card a::after{content:"  ›";font-weight:700;}
+.service-card.featured{background:linear-gradient(180deg,#ffffff,#f0f7f2);}
+.slider-btn{
+  background:rgba(255,255,255,.82) !important;
+  color:#555 !important;
+  border:1px solid rgba(0,0,0,.06) !important;
+  box-shadow:0 10px 24px rgba(0,0,0,.08) !important;
+}
+.slider-btn:hover{background:#fff !important;color:var(--primary) !important;}
+
+.stat-grid{max-width:1180px;gap:14px;}
+.stat-card{
+  border-radius:26px;
+  background:#fff;
+  padding:24px 20px;
+}
+.stat-card strong{font-size:32px;font-weight:760;letter-spacing:-.045em;color:#1d1d1f;}
+.stat-card span{font-size:13px;color:#6e6e73;font-weight:600;}
+.announcement-grid{max-width:1180px;}
+.announcement-card{border-radius:28px;background:#fff;}
+
+/* Pages */
+.page{
+  width:min(980px,100%);
+  max-width:980px;
+  padding:72px 20px;
+}
+.content-card{
+  border-radius:var(--radius-xl);
+  padding:36px;
+  background:rgba(255,255,255,.9);
+}
+.page-title{
+  color:#1d1d1f;
+  font-size:clamp(30px,5vw,48px);
+  line-height:1.05;
+  font-weight:760;
+  letter-spacing:-.055em;
+  margin-bottom:16px;
+}
+.page-title i{color:var(--primary);font-size:1em;}
+.page p,.page li{color:var(--muted);font-size:15.5px;line-height:1.72;}
+.info-box{background:#f7f7f9;border-color:rgba(0,0,0,.06);border-radius:22px;}
+.btn{
+  min-height:48px;
+  border-radius:999px;
+  background:var(--primary);
+  font-weight:650;
+}
+.btn:hover{background:var(--primary-2);}
+.back-link{
+  width:max-content;
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  margin-bottom:22px;
+  padding:8px 12px;
+  border-radius:999px;
+  background:#f3f7f4;
+  color:var(--primary);
+  text-decoration:none;
+  font-size:13px;
+  font-weight:650;
+}
+
+/* Pedoman MPQ page */
+.page-hero-minimal{
+  text-align:center;
+  max-width:760px;
+  margin:0 auto 28px;
+}
+.page-hero-minimal h1{
+  font-size:clamp(38px,7vw,68px);
+  line-height:1;
+  font-weight:760;
+  letter-spacing:-.065em;
+  color:#1d1d1f;
+  margin-bottom:16px;
+}
+.page-hero-minimal p{font-size:17px;line-height:1.65;}
+.pedoman-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px;
+}
+.pedoman-card{
+  min-height:330px;
+  border-radius:34px;
+  background:#fff;
+  border:1px solid rgba(0,0,0,.06);
+  box-shadow:var(--shadow-soft);
+  padding:34px;
+  text-decoration:none;
+  color:inherit;
+  display:flex;
+  flex-direction:column;
+  transition:transform .18s ease, box-shadow .18s ease;
+}
+.pedoman-card:hover{transform:translateY(-3px);box-shadow:var(--shadow) !important;}
+.pedoman-card i{
+  width:58px;height:58px;border-radius:20px;background:#f1f7f3;color:var(--primary);display:grid;place-items:center;font-size:29px;margin-bottom:24px;
+}
+.pedoman-card span{color:var(--primary);font-size:12px;font-weight:720;text-transform:uppercase;letter-spacing:.12em;margin-bottom:9px;}
+.pedoman-card strong{font-size:30px;line-height:1.05;font-weight:740;letter-spacing:-.05em;color:#1d1d1f;margin-bottom:12px;}
+.pedoman-card p{font-size:15px;line-height:1.65;color:var(--muted);}
+.pedoman-card em{margin-top:auto;color:var(--primary);font-size:14px;font-style:normal;font-weight:650;}
+.pedoman-card em::after{content:"  ›";}
+
+/* Accordion lebih clean */
+.accordion{
+  border:1px solid rgba(0,0,0,.06);
+  border-radius:22px;
+  box-shadow:none;
+  background:#fff;
+  margin-bottom:12px;
+}
+.accordion summary{
+  padding:18px 20px;
+  font-size:15px;
+  font-weight:680;
+  color:#1d1d1f;
+}
+.accordion summary::after{
+  background:#f2f2f7;
+  color:#6e6e73;
+  font-weight:500;
+}
+.accordion[open] summary{color:var(--primary);}
+.accordion[open] summary::after{background:var(--primary);color:#fff;}
+
+/* Search */
+.search-panel{max-width:860px;margin:0 auto;}
+.search-box{gap:10px;margin:22px 0 16px;}
+.search-box input,
+.rekom-toolbar input,
+.rekom-toolbar select{
+  min-height:48px;
+  border-radius:18px;
+  border-color:rgba(0,0,0,.08);
+  background:#fff;
+  font-size:15px;
+  font-weight:500;
+}
+.search-box input:focus,
+.rekom-toolbar input:focus,
+.rekom-toolbar select:focus{
+  border-color:rgba(15,122,59,.35);
+  box-shadow:0 0 0 4px rgba(15,122,59,.10);
+}
+.search-box button{
+  min-height:48px;
+  border-radius:999px;
+  padding:0 22px;
+  font-weight:650;
+}
+.search-period-info{background:#fff;border:1px solid rgba(0,0,0,.06);color:var(--primary);font-weight:650;}
+.search-card{
+  border-radius:22px;
+  background:#fff;
+  padding:17px 18px;
+}
+.search-card:hover{background:#fff;border-color:rgba(15,122,59,.22) !important;}
+.search-card-top .search-name,
+.search-name{font-weight:680 !important;color:#1d1d1f;}
+.search-meta{font-weight:500;color:#6e6e73;}
+.search-detail-btn{background:#f2f7f4;color:var(--primary);font-weight:650;border-radius:999px;}
+.modal-card{border-radius:30px;box-shadow:0 30px 100px rgba(0,0,0,.23);}
+.modal-title{color:#1d1d1f;font-weight:730;letter-spacing:-.04em;}
+.detail-item,.compact-item,.status-detail-section,.alpa-detail-box{border-color:rgba(0,0,0,.06);background:#fff;border-radius:20px;}
+
+/* Rekom internal page */
+.rekom-page{max-width:1120px;width:min(1120px,100%);}
+.rekom-shell-card{background:transparent;border:0 !important;box-shadow:none !important;padding:0;}
+.rekom-hero-card{
+  border-radius:34px;
+  padding:36px;
+  background:
+    radial-gradient(circle at 90% 5%, rgba(255,255,255,.16), transparent 34%),
+    linear-gradient(135deg,#1d1d1f,#0f7a3b);
+}
+.rekom-hero-card h1{font-size:clamp(34px,6vw,60px);font-weight:760;letter-spacing:-.06em;}
+.rekom-toolbar{
+  border-radius:26px;
+  background:rgba(255,255,255,.9);
+  border:1px solid rgba(0,0,0,.06) !important;
+  box-shadow:var(--shadow-soft) !important;
+}
+.rekom-mobile-filter-btn,.rekom-reset-btn{border-radius:999px;font-weight:650;}
+.rekom-row{border-radius:22px;background:#fff;}
+.rekom-row-head{padding-top:16px !important;padding-bottom:16px !important;}
+.rekom-row-head > i::before{font-weight:400 !important;}
+.rekom-student-name{font-weight:680 !important;color:#1d1d1f;}
+.rekom-student-meta{font-weight:500;color:#6e6e73;}
+.rekom-summary-card{border-radius:20px;background:#fff;}
+.rekom-summary-card strong{font-weight:760;}
+.rekom-filter-panel{border:1px solid rgba(255,255,255,.7);}
+.rekom-filter-group{border-color:rgba(0,0,0,.06);background:#fff;}
+.rekom-filter-option{border-color:rgba(0,0,0,.06);background:#fbfbfd;}
+.rekom-filter-option.active{background:#edf8f1;border-color:rgba(15,122,59,.26);}
+
+/* Footer */
+.footer-pro{
+  background:#f5f5f7;
+  border-top:1px solid rgba(0,0,0,.06);
+  padding:38px 20px;
+}
+.footer-pro strong{font-size:16px;color:#1d1d1f;font-weight:700;}
+.footer-pro span,.footer-pro small{font-size:12.5px;color:#707074;}
+.footer-wa{background:#fff;color:var(--primary);border:1px solid rgba(15,122,59,.16);font-weight:650;}
+.footer-wa:hover{background:var(--primary);color:#fff;}
+
+/* Mobile polish */
+@media(max-width:768px){
+  .navbar{min-height:56px;padding:7px 14px !important;}
+  .brand img{width:34px !important;height:34px !important;}
+  .brand strong{font-size:13.5px !important;}
+  .brand span{font-size:10.5px !important;}
+  .menu-toggle{width:38px !important;height:38px !important;border-radius:999px !important;font-size:21px !important;}
+  .navbar nav{
+    top:62px !important;
+    left:12px !important;
+    right:12px !important;
+    border-radius:22px !important;
+    padding:8px !important;
+    background:rgba(255,255,255,.94) !important;
+    backdrop-filter:blur(18px);
+  }
+  .navbar nav a{font-size:14px !important;padding:13px 14px !important;border-radius:15px !important;}
+  .hero.apple-hero,.hero{
+    grid-template-columns:1fr;
+    padding:52px 18px 54px;
+    text-align:center;
+    gap:28px;
+  }
+  .hero-text,.hero-logo-wrap{order:initial;}
+  .hero h1{font-size:48px;line-height:1.02;}
+  .hero h2{font-size:21px;}
+  .hero p{font-size:15.5px;line-height:1.62;margin-left:auto;margin-right:auto;}
+  .hero-actions{justify-content:center;margin-top:22px;}
+  .hero-device-card{width:min(280px,88vw);border-radius:36px;padding:26px;}
+  .hero-logo{width:168px;}
+  .hero-mini-stats{gap:8px;margin-top:24px;}
+  .hero-mini-stats div{padding:13px 8px;border-radius:18px;}
+  .hero-mini-stats strong{font-size:24px;}
+  .hero-mini-stats span{font-size:10.5px;}
+  .section{padding:54px 18px;}
+  .section-heading h2{font-size:34px;line-height:1.08;}
+  .about-card.apple-card-large,.about-card{grid-template-columns:1fr;border-radius:30px;padding:26px;}
+  .about-card h2{font-size:30px;}
+  .info-slider .info-card{flex:0 0 86%;min-height:232px;border-radius:28px;padding:28px;}
+  .slider-btn{display:none !important;}
+  .page{padding:52px 16px;width:100%;}
+  .content-card{border-radius:30px;padding:26px 20px;}
+  .page-title{font-size:36px;}
+  .pedoman-grid{grid-template-columns:1fr;gap:14px;}
+  .pedoman-card{min-height:270px;border-radius:30px;padding:28px;}
+  .pedoman-card strong{font-size:28px;}
+  .search-box{flex-direction:column;}
+  .search-box button{width:100%;}
+  .search-card{border-radius:22px;}
+  .modal-card{border-radius:28px 28px 0 0;}
+}
+
+@media(max-width:420px){
+  .hero h1{font-size:42px;}
+  .hero h2{font-size:19px;}
+  .hero-mini-stats span{font-size:10px;}
+  .page-hero-minimal h1{font-size:38px;}
+  .page-title{font-size:32px;}
+  .rekom-summary-card{padding:10px 7px;}
+}
+
+
+/* ================= APPLE STYLE V2 POLISH ================= */
+body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+
+.home-page .hero.apple-hero,.home-page .hero{
+  grid-template-columns:1fr;
+  justify-items:center;
+  text-align:center;
+  gap:30px;
+  padding-top:72px;
+  padding-bottom:72px;
+}
+.home-page .hero-text{
+  max-width:960px;
+  width:100%;
+}
+.home-page .hero p{
+  margin-left:auto;
+  margin-right:auto;
+}
+.home-page .hero-inline-logo{
+  display:flex;
+  justify-content:center;
+  margin:26px 0 4px;
+}
+.home-page .hero-inline-logo img{
+  width:clamp(112px,16vw,154px);
+  height:auto;
+  object-fit:contain;
+  filter:drop-shadow(0 12px 22px rgba(0,0,0,.10));
+}
+.home-page .hero-logo-wrap,
+.home-page .hero-device-card{
+  display:none !important;
+}
+.home-page .hero-actions,
+.home-page .hero-mini-stats{
+  justify-content:center;
+  margin-left:auto;
+  margin-right:auto;
+}
+.home-page .hero-mini-stats{
+  max-width:760px;
+}
+
+.about-icon{
+  width:auto;
+  height:auto;
+  border-radius:0;
+  background:transparent;
+  padding:0;
+  box-shadow:none;
+}
+.about-logo{
+  width:88px;
+  height:88px;
+}
+
+.search-input-wrap input{
+  padding-right:58px;
+}
+.search-box .search-input-wrap .search-clear-btn{
+  right:10px !important;
+  width:30px !important;
+  height:30px !important;
+  min-width:30px !important;
+  max-width:30px !important;
+  border:1px solid rgba(17,24,39,.08) !important;
+  background:#f3f5f4 !important;
+  color:#7a7f7b !important;
+  box-shadow:0 8px 18px rgba(15,23,42,.08) !important;
+  transform:translateY(-50%) scale(.92) !important;
+}
+.search-box .search-input-wrap .search-clear-btn.show{
+  transform:translateY(-50%) scale(1) !important;
+}
+.search-box .search-input-wrap .search-clear-btn:hover,
+.search-box .search-input-wrap .search-clear-btn:active{
+  background:#ebefec !important;
+  color:#38413a !important;
+}
+.search-box .search-input-wrap .search-clear-btn i{
+  font-size:15px !important;
+  font-weight:700 !important;
+}
+
+/* Smooth reveal ala Apple */
+.reveal-on-scroll{
+  opacity:0;
+  transform:translate3d(0,36px,0);
+  transition:
+    opacity .86s cubic-bezier(.22,1,.36,1),
+    transform .86s cubic-bezier(.22,1,.36,1);
+  will-change:opacity,transform;
+}
+.reveal-on-scroll.is-visible{
+  opacity:1;
+  transform:translate3d(0,0,0);
+}
+.reveal-delay-1{transition-delay:.06s;}
+.reveal-delay-2{transition-delay:.12s;}
+.reveal-delay-3{transition-delay:.18s;}
+.reveal-delay-4{transition-delay:.24s;}
+
+@media (prefers-reduced-motion: reduce){
+  .reveal-on-scroll{
+    opacity:1 !important;
+    transform:none !important;
+    transition:none !important;
+  }
+}
+
+@media(max-width:720px){
+  .home-page .hero.apple-hero,.home-page .hero{
+    padding-top:46px;
+    padding-bottom:50px;
+  }
+  .home-page .hero-inline-logo{
+    margin:20px 0 2px;
+  }
+  .home-page .hero-inline-logo img{
+    width:124px;
+  }
+  .about-card.apple-card-large,.about-card{
+    gap:18px;
+  }
+  .about-logo{
+    width:72px;
+    height:72px;
+  }
+}
+
+
+/* ================= APPLE STYLE V3 INTERACTIVE POLISH ================= */
+body{
+  position:relative;
+  overflow-x:hidden;
+  background:
+    linear-gradient(180deg,#f7f8f7 0%,#fbfcfb 52%,#f7f8f7 100%);
+  --bg-shift-1:0px;
+  --bg-shift-2:0px;
+}
+body::before,
+body::after{
+  content:"";
+  position:fixed;
+  pointer-events:none;
+  z-index:0;
+  border-radius:999px;
+  opacity:.8;
+  will-change:transform;
+}
+body::before{
+  width:min(38vw,480px);
+  height:min(38vw,480px);
+  top:9%;
+  right:-10%;
+  background:radial-gradient(circle, rgba(22,101,52,.10) 0%, rgba(22,101,52,.06) 32%, rgba(22,101,52,0) 72%);
+  transform:translate3d(0,calc(var(--bg-shift-1) * .45),0);
+}
+body::after{
+  width:min(34vw,420px);
+  height:min(34vw,420px);
+  top:54%;
+  left:-9%;
+  background:radial-gradient(circle, rgba(34,197,94,.08) 0%, rgba(34,197,94,.05) 34%, rgba(34,197,94,0) 72%);
+  transform:translate3d(0,calc(var(--bg-shift-2) * -.35),0);
+}
+.navbar, main, .footer-pro{position:relative;z-index:1;}
+
+/* Logo motion */
+.hero-inline-logo img{
+  animation:heroLogoFloat 5.8s ease-in-out infinite;
+}
+.about-logo{
+  animation:aboutLogoFloat 6.4s ease-in-out infinite;
+}
+@keyframes heroLogoFloat{
+  0%,100%{transform:translate3d(0,0,0) scale(1) rotate(0deg);}
+  50%{transform:translate3d(0,-7px,0) scale(1.012) rotate(.6deg);}
+}
+@keyframes aboutLogoFloat{
+  0%,100%{transform:translate3d(0,0,0) rotate(0deg);}
+  50%{transform:translate3d(0,-5px,0) rotate(-.6deg);}
+}
+
+/* About card logo placement */
+.about-card{
+  position:relative;
+  overflow:hidden;
+}
+.about-icon{
+  align-self:start;
+  justify-content:flex-start;
+  padding-top:4px;
+}
+.about-logo{
+  display:block;
+  margin:0;
+}
+
+/* Search clear button more subtle */
+.search-input-wrap input{padding-right:52px;}
+.search-box .search-input-wrap .search-clear-btn{
+  right:12px !important;
+  width:22px !important;
+  height:22px !important;
+  min-width:22px !important;
+  max-width:22px !important;
+  border-radius:999px !important;
+  border:1px solid rgba(16,32,22,.06) !important;
+  background:#f1f3f2 !important;
+  color:#8a918d !important;
+  box-shadow:0 4px 12px rgba(15,23,42,.05) !important;
+}
+.search-box .search-input-wrap .search-clear-btn i{
+  font-size:12px !important;
+  font-weight:700 !important;
+}
+.search-box .search-input-wrap .search-clear-btn:hover,
+.search-box .search-input-wrap .search-clear-btn:active{
+  background:#e8ece9 !important;
+  color:#4d564f !important;
+}
+
+/* Interactive touch / press states */
+.brand,
+.menu-toggle,
+nav a,
+.hero-btn,
+.info-card,
+.stat-card,
+.announcement-card,
+.search-card,
+.search-detail-btn,
+.accordion,
+.accordion summary,
+.pedoman-card,
+.service-card,
+.footer-wa,
+.rekom-card,
+.rekom-item,
+.rekom-summary-card,
+.rekom-filter-btn,
+.rekom-reset-btn,
+button,
+a.btn{
+  transition:
+    transform .22s cubic-bezier(.22,1,.36,1),
+    box-shadow .22s cubic-bezier(.22,1,.36,1),
+    background-color .22s ease,
+    border-color .22s ease,
+    color .22s ease,
+    opacity .22s ease;
+  -webkit-tap-highlight-color:transparent;
+}
+.brand:hover,
+.menu-toggle:hover,
+nav a:hover,
+.hero-btn:hover,
+.search-detail-btn:hover,
+.footer-wa:hover{
+  transform:translateY(-1px);
+}
+.info-card:hover,
+.stat-card:hover,
+.announcement-card:hover,
+.search-card:hover,
+.pedoman-card:hover,
+.rekom-card:hover,
+.rekom-item:hover,
+.rekom-summary-card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 22px 46px rgba(16,32,22,.10);
+}
+.press-feedback{
+  transform:scale(.985) translateY(1px) !important;
+}
+.press-glow{
+  box-shadow:0 14px 34px rgba(22,101,52,.12) !important;
+}
+nav a:active,
+.hero-btn:active,
+.menu-toggle:active,
+.search-detail-btn:active,
+.footer-wa:active,
+button:active{
+  transform:scale(.98);
+}
+
+/* Slight card sheen/accent */
+.info-card::before,
+.stat-card::before,
+.announcement-card::before,
+.pedoman-card::before,
+.search-card::before,
+.about-card::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  background:linear-gradient(135deg, rgba(22,101,52,.025), rgba(255,255,255,0) 36%);
+  pointer-events:none;
+}
+.info-card,.stat-card,.announcement-card,.pedoman-card,.search-card,.about-card{position:relative;overflow:hidden;}
+
+@media(max-width:720px){
+  body::before{
+    width:260px;
+    height:260px;
+    top:8%;
+    right:-28%;
+    opacity:.72;
+  }
+  body::after{
+    width:220px;
+    height:220px;
+    top:58%;
+    left:-26%;
+    opacity:.64;
+  }
+  .about-card.apple-card-large,.about-card{
+    gap:12px;
+  }
+  .about-icon{
+    padding-top:0;
+    margin-bottom:2px;
+  }
+  .about-logo{
+    width:64px;
+    height:64px;
+  }
+  .info-card:hover,
+  .stat-card:hover,
+  .announcement-card:hover,
+  .search-card:hover,
+  .pedoman-card:hover,
+  .rekom-card:hover,
+  .rekom-item:hover,
+  .rekom-summary-card:hover{
+    transform:none;
+    box-shadow:var(--shadow-soft);
+  }
 }
