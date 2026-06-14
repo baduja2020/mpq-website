@@ -74,7 +74,6 @@ function setupScrollReveal() {
   elements.forEach(el => observer.observe(el));
 }
 
-
 function setupInteractiveFeedback() {
   const selector = [
     '.hero-btn',
@@ -87,18 +86,28 @@ function setupInteractiveFeedback() {
     '.footer-wa',
     '.rekom-card',
     '.rekom-item',
-    '.rekom-summary-card'
+    '.rekom-summary-card',
+    '.rekom-filter-btn',
+    '.rekom-reset-btn',
+    '.btn'
   ].join(',');
 
   const clearPress = () => {
-    document.querySelectorAll('.press-feedback').forEach((el) => {
+    document.querySelectorAll('.press-feedback, .press-glow').forEach((el) => {
       el.classList.remove('press-feedback');
+      el.classList.remove('press-glow');
     });
   };
 
   document.addEventListener('pointerdown', (event) => {
     const target = event.target.closest(selector);
-    if (target) target.classList.add('press-feedback');
+    if (!target) return;
+
+    target.classList.add('press-feedback');
+
+    if (target.matches('.info-card, .stat-card, .announcement-card, .search-card, .pedoman-card, .rekom-card, .rekom-item, .rekom-summary-card')) {
+      target.classList.add('press-glow');
+    }
   }, { passive: true });
 
   document.addEventListener('pointerup', clearPress, { passive: true });
