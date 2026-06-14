@@ -706,7 +706,7 @@ function closeDetailModal() {
 
 function statusTone(value, context = "default") {
   const raw = String(value || "-").trim().toUpperCase();
-  const norm = normalizeSearchText(raw);
+  const norm = normalizeSearchText(raw).toLowerCase();
 
   const isEmpty = !norm || norm === "-";
   const isNoRekom = norm === "tidak rekom" || norm === "tidak ada rekom";
@@ -1342,7 +1342,7 @@ function toRekomNumber(value) {
 function hasRekomPeriodData(item, period) {
   const alpa = toRekomNumber(item?.[period.alpaKey]);
   const status = normalizeSearchText(item?.[period.statusKey] || "");
-  return alpa > 0 || status === "s" || status === "selesai";
+  return alpa > 0 || status === "S" || status === "SELESAI";
 }
 
 function getVisibleRekomPeriods(data = []) {
@@ -1418,7 +1418,7 @@ function isOverallSelesai(item = {}) {
 
 function isPeriodMarkedDone(status = "") {
   const raw = String(status || "").trim().toUpperCase();
-  const norm = normalizeSearchText(raw);
+  const norm = normalizeSearchText(raw).toLowerCase();
   return raw === "S" || norm === "s" || (norm.includes("selesai") && !norm.includes("belum") && !norm.includes("tidak"));
 }
 
