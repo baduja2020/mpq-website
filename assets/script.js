@@ -303,8 +303,13 @@ function tampilkanDaftar() {
       }
     </div>
 
-    ${hasilPencarian.map((s, index) => `
-      <div class="search-card" onclick="showDetail(${index})">
+    ${hasilPencarian.map((s, index) => {
+      const indicatorTone = getRekomIndicatorTone(s);
+
+      return `
+      <div class="search-card ${indicatorTone ? "has-rekom-indicator" : ""}" onclick="showDetail(${index})">
+        ${renderRekomIndicator(s)}
+
         <div class="search-card-top">
           <div class="search-name">
             ${highlightText(s.nama || "-", keyword, "word")}
@@ -322,17 +327,10 @@ function tampilkanDaftar() {
 
         <div class="search-meta">
           <span>
-            <i class="ri-id-card-line"></i>
-            ${escapeHtml(s.kode || "-")}
-          </span>
-
-          <span>
             <i class="ri-school-line"></i>
             ${highlightText(s.kelas || "-", keyword, "field")}
           </span>
-        </div>
 
-        <div class="search-meta">
           <span>
             <i class="ri-bookmark-line"></i>
             ${highlightText(s.adna || "-", keyword, "field")}
@@ -344,7 +342,8 @@ function tampilkanDaftar() {
           </span>
         </div>
       </div>
-    `).join("")}
+    `;
+    }).join("")}
   `;
 }
 
@@ -746,6 +745,75 @@ function badgeStatus(value, context = "default") {
   const text = String(value || "-").trim().toUpperCase();
   const color = statusToneToBadgeClass(statusTone(text, context));
   return `<strong class="status-badge ${color}">${text}</strong>`;
+}
+
+function toIndicatorNumber(value) {
+  const parsed = Number(String(value ?? "0").replace(",", "."));
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function hasAnyRekomDetail(item = {}) {
+  const rincian = Array.isArray(item.rincianTanggungan) ? item.rincianTanggungan : [];
+  const hasRincian = rincian.some((row) => {
+    const label = String(row?.label || "").trim();
+    const alpa = toIndicatorNumber(row?.alpa);
+    return label !== "" && alpa > 0;
+  });
+
+  const periodKeys = [
+    "alpaPenertiban",
+    "alpa1",
+    "alpa2",
+    "alpa3",
+    "alpa4",
+    "ALPA !!!",
+    "ALPA_!!!",
+    "ALPA 1",
+    "ALPA_1",
+    "ALPA 2",
+    "ALPA_2",
+    "ALPA 3",
+    "ALPA_3",
+    "ALPA 4",
+    "ALPA_4",
+  ];
+
+  const hasPeriodAlpa = periodKeys.some((key) => toIndicatorNumber(item?.[key]) > 0);
+
+  const statusNorm = normalizeSearchText(item?.statusRekom || item?.["STATUS REKOM"] || item?.["STATUS_REKOM"] || "");
+  const hasRekomStatus = Boolean(statusNorm) &&
+    statusNorm !== "-" &&
+    statusNorm !== "TIDAK REKOM" &&
+    statusNorm !== "TIDAK ADA REKOM" &&
+    (statusNorm.includes("REKOM") ||
+      statusNorm.includes("R1") ||
+      statusNorm.includes("R2") ||
+      statusNorm.includes("R3") ||
+      statusNorm.includes("R4") ||
+      statusNorm.includes("PENERTIBAN"));
+
+  return hasRincian || hasPeriodAlpa || hasRekomStatus;
+}
+
+function getRekomIndicatorTone(item = {}) {
+  const statusNorm = normalizeSearchText(item?.statusRekom || item?.["STATUS REKOM"] || item?.["STATUS_REKOM"] || "");
+  const explicitNoRekom =
+    statusNorm === "TIDAK REKOM" ||
+    statusNorm === "TIDAK ADA REKOM" ||
+    statusNorm === "-";
+
+  if (explicitNoRekom) return "";
+  if (!hasAnyRekomDetail(item)) return "";
+
+  return isOverallSelesai(item) ? "done" : "active";
+}
+
+function renderRekomIndicator(item = {}) {
+  const tone = getRekomIndicatorTone(item);
+  if (!tone) return "";
+
+  const label = tone === "done" ? "Rekom selesai" : "Masih rekom";
+  return `<span class="rekom-indicator-dot ${tone}" title="${label}" aria-label="${label}"></span>`;
 }
 function animateCounter(element, endValue, duration = 1600) {
   if (!element) return;
@@ -1342,7 +1410,10 @@ function getSelesaiClass(value = "") {
 
 
 function isOverallSelesai(item = {}) {
-  return statusTone(item.statusSelesai || "", "selesai") === "success";
+  return statusTone(
+    item.statusSelesai || item["STATUS SELESAI"] || item["STATUS_SELESAI"] || "",
+    "selesai"
+  ) === "success";
 }
 
 function isPeriodMarkedDone(status = "") {
@@ -1359,10 +1430,9 @@ function renderRekomCard(item) {
   const periodItems = getItemRekomPeriods(item);
   const statusClass = getStatusClass(item.statusRekom);
   const selesaiClass = getSelesaiClass(item.statusSelesai);
+  const indicatorTone = getRekomIndicatorTone(item);
 
   const overallSelesai = isOverallSelesai(item);
-  const statusText = item.statusRekom || "-";
-  const selesaiText = item.statusSelesai || "-";
 
   const periodHtml = periodItems.length
     ? periodItems.map((period) => renderRekomPeriod(period.label, item[period.alpaKey], item[period.statusKey], overallSelesai)).join("")
@@ -1377,16 +1447,12 @@ function renderRekomCard(item) {
     `;
 
   return `
-    <article class="rekom-row ${isOpen ? "open" : ""}" data-rekom-key="${key}">
+    <article class="rekom-row ${isOpen ? "open" : ""} ${indicatorTone ? "has-rekom-indicator" : ""}" data-rekom-key="${key}">
       <button class="rekom-row-head" type="button" onclick="toggleRekomRow('${key}')">
+        ${renderRekomIndicator(item)}
         <span class="rekom-student-name">${escapeHtml(item.nama || "-")}</span>
         <span class="rekom-student-meta">
           ${escapeHtml(item.kelas || "-")} • Kamar ${escapeHtml(item.kamar || "-")} • ${escapeHtml(item.adna || "-")}
-        </span>
-        <span class="rekom-head-tags">
-          <span class="rekom-mini-tag total">Alpa ${escapeHtml(item.totalAlpa || "0")}</span>
-          <span class="rekom-mini-tag ${statusClass}">${escapeHtml(statusText)}</span>
-          <span class="rekom-mini-tag ${selesaiClass}">${escapeHtml(selesaiText)}</span>
         </span>
         <i class="ri-arrow-down-s-line"></i>
       </button>
