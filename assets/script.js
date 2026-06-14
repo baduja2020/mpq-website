@@ -1252,11 +1252,11 @@ function uniqueSorted(items) {
 }
 
 const REKOM_FILTER_FIELDS = [
-  { id: "rekomKelasFilter", label: "Kelas", short: "Kelas", icon: "ri-school-line", placeholder: "Cari kelas..." },
-  { id: "rekomKamarFilter", label: "Kamar", short: "Kamar", icon: "ri-home-4-line", placeholder: "Cari kamar..." },
-  { id: "rekomAdnaFilter", label: "ADNA", short: "ADNA", icon: "ri-book-open-line", placeholder: "Cari ADNA..." },
-  { id: "rekomStatusFilter", label: "Status Rekom", short: "Status", icon: "ri-flag-line", placeholder: "Cari status rekom..." },
-  { id: "rekomSelesaiFilter", label: "Status Selesai", short: "Selesai", icon: "ri-checkbox-circle-line", placeholder: "Cari status selesai..." },
+  { id: "rekomKelasFilter", label: "Kelas", short: "Kelas", icon: "ri-school-line", placeholder: "Cari kelas...", searchable: true },
+  { id: "rekomKamarFilter", label: "Kamar", short: "Kamar", icon: "ri-home-4-line", placeholder: "Cari kamar...", searchable: true },
+  { id: "rekomAdnaFilter", label: "ADNA", short: "ADNA", icon: "ri-book-open-line", placeholder: "Cari ADNA...", searchable: true },
+  { id: "rekomStatusFilter", label: "Status Rekom", short: "Status", icon: "ri-flag-line", searchable: false },
+  { id: "rekomSelesaiFilter", label: "Status Selesai", short: "Selesai", icon: "ri-checkbox-circle-line", searchable: false },
 ];
 
 function setupRekomFilterPanel() {
@@ -1391,7 +1391,7 @@ function buildRekomFilterPanelOptions() {
     }).join("");
 
     return `
-      <div class="rekom-filter-group ${isOpen ? "open" : ""} ${hasValue ? "has-value" : ""}" data-filter-group="${field.id}">
+      <div class="rekom-filter-group ${isOpen ? "open" : ""} ${hasValue ? "has-value" : ""} ${field.searchable ? "is-searchable" : "no-search"}" data-filter-group="${field.id}">
         <button type="button" class="rekom-filter-group-toggle" data-filter-toggle="${field.id}" aria-expanded="${isOpen ? "true" : "false"}">
           <span class="rekom-filter-category-icon"><i class="${field.icon}"></i></span>
           <span class="rekom-filter-category-text">
@@ -1401,10 +1401,11 @@ function buildRekomFilterPanelOptions() {
           <span class="rekom-filter-category-arrow"><i class="ri-arrow-down-s-line"></i></span>
         </button>
         <div class="rekom-filter-group-panel">
+          ${field.searchable ? `
           <label class="rekom-filter-search">
             <i class="ri-search-line"></i>
             <input type="search" inputmode="search" placeholder="${escapeHtml(field.placeholder || `Cari ${field.label}...`)}" data-filter-search="${field.id}">
-          </label>
+          </label>` : ""}
           <div class="rekom-filter-options">
             ${buttons}
           </div>
@@ -1420,8 +1421,9 @@ function buildRekomFilterPanelOptions() {
       rekomState.filterOpenGroup = rekomState.filterOpenGroup === targetId ? null : targetId;
       buildRekomFilterPanelOptions();
       syncRekomFilterPanel();
+      const field = REKOM_FILTER_FIELDS.find((item) => item.id === targetId);
       const activeInput = document.querySelector(`.rekom-filter-search input[data-filter-search="${targetId}"]`);
-      if (activeInput && rekomState.filterOpenGroup === targetId) {
+      if (field?.searchable && activeInput && rekomState.filterOpenGroup === targetId) {
         setTimeout(() => activeInput.focus({ preventScroll: true }), 60);
       }
     });
@@ -1566,7 +1568,24 @@ function updateRekomSummary() {
   const total = rekomState.filtered.length;
   const selesai = rekomState.filtered.filter((item) => isOverallSelesai(item)).length;
   const belum = rekomState.filtered.filter((item) => !isOverallSelesai(item)).length;
-  summary.innerHTML = `Menampilkan <strong>${total}</strong> santri aktif • <strong>${selesai}</strong> selesai • <strong>${belum}</strong> belum`;
+
+  summary.innerHTML = `
+    <div class="rekom-summary-card total">
+      <span>Menampilkan</span>
+      <strong>${total}</strong>
+      <em>santri aktif</em>
+    </div>
+    <div class="rekom-summary-card done">
+      <span>Selesai</span>
+      <strong>${selesai}</strong>
+      <em>rekom tuntas</em>
+    </div>
+    <div class="rekom-summary-card pending">
+      <span>Belum</span>
+      <strong>${belum}</strong>
+      <em>perlu tindak lanjut</em>
+    </div>
+  `;
 }
 
 
