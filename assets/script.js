@@ -23,7 +23,6 @@ document.addEventListener("DOMContentLoaded", function () {
   setupScrollReveal();
   setupInteractiveFeedback();
   setupAmbientMotion();
-  setupMobileOverflowGuard();
 });
 
 
@@ -70,17 +69,6 @@ function setupInteractiveFeedback() {
 }
 
 
-function setupMobileOverflowGuard() {
-  const lock = () => {
-    if (window.scrollX !== 0) {
-      window.scrollTo(0, window.scrollY || window.pageYOffset || 0);
-    }
-  };
-
-  window.addEventListener('resize', lock, { passive: true });
-  window.addEventListener('orientationchange', () => setTimeout(lock, 120), { passive: true });
-  window.addEventListener('scroll', lock, { passive: true });
-}
 
 function setupAmbientMotion() {
   const root = document.body;
@@ -109,40 +97,22 @@ function setupAmbientMotion() {
 function setupScrollReveal() {
   const selector = [
     '.hero-text',
-    '.hero-text > *',
     '.hero-actions',
     '.hero-mini-stats',
-    '.hero-mini-stats > div',
     '.about-card',
-    '.about-card h2',
-    '.about-card p',
     '.section-heading',
-    '.section-heading > *',
     '.info-card',
-    '.info-card h3',
-    '.info-card p',
     '.stat-card',
     '.announcement-card',
-    '.announcement-card h3',
-    '.announcement-card p',
     '.content-card',
-    '.content-card h1',
-    '.content-card h2',
-    '.content-card h3',
-    '.content-card p',
     '.accordion',
-    '.accordion summary',
     '.pedoman-card',
-    '.pedoman-card *',
     '.footer-pro',
-    '.footer-pro > *',
     '.search-period-info',
     '.search-header-pro',
     '.search-card',
-    '.search-card *',
     '.search-empty-card',
     '.rekom-hero-card',
-    '.rekom-hero-card *',
     '.rekom-summary-card',
     '.rekom-card',
     '.rekom-item',
@@ -154,16 +124,8 @@ function setupScrollReveal() {
 
   if (!elements.length) return;
 
-  elements.forEach((el, index) => {
+  elements.forEach((el) => {
     el.classList.add('reveal-on-scroll');
-    el.classList.add(`reveal-delay-${index % 5}`);
-
-    if (
-      el.matches('h1, h2, h3, h4, p, li, span, strong, small, .label, .page-title') ||
-      el.closest('.hero-text, .section-heading, .content-card, .about-card, .footer-pro')
-    ) {
-      el.classList.add('text-reveal');
-    }
   });
 
   if (!('IntersectionObserver' in window)) {
@@ -179,8 +141,8 @@ function setupScrollReveal() {
       }
     });
   }, {
-    threshold: 0.12,
-    rootMargin: '0px 0px -8% 0px'
+    threshold: 0.08,
+    rootMargin: '0px 0px -4% 0px'
   });
 
   elements.forEach(el => observer.observe(el));
