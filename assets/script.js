@@ -1,4 +1,5 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbzh51ITXyvrDz7VkzZhWV5GB4IHrV-usd38wRa49VQuEXhABwgsoNW0m9WA2ztsotS0/exec";
+const API_URL =
+  "https://script.google.com/macros/s/AKfycbzh51ITXyvrDz7VkzZhWV5GB4IHrV-usd38wRa49VQuEXhABwgsoNW0m9WA2ztsotS0/exec";
 
 let hasilPencarian = [];
 let searchTimer = null;
@@ -24,12 +25,8 @@ document.addEventListener("DOMContentLoaded", function () {
   setupAppleLiteTouch();
 });
 
-
-function setupAppleLiteReveal() {
-  const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if (reduceMotion) return;
-
-  const selector = [
+function getRevealSelector() {
+  return [
     ".hero-text",
     ".hero-mini-stats",
     ".about-card",
@@ -47,33 +44,50 @@ function setupAppleLiteReveal() {
     ".rekom-summary-card",
     ".rekom-card",
     ".rekom-item",
-    ".footer-pro"
+    ".footer-pro",
   ].join(",");
+}
 
-  const elements = Array.from(document.querySelectorAll(selector))
-    .filter((el) => !el.classList.contains("mpq-reveal"));
+let mpqRevealObserver = null;
+
+function applyAppleLiteReveal(root = document) {
+  const reduceMotion =
+    window.matchMedia &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const elements = Array.from(
+    root.querySelectorAll(getRevealSelector()),
+  ).filter((el) => !el.classList.contains("mpq-reveal"));
 
   if (!elements.length) return;
 
   elements.forEach((el) => el.classList.add("mpq-reveal"));
 
-  if (!("IntersectionObserver" in window)) {
+  if (reduceMotion || !("IntersectionObserver" in window)) {
     elements.forEach((el) => el.classList.add("is-visible"));
     return;
   }
 
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (!entry.isIntersecting) return;
-      requestAnimationFrame(() => entry.target.classList.add("is-visible"));
-      observer.unobserve(entry.target);
-    });
-  }, {
-    threshold: 0.01,
-    rootMargin: "0px 0px -8% 0px"
-  });
+  if (!mpqRevealObserver) {
+    mpqRevealObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          requestAnimationFrame(() => entry.target.classList.add("is-visible"));
+          mpqRevealObserver.unobserve(entry.target);
+        });
+      },
+      {
+        threshold: 0.01,
+        rootMargin: "0px 0px -8% 0px",
+      },
+    );
+  }
 
-  elements.forEach((el) => observer.observe(el));
+  elements.forEach((el) => mpqRevealObserver.observe(el));
+}
+
+function setupAppleLiteReveal() {
+  applyAppleLiteReveal(document);
 }
 
 function setupAppleLiteTouch() {
@@ -92,7 +106,7 @@ function setupAppleLiteTouch() {
     ".rekom-filter-btn",
     ".rekom-reset-btn",
     ".btn",
-    ".report-data-btn"
+    ".report-data-btn",
   ].join(",");
 
   const clearTouch = () => {
@@ -101,11 +115,15 @@ function setupAppleLiteTouch() {
     });
   };
 
-  document.addEventListener("pointerdown", (event) => {
-    const target = event.target.closest(selector);
-    if (!target) return;
-    target.classList.add("mpq-touching");
-  }, { passive: true });
+  document.addEventListener(
+    "pointerdown",
+    (event) => {
+      const target = event.target.closest(selector);
+      if (!target) return;
+      target.classList.add("mpq-touching");
+    },
+    { passive: true },
+  );
 
   document.addEventListener("pointerup", clearTouch, { passive: true });
   document.addEventListener("pointercancel", clearTouch, { passive: true });
@@ -130,7 +148,9 @@ function setupMenu() {
   });
 }
 function getSearchCacheKey(keyword) {
-  return String(keyword || "").trim().toLowerCase();
+  return String(keyword || "")
+    .trim()
+    .toLowerCase();
 }
 
 function saveSearchCache(keyword, data) {
@@ -275,20 +295,20 @@ async function cekSantri(force = false) {
 
   if (!force && keyword === lastKeyword) return;
 
- lastKeyword = keyword;
+  lastKeyword = keyword;
 
-const cachedResult = getSearchCache(keyword);
+  const cachedResult = getSearchCache(keyword);
 
-if (cachedResult) {
-  hasilPencarian = cachedResult;
-  tampilkanDaftar();
-  scrollToSearchResultMobile();
-  return;
-}
+  if (cachedResult) {
+    hasilPencarian = cachedResult;
+    tampilkanDaftar();
+    scrollToSearchResultMobile();
+    return;
+  }
 
-const currentRequestId = ++searchRequestId;
+  const currentRequestId = ++searchRequestId;
 
-result.innerHTML = renderSearchSkeleton();
+  result.innerHTML = renderSearchSkeleton();
 
   try {
     const response = await fetch(`${API_URL}?q=${encodeURIComponent(keyword)}`);
@@ -300,17 +320,17 @@ result.innerHTML = renderSearchSkeleton();
 
     if (latestKeyword !== keyword) return;
 
-  if (!json.success || !json.data || json.data.length === 0) {
-  hasilPencarian = [];
-result.innerHTML = renderEmptySearchState(keyword);
-scrollToSearchResultMobile();
-return;
-}
+    if (!json.success || !json.data || json.data.length === 0) {
+      hasilPencarian = [];
+      result.innerHTML = renderEmptySearchState(keyword);
+      scrollToSearchResultMobile();
+      return;
+    }
 
     hasilPencarian = json.data;
-saveSearchCache(keyword, json.data);
-tampilkanDaftar();
-scrollToSearchResultMobile();
+    saveSearchCache(keyword, json.data);
+    tampilkanDaftar();
+    scrollToSearchResultMobile();
   } catch (error) {
     if (currentRequestId !== searchRequestId) return;
 
@@ -353,7 +373,9 @@ function highlightText(value, keyword, mode = "word") {
   // kalau field cocok dengan query, highlight satu field penuh
   if (mode === "field") {
     const keywordParts = cleanKeyword.split(" ").filter(Boolean);
-    const allPartsMatch = keywordParts.every(part => cleanText.includes(part));
+    const allPartsMatch = keywordParts.every((part) =>
+      cleanText.includes(part),
+    );
 
     if (cleanText.includes(cleanKeyword) || allPartsMatch) {
       return `<mark class="search-highlight">${safeText}</mark>`;
@@ -365,7 +387,7 @@ function highlightText(value, keyword, mode = "word") {
   // Untuk nama: highlight kata yang panjangnya minimal 2 huruf
   const terms = cleanKeyword
     .split(/\s+/)
-    .filter(term => term.length >= 2)
+    .filter((term) => term.length >= 2)
     .map(escapeRegExp);
 
   if (terms.length === 0) return safeText;
@@ -393,10 +415,11 @@ function tampilkanDaftar() {
       }
     </div>
 
-    ${hasilPencarian.map((s, index) => {
-      const indicatorTone = getRekomIndicatorTone(s);
+    ${hasilPencarian
+      .map((s, index) => {
+        const indicatorTone = getRekomIndicatorTone(s);
 
-      return `
+        return `
       <div class="search-card ${indicatorTone ? "has-rekom-indicator" : ""}" onclick="showDetail(${index})">
         ${renderRekomIndicator(s)}
 
@@ -433,14 +456,19 @@ function tampilkanDaftar() {
         </div>
       </div>
     `;
-    }).join("")}
+      })
+      .join("")}
   `;
+
+  applyAppleLiteReveal(result);
 }
 
 function renderSearchSkeleton() {
   return `
     <div class="search-skeleton-wrap">
-      ${Array.from({ length: 3 }).map(() => `
+      ${Array.from({ length: 3 })
+        .map(
+          () => `
         <div class="search-skeleton-card">
           <div class="skeleton-line skeleton-name"></div>
 
@@ -454,7 +482,9 @@ function renderSearchSkeleton() {
             <div class="skeleton-line skeleton-small"></div>
           </div>
         </div>
-      `).join("")}
+      `,
+        )
+        .join("")}
     </div>
   `;
 }
@@ -467,7 +497,7 @@ function scrollToSearchResultMobile() {
   setTimeout(() => {
     result.scrollIntoView({
       behavior: "smooth",
-      block: "start"
+      block: "start",
     });
   }, 180);
 }
@@ -614,7 +644,6 @@ ${detailAlpaHtml}
   });
 
   setupFloatingScrollHint();
-
 }
 
 function laporkanDataSalah(index) {
@@ -677,19 +706,19 @@ function setupFloatingScrollHint() {
   setTimeout(updateHint, 150);
 }
 function renderDetailAlpa(s) {
-  const statusRekom = String(s.statusRekom || "").trim().toUpperCase();
-  const statusSelesai = String(s.statusSelesai || "").trim().toUpperCase();
+  const statusRekom = String(s.statusRekom || "")
+    .trim()
+    .toUpperCase();
+  const statusSelesai = String(s.statusSelesai || "")
+    .trim()
+    .toUpperCase();
 
-  const rincian = Array.isArray(s.rincianTanggungan)
-    ? s.rincianTanggungan
-    : [];
+  const rincian = Array.isArray(s.rincianTanggungan) ? s.rincianTanggungan : [];
 
   const isTidakRekom =
-    statusRekom === "TIDAK REKOM" ||
-    statusRekom === "-" ||
-    statusRekom === "";
+    statusRekom === "TIDAK REKOM" || statusRekom === "-" || statusRekom === "";
 
-  const hasRincianValid = rincian.some(item => {
+  const hasRincianValid = rincian.some((item) => {
     const label = String(item.label || "").trim();
     const alpa = Number(item.alpa || 0);
 
@@ -723,10 +752,12 @@ function renderDetailAlpa(s) {
         </div>
 
         <div class="rekom-detail-list">
-          ${rincian.map(item => {
-            const selesai = isPeriodMarkedDone(item.status) || isOverallSelesai(s);
+          ${rincian
+            .map((item) => {
+              const selesai =
+                isPeriodMarkedDone(item.status) || isOverallSelesai(s);
 
-            return `
+              return `
               <div class="rekom-detail-item ${selesai ? "is-done" : "is-pending"}">
                 <div>
                   <strong>${item.label}</strong>
@@ -736,7 +767,8 @@ function renderDetailAlpa(s) {
                 <em>${selesai ? "Selesai" : "Belum"}</em>
               </div>
             `;
-          }).join("")}
+            })
+            .join("")}
         </div>
       </div>
     </div>
@@ -785,7 +817,7 @@ function toggleAlpaDetail(button) {
     setTimeout(() => {
       modalCard.scrollTo({
         top: box.offsetTop + 240,
-        behavior: "smooth"
+        behavior: "smooth",
       });
     }, 220);
   }
@@ -810,16 +842,28 @@ function closeDetailModal() {
 }
 
 function statusTone(value, context = "default") {
-  const raw = String(value || "-").trim().toUpperCase();
+  const raw = String(value || "-")
+    .trim()
+    .toUpperCase();
   const norm = normalizeSearchText(raw).toLowerCase();
 
   const isEmpty = !norm || norm === "-";
   const isNoRekom = norm === "tidak rekom" || norm === "tidak ada rekom";
   const isInactive = ["pindah", "boyong", "nonaktif"].includes(norm);
   const hasBelum = norm.includes("belum") || raw === "B";
-  const hasSelesai = (raw === "S" || norm === "s" || norm.includes("selesai")) && !hasBelum && !norm.includes("tidak");
-  const isAttention = norm.includes("perlu") || norm.includes("ralat") || norm.includes("cek");
-  const isRekomAktif = norm.includes("r1") || norm.includes("r2") || norm.includes("r3") || norm.includes("r4") || norm.includes("rekom") || norm.includes("penertiban");
+  const hasSelesai =
+    (raw === "S" || norm === "s" || norm.includes("selesai")) &&
+    !hasBelum &&
+    !norm.includes("tidak");
+  const isAttention =
+    norm.includes("perlu") || norm.includes("ralat") || norm.includes("cek");
+  const isRekomAktif =
+    norm.includes("r1") ||
+    norm.includes("r2") ||
+    norm.includes("r3") ||
+    norm.includes("r4") ||
+    norm.includes("rekom") ||
+    norm.includes("penertiban");
 
   if (isEmpty || isNoRekom || isInactive) return "neutral";
   if (context === "selesai") {
@@ -847,7 +891,9 @@ function getStatusRowClass(value, context = "default") {
 }
 
 function badgeStatus(value, context = "default") {
-  const text = String(value || "-").trim().toUpperCase();
+  const text = String(value || "-")
+    .trim()
+    .toUpperCase();
   const color = statusToneToBadgeClass(statusTone(text, context));
   return `<strong class="status-badge ${color}">${text}</strong>`;
 }
@@ -858,7 +904,9 @@ function toIndicatorNumber(value) {
 }
 
 function hasAnyRekomDetail(item = {}) {
-  const rincian = Array.isArray(item.rincianTanggungan) ? item.rincianTanggungan : [];
+  const rincian = Array.isArray(item.rincianTanggungan)
+    ? item.rincianTanggungan
+    : [];
   const hasRincian = rincian.some((row) => {
     const label = String(row?.label || "").trim();
     const alpa = toIndicatorNumber(row?.alpa);
@@ -883,10 +931,15 @@ function hasAnyRekomDetail(item = {}) {
     "ALPA_4",
   ];
 
-  const hasPeriodAlpa = periodKeys.some((key) => toIndicatorNumber(item?.[key]) > 0);
+  const hasPeriodAlpa = periodKeys.some(
+    (key) => toIndicatorNumber(item?.[key]) > 0,
+  );
 
-  const statusNorm = normalizeSearchText(item?.statusRekom || item?.["STATUS REKOM"] || item?.["STATUS_REKOM"] || "");
-  const hasRekomStatus = Boolean(statusNorm) &&
+  const statusNorm = normalizeSearchText(
+    item?.statusRekom || item?.["STATUS REKOM"] || item?.["STATUS_REKOM"] || "",
+  );
+  const hasRekomStatus =
+    Boolean(statusNorm) &&
     statusNorm !== "-" &&
     statusNorm !== "TIDAK REKOM" &&
     statusNorm !== "TIDAK ADA REKOM" &&
@@ -901,10 +954,12 @@ function hasAnyRekomDetail(item = {}) {
 }
 
 function getRekomIndicatorTone(item = {}) {
-  const statusRekomText = item?.statusRekom || item?.["STATUS REKOM"] || item?.["STATUS_REKOM"] || "";
+  const statusRekomText =
+    item?.statusRekom || item?.["STATUS REKOM"] || item?.["STATUS_REKOM"] || "";
   const statusSelesaiText = getOverallSelesaiText(item);
 
-  if (isNoRekomStatus(statusRekomText) || isNoRekomStatus(statusSelesaiText)) return "";
+  if (isNoRekomStatus(statusRekomText) || isNoRekomStatus(statusSelesaiText))
+    return "";
   if (isOverallSelesai(item)) return "done";
   if (isOverallBelum(item)) return "active";
   if (!hasAnyRekomDetail(item)) return "";
@@ -933,7 +988,7 @@ function animateCounter(element, endValue, duration = 1600) {
     // animasi halus
     const easeOut = 1 - Math.pow(1 - progress, 3);
     const currentValue = Math.floor(
-      startValue + (finalValue - startValue) * easeOut
+      startValue + (finalValue - startValue) * easeOut,
     );
 
     element.textContent = currentValue;
@@ -982,7 +1037,6 @@ async function loadStats() {
     animateCounter(statPindah, data.santriPindah);
     animateCounter(statBoyong, data.santriBoyong);
     animateCounter(statNonaktif, data.santriNonaktif);
-
   } catch (error) {
     console.log("Gagal load statistik");
   }
@@ -997,19 +1051,24 @@ async function loadPengumuman() {
     const response = await fetch(`${API_URL}?mode=pengumuman`);
     const json = await response.json();
 
-   if (!json.success || !json.data || json.data.length === 0) {
-  container.innerHTML = renderPengumumanKosong();
-  return;
-}
+    if (!json.success || !json.data || json.data.length === 0) {
+      container.innerHTML = renderPengumumanKosong();
+      return;
+    }
 
-    container.innerHTML = json.data.map(item => `
+    container.innerHTML = json.data
+      .map(
+        (item) => `
       <article class="announcement-card">
         <i class="ri-megaphone-line"></i>
         <small>${formatTanggal(item.tanggal)}</small>
         <h3>${item.judul}</h3>
         <p>${item.isi}</p>
       </article>
-    `).join("");
+    `,
+      )
+      .join("");
+    applyAppleLiteReveal(container);
   } catch (error) {
     container.innerHTML = `<div class="empty-state">Gagal memuat pengumuman.</div>`;
   }
@@ -1040,7 +1099,7 @@ function formatTanggal(value) {
   return date.toLocaleDateString("id-ID", {
     day: "2-digit",
     month: "long",
-    year: "numeric"
+    year: "numeric",
   });
 }
 function setupAutoSliders() {
@@ -1076,14 +1135,14 @@ function setupAutoSliders() {
       if (currentLeft >= maxScroll - 15) {
         slider.scrollTo({
           left: 0,
-          behavior: "smooth"
+          behavior: "smooth",
         });
         return;
       }
 
       slider.scrollTo({
         left: Math.min(currentLeft + step, maxScroll),
-        behavior: "smooth"
+        behavior: "smooth",
       });
     };
 
@@ -1159,7 +1218,7 @@ function setupSliderButtons() {
       if (currentLeft >= maxScroll - 15) {
         slider.scrollTo({
           left: 0,
-          behavior: "smooth"
+          behavior: "smooth",
         });
         return;
       }
@@ -1168,7 +1227,7 @@ function setupSliderButtons() {
       // Kalau step terlalu besar, langsung ke posisi paling kanan.
       slider.scrollTo({
         left: Math.min(currentLeft + step, maxScroll),
-        behavior: "smooth"
+        behavior: "smooth",
       });
     }
 
@@ -1184,14 +1243,14 @@ function setupSliderButtons() {
       if (currentLeft <= 15) {
         slider.scrollTo({
           left: maxScroll,
-          behavior: "smooth"
+          behavior: "smooth",
         });
         return;
       }
 
       slider.scrollTo({
         left: Math.max(currentLeft - step, 0),
-        behavior: "smooth"
+        behavior: "smooth",
       });
     }
 
@@ -1225,7 +1284,14 @@ function setupRekomPage() {
   const selesaiFilter = document.getElementById("rekomSelesaiFilter");
   const resetButton = document.getElementById("rekomResetButton");
 
-  [searchInput, kelasFilter, adnaFilter, kamarFilter, statusFilter, selesaiFilter].forEach((el) => {
+  [
+    searchInput,
+    kelasFilter,
+    adnaFilter,
+    kamarFilter,
+    statusFilter,
+    selesaiFilter,
+  ].forEach((el) => {
     if (!el) return;
     el.addEventListener("input", applyRekomFilters);
     el.addEventListener("change", applyRekomFilters);
@@ -1234,7 +1300,13 @@ function setupRekomPage() {
   if (resetButton) {
     resetButton.addEventListener("click", function () {
       if (searchInput) searchInput.value = "";
-      [kelasFilter, adnaFilter, kamarFilter, statusFilter, selesaiFilter].forEach((el) => {
+      [
+        kelasFilter,
+        adnaFilter,
+        kamarFilter,
+        statusFilter,
+        selesaiFilter,
+      ].forEach((el) => {
         if (el) el.value = "";
       });
       rekomState.openedKey = null;
@@ -1294,7 +1366,11 @@ async function loadRekomData() {
 function normalizeRekomRow(row = {}) {
   const get = (...keys) => {
     for (const key of keys) {
-      if (row[key] !== undefined && row[key] !== null && String(row[key]).trim() !== "") {
+      if (
+        row[key] !== undefined &&
+        row[key] !== null &&
+        String(row[key]).trim() !== ""
+      ) {
         return String(row[key]).trim();
       }
     }
@@ -1324,19 +1400,41 @@ function normalizeRekomRow(row = {}) {
     alpa4: num("alpa4", "ALPA 4", "ALPA_4"),
     s4: get("s4", "S 4", "S_4"),
     totalAlpa: num("totalAlpa", "TOTAL ALPA", "TOTAL_ALPA"),
-    statusRekom: get("statusRekom", "STATUS REKOM", "STATUS_REKOM") || "TIDAK REKOM",
+    statusRekom:
+      get("statusRekom", "STATUS REKOM", "STATUS_REKOM") || "TIDAK REKOM",
     statusSelesai: get("statusSelesai", "STATUS SELESAI", "STATUS_SELESAI"),
-    statusSantri: get("statusSantri", "STATUS SANTRI", "STATUS_SANTRI") || "AKTIF",
+    statusSantri:
+      get("statusSantri", "STATUS SANTRI", "STATUS_SANTRI") || "AKTIF",
     keterangan: get("keterangan", "KETERANGAN", "KET"),
   };
 }
 
 function populateRekomFilters(data) {
-  fillSelect("rekomKelasFilter", uniqueSorted(data.map((item) => item.kelas)), "Semua Kelas");
-  fillSelect("rekomAdnaFilter", uniqueSorted(data.map((item) => item.adna)), "Semua ADNA");
-  fillSelect("rekomKamarFilter", uniqueSorted(data.map((item) => item.kamar)), "Semua Kamar");
-  fillSelect("rekomStatusFilter", uniqueSorted(data.map((item) => item.statusRekom)), "Semua");
-  fillSelect("rekomSelesaiFilter", uniqueSorted(data.map((item) => item.statusSelesai)), "Semua");
+  fillSelect(
+    "rekomKelasFilter",
+    uniqueSorted(data.map((item) => item.kelas)),
+    "Semua Kelas",
+  );
+  fillSelect(
+    "rekomAdnaFilter",
+    uniqueSorted(data.map((item) => item.adna)),
+    "Semua ADNA",
+  );
+  fillSelect(
+    "rekomKamarFilter",
+    uniqueSorted(data.map((item) => item.kamar)),
+    "Semua Kamar",
+  );
+  fillSelect(
+    "rekomStatusFilter",
+    uniqueSorted(data.map((item) => item.statusRekom)),
+    "Semua",
+  );
+  fillSelect(
+    "rekomSelesaiFilter",
+    uniqueSorted(data.map((item) => item.statusSelesai)),
+    "Semua",
+  );
 }
 
 function fillSelect(id, items, defaultText) {
@@ -1344,23 +1442,63 @@ function fillSelect(id, items, defaultText) {
   if (!select) return;
 
   const current = select.value;
-  select.innerHTML = `<option value="">${defaultText}</option>` +
-    items.map((item) => `<option value="${escapeHtml(item)}">${escapeHtml(item)}</option>`).join("");
+  select.innerHTML =
+    `<option value="">${defaultText}</option>` +
+    items
+      .map(
+        (item) =>
+          `<option value="${escapeHtml(item)}">${escapeHtml(item)}</option>`,
+      )
+      .join("");
 
   if (items.includes(current)) select.value = current;
 }
 
 function uniqueSorted(items) {
-  return [...new Set(items.map((item) => String(item || "").trim()).filter(Boolean))]
-    .sort((a, b) => a.localeCompare(b, "id-ID", { numeric: true }));
+  return [
+    ...new Set(items.map((item) => String(item || "").trim()).filter(Boolean)),
+  ].sort((a, b) => a.localeCompare(b, "id-ID", { numeric: true }));
 }
 
 const REKOM_FILTER_FIELDS = [
-  { id: "rekomKelasFilter", label: "Kelas", short: "Kelas", icon: "ri-school-line", placeholder: "Cari kelas...", searchable: true },
-  { id: "rekomKamarFilter", label: "Kamar", short: "Kamar", icon: "ri-home-4-line", placeholder: "Cari kamar...", searchable: true },
-  { id: "rekomAdnaFilter", label: "ADNA", short: "ADNA", icon: "ri-book-open-line", placeholder: "Cari ADNA...", searchable: true },
-  { id: "rekomStatusFilter", label: "Status Rekom", short: "Status", icon: "ri-flag-line", searchable: false },
-  { id: "rekomSelesaiFilter", label: "Status Selesai", short: "Selesai", icon: "ri-checkbox-circle-line", searchable: false },
+  {
+    id: "rekomKelasFilter",
+    label: "Kelas",
+    short: "Kelas",
+    icon: "ri-school-line",
+    placeholder: "Cari kelas...",
+    searchable: true,
+  },
+  {
+    id: "rekomKamarFilter",
+    label: "Kamar",
+    short: "Kamar",
+    icon: "ri-home-4-line",
+    placeholder: "Cari kamar...",
+    searchable: true,
+  },
+  {
+    id: "rekomAdnaFilter",
+    label: "ADNA",
+    short: "ADNA",
+    icon: "ri-book-open-line",
+    placeholder: "Cari ADNA...",
+    searchable: true,
+  },
+  {
+    id: "rekomStatusFilter",
+    label: "Status Rekom",
+    short: "Status",
+    icon: "ri-flag-line",
+    searchable: false,
+  },
+  {
+    id: "rekomSelesaiFilter",
+    label: "Status Selesai",
+    short: "Selesai",
+    icon: "ri-checkbox-circle-line",
+    searchable: false,
+  },
 ];
 
 function setupRekomFilterPanel() {
@@ -1482,17 +1620,19 @@ function buildRekomFilterPanelOptions() {
     const hasValue = !!select.value;
     const isOpen = rekomState.filterOpenGroup === field.id;
 
-    const buttons = Array.from(select.options).map((option) => {
-      const value = option.value || "";
-      const label = option.textContent || "Semua";
-      const labelKey = normalizeSearchText(label);
-      return `
+    const buttons = Array.from(select.options)
+      .map((option) => {
+        const value = option.value || "";
+        const label = option.textContent || "Semua";
+        const labelKey = normalizeSearchText(label);
+        return `
         <button type="button" class="rekom-filter-option" data-filter-target="${field.id}" data-filter-value="${escapeHtml(value)}" data-filter-label="${escapeHtml(labelKey)}">
           <span>${escapeHtml(label)}</span>
           <i class="ri-check-line"></i>
         </button>
       `;
-    }).join("");
+      })
+      .join("");
 
     return `
       <div class="rekom-filter-group ${isOpen ? "open" : ""} ${hasValue ? "has-value" : ""} ${field.searchable ? "is-searchable" : "no-search"}" data-filter-group="${field.id}">
@@ -1505,11 +1645,15 @@ function buildRekomFilterPanelOptions() {
           <span class="rekom-filter-category-arrow"><i class="ri-arrow-down-s-line"></i></span>
         </button>
         <div class="rekom-filter-group-panel">
-          ${field.searchable ? `
+          ${
+            field.searchable
+              ? `
           <label class="rekom-filter-search">
             <i class="ri-search-line"></i>
             <input type="search" inputmode="search" placeholder="${escapeHtml(field.placeholder || `Cari ${field.label}...`)}" data-filter-search="${field.id}">
-          </label>` : ""}
+          </label>`
+              : ""
+          }
           <div class="rekom-filter-options">
             ${buttons}
           </div>
@@ -1522,12 +1666,19 @@ function buildRekomFilterPanelOptions() {
   body.querySelectorAll(".rekom-filter-group-toggle").forEach((button) => {
     button.addEventListener("click", function () {
       const targetId = this.dataset.filterToggle;
-      rekomState.filterOpenGroup = rekomState.filterOpenGroup === targetId ? null : targetId;
+      rekomState.filterOpenGroup =
+        rekomState.filterOpenGroup === targetId ? null : targetId;
       buildRekomFilterPanelOptions();
       syncRekomFilterPanel();
       const field = REKOM_FILTER_FIELDS.find((item) => item.id === targetId);
-      const activeInput = document.querySelector(`.rekom-filter-search input[data-filter-search="${targetId}"]`);
-      if (field?.searchable && activeInput && rekomState.filterOpenGroup === targetId) {
+      const activeInput = document.querySelector(
+        `.rekom-filter-search input[data-filter-search="${targetId}"]`,
+      );
+      if (
+        field?.searchable &&
+        activeInput &&
+        rekomState.filterOpenGroup === targetId
+      ) {
         setTimeout(() => activeInput.focus({ preventScroll: true }), 60);
       }
     });
@@ -1542,7 +1693,9 @@ function buildRekomFilterPanelOptions() {
       let visibleCount = 0;
 
       group.querySelectorAll(".rekom-filter-option").forEach((button) => {
-        const label = button.dataset.filterLabel || normalizeSearchText(button.textContent || "");
+        const label =
+          button.dataset.filterLabel ||
+          normalizeSearchText(button.textContent || "");
         const isVisible = !keyword || label.includes(keyword);
         button.classList.toggle("is-hidden", !isVisible);
         if (isVisible) visibleCount += 1;
@@ -1584,7 +1737,12 @@ function syncRekomFilterPanel() {
   const trigger = document.getElementById("rekomMobileFilterButton");
   if (trigger) {
     trigger.classList.toggle("has-active", activeFilters.length > 0);
-    trigger.setAttribute("aria-label", activeFilters.length ? `${activeFilters.length} filter aktif` : "Buka filter data rekom");
+    trigger.setAttribute(
+      "aria-label",
+      activeFilters.length
+        ? `${activeFilters.length} filter aktif`
+        : "Buka filter data rekom",
+    );
   }
 
   document.querySelectorAll(".rekom-filter-option").forEach((button) => {
@@ -1632,28 +1790,38 @@ function updateRekomUrl(push = true) {
 function applyRekomFilters() {
   if (!rekomState.loaded) return;
 
-  const keyword = normalizeSearchText(document.getElementById("rekomSearchInput")?.value || "");
-  const kelas = normalizeSearchText(document.getElementById("rekomKelasFilter")?.value || "");
-  const adna = normalizeSearchText(document.getElementById("rekomAdnaFilter")?.value || "");
-  const kamar = normalizeSearchText(document.getElementById("rekomKamarFilter")?.value || "");
-  const status = normalizeSearchText(document.getElementById("rekomStatusFilter")?.value || "");
-  const selesai = normalizeSearchText(document.getElementById("rekomSelesaiFilter")?.value || "");
+  const keyword = normalizeSearchText(
+    document.getElementById("rekomSearchInput")?.value || "",
+  );
+  const kelas = normalizeSearchText(
+    document.getElementById("rekomKelasFilter")?.value || "",
+  );
+  const adna = normalizeSearchText(
+    document.getElementById("rekomAdnaFilter")?.value || "",
+  );
+  const kamar = normalizeSearchText(
+    document.getElementById("rekomKamarFilter")?.value || "",
+  );
+  const status = normalizeSearchText(
+    document.getElementById("rekomStatusFilter")?.value || "",
+  );
+  const selesai = normalizeSearchText(
+    document.getElementById("rekomSelesaiFilter")?.value || "",
+  );
 
   rekomState.filtered = rekomState.data.filter((item) => {
-    const searchable = normalizeSearchText([
-      item.kode,
-      item.nama,
-      item.kelas,
-      item.kamar,
-      item.adna,
-    ].join(" "));
+    const searchable = normalizeSearchText(
+      [item.kode, item.nama, item.kelas, item.kamar, item.adna].join(" "),
+    );
 
     if (keyword && !searchable.includes(keyword)) return false;
     if (kelas && normalizeSearchText(item.kelas) !== kelas) return false;
     if (adna && normalizeSearchText(item.adna) !== adna) return false;
     if (kamar && normalizeSearchText(item.kamar) !== kamar) return false;
-    if (status && normalizeSearchText(item.statusRekom) !== status) return false;
-    if (selesai && normalizeSearchText(item.statusSelesai) !== selesai) return false;
+    if (status && normalizeSearchText(item.statusRekom) !== status)
+      return false;
+    if (selesai && normalizeSearchText(item.statusSelesai) !== selesai)
+      return false;
     return true;
   });
 
@@ -1676,8 +1844,12 @@ function updateRekomSummary() {
     Sebab ada santri yang punya catatan/alpa lama tetapi status akhirnya TIDAK REKOM.
     Kalau dihitung dari angka alpa, jumlah "Belum" bisa membengkak.
   */
-  const selesai = rekomState.filtered.filter((item) => isOverallSelesai(item)).length;
-  const belum = rekomState.filtered.filter((item) => isOverallBelum(item)).length;
+  const selesai = rekomState.filtered.filter((item) =>
+    isOverallSelesai(item),
+  ).length;
+  const belum = rekomState.filtered.filter((item) =>
+    isOverallBelum(item),
+  ).length;
 
   summary.innerHTML = `
     <div class="rekom-summary-card total">
@@ -1696,8 +1868,8 @@ function updateRekomSummary() {
       <em>rekom belum</em>
     </div>
   `;
+  applyAppleLiteReveal(summary);
 }
-
 
 const REKOM_PERIODS = [
   { label: "Penertiban", alpaKey: "alpaPenertiban", statusKey: "sPenertiban" },
@@ -1708,7 +1880,9 @@ const REKOM_PERIODS = [
 ];
 
 function toRekomNumber(value) {
-  const raw = String(value ?? "").replace(",", ".").trim();
+  const raw = String(value ?? "")
+    .replace(",", ".")
+    .trim();
   const num = Number(raw);
   return Number.isFinite(num) ? num : 0;
 }
@@ -1742,7 +1916,6 @@ function getVisibleRekomPeriods(data = []) {
   return REKOM_PERIODS.slice(0, visibleUntil + 1);
 }
 
-
 function renderRekomList() {
   const list = document.getElementById("rekomList");
   if (!list) return;
@@ -1758,18 +1931,23 @@ function renderRekomList() {
     return;
   }
 
-  list.innerHTML = rekomState.filtered.map((item) => renderRekomCard(item)).join("");
+  list.innerHTML = rekomState.filtered
+    .map((item) => renderRekomCard(item))
+    .join("");
+  applyAppleLiteReveal(list);
 }
 
 function getRekomKey(item) {
-  return encodeURIComponent(item.kode || item.nama || Math.random().toString(36));
+  return encodeURIComponent(
+    item.kode || item.nama || Math.random().toString(36),
+  );
 }
 
-
 function getItemRekomPeriods(item) {
-  const periods = (rekomState.visiblePeriods && rekomState.visiblePeriods.length)
-    ? rekomState.visiblePeriods
-    : REKOM_PERIODS.slice(0, 2);
+  const periods =
+    rekomState.visiblePeriods && rekomState.visiblePeriods.length
+      ? rekomState.visiblePeriods
+      : REKOM_PERIODS.slice(0, 2);
 
   return periods.filter((period) => hasRekomPeriodData(item, period));
 }
@@ -1782,10 +1960,12 @@ function getSelesaiClass(value = "") {
   return statusTone(value, "selesai");
 }
 
-
 function getOverallSelesaiText(item = {}) {
   return String(
-    item.statusSelesai || item["STATUS SELESAI"] || item["STATUS_SELESAI"] || ""
+    item.statusSelesai ||
+      item["STATUS SELESAI"] ||
+      item["STATUS_SELESAI"] ||
+      "",
   ).trim();
 }
 
@@ -1808,12 +1988,18 @@ function isNoRekomStatus(value = "") {
 }
 
 function isPeriodMarkedDone(status = "") {
-  const raw = String(status || "").trim().toUpperCase();
+  const raw = String(status || "")
+    .trim()
+    .toUpperCase();
   const norm = normalizeSearchText(raw).toLowerCase();
-  return raw === "S" || norm === "s" || (norm.includes("selesai") && !norm.includes("belum") && !norm.includes("tidak"));
+  return (
+    raw === "S" ||
+    norm === "s" ||
+    (norm.includes("selesai") &&
+      !norm.includes("belum") &&
+      !norm.includes("tidak"))
+  );
 }
-
-
 
 function renderRekomCard(item) {
   const key = getRekomKey(item);
@@ -1826,7 +2012,16 @@ function renderRekomCard(item) {
   const overallSelesai = isOverallSelesai(item);
 
   const periodHtml = periodItems.length
-    ? periodItems.map((period) => renderRekomPeriod(period.label, item[period.alpaKey], item[period.statusKey], overallSelesai)).join("")
+    ? periodItems
+        .map((period) =>
+          renderRekomPeriod(
+            period.label,
+            item[period.alpaKey],
+            item[period.statusKey],
+            overallSelesai,
+          ),
+        )
+        .join("")
     : `
       <div class="rekom-no-detail">
         <i class="ri-check-double-line"></i>
@@ -1904,12 +2099,16 @@ function toggleRekomRow(key) {
 function renderRekomSkeleton() {
   return `
     <div class="rekom-skeleton-list">
-      ${Array.from({ length: 6 }).map(() => `
+      ${Array.from({ length: 6 })
+        .map(
+          () => `
         <div class="rekom-skeleton-row">
           <div class="skeleton-line skeleton-name"></div>
           <div class="skeleton-line skeleton-small"></div>
         </div>
-      `).join("")}
+      `,
+        )
+        .join("")}
     </div>
   `;
 }
