@@ -20,7 +20,56 @@ document.addEventListener("DOMContentLoaded", function () {
   loadStats();
   loadPengumuman();
   setupRekomPage();
+  setupSmoothReveal();
 });
+
+
+function setupSmoothReveal() {
+  const selector = [
+    '.intro-section .about-card',
+    '.section-heading',
+    '.info-card',
+    '.stat-card',
+    '.announcement-card',
+    '.content-card',
+    '.accordion',
+    '.pedoman-card',
+    '.search-header-pro',
+    '.search-card',
+    '.search-empty-card',
+    '.rekom-hero-card',
+    '.rekom-summary-card',
+    '.rekom-card',
+    '.rekom-item',
+    '.footer-pro'
+  ].join(',');
+
+  const elements = Array.from(document.querySelectorAll(selector))
+    .filter(el => !el.classList.contains('apple-reveal'));
+
+  if (!elements.length) return;
+
+  elements.forEach((el) => el.classList.add('apple-reveal'));
+
+  if (!('IntersectionObserver' in window)) {
+    elements.forEach((el) => el.classList.add('apple-reveal-visible'));
+    return;
+  }
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('apple-reveal-visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, {
+    threshold: 0.08,
+    rootMargin: '0px 0px -8% 0px'
+  });
+
+  elements.forEach((el) => observer.observe(el));
+}
 
 /* MENU */
 function setupMenu() {
