@@ -20,24 +20,27 @@ document.addEventListener("DOMContentLoaded", function () {
   loadStats();
   loadPengumuman();
   setupRekomPage();
-  setupAppleSmoothReveal();
-  setupAppleTouchFeedback();
+  setupAppleLiteReveal();
+  setupAppleLiteTouch();
 });
 
 
-function setupAppleSmoothReveal() {
+function setupAppleLiteReveal() {
   const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   if (reduceMotion) return;
 
   const selector = [
+    ".hero-text",
+    ".hero-mini-stats",
+    ".about-card",
     ".section-heading",
-    ".intro-section .about-card",
     ".info-card",
     ".stat-card",
     ".announcement-card",
     ".content-card",
     ".accordion",
     ".pedoman-card",
+    ".search-panel",
     ".search-card",
     ".search-empty-card",
     ".rekom-hero-card",
@@ -48,13 +51,11 @@ function setupAppleSmoothReveal() {
   ].join(",");
 
   const elements = Array.from(document.querySelectorAll(selector))
-    .filter((el) => !el.classList.contains("apple-smooth-reveal"));
+    .filter((el) => !el.classList.contains("mpq-reveal"));
 
   if (!elements.length) return;
 
-  elements.forEach((el) => {
-    el.classList.add("apple-smooth-reveal");
-  });
+  elements.forEach((el) => el.classList.add("mpq-reveal"));
 
   if (!("IntersectionObserver" in window)) {
     elements.forEach((el) => el.classList.add("is-visible"));
@@ -62,24 +63,20 @@ function setupAppleSmoothReveal() {
   }
 
   const observer = new IntersectionObserver((entries) => {
-    for (const entry of entries) {
-      if (!entry.isIntersecting) continue;
-
-      window.requestAnimationFrame(() => {
-        entry.target.classList.add("is-visible");
-      });
-
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      requestAnimationFrame(() => entry.target.classList.add("is-visible"));
       observer.unobserve(entry.target);
-    }
+    });
   }, {
     threshold: 0.01,
-    rootMargin: "0px 0px -12% 0px"
+    rootMargin: "0px 0px -8% 0px"
   });
 
   elements.forEach((el) => observer.observe(el));
 }
 
-function setupAppleTouchFeedback() {
+function setupAppleLiteTouch() {
   const selector = [
     ".hero-btn",
     ".info-card",
@@ -92,24 +89,27 @@ function setupAppleTouchFeedback() {
     ".rekom-card",
     ".rekom-item",
     ".rekom-summary-card",
-    ".btn"
+    ".rekom-filter-btn",
+    ".rekom-reset-btn",
+    ".btn",
+    ".report-data-btn"
   ].join(",");
 
-  const clear = () => {
-    document.querySelectorAll(".apple-touching").forEach((el) => {
-      el.classList.remove("apple-touching");
+  const clearTouch = () => {
+    document.querySelectorAll(".mpq-touching").forEach((el) => {
+      el.classList.remove("mpq-touching");
     });
   };
 
   document.addEventListener("pointerdown", (event) => {
     const target = event.target.closest(selector);
     if (!target) return;
-    target.classList.add("apple-touching");
+    target.classList.add("mpq-touching");
   }, { passive: true });
 
-  document.addEventListener("pointerup", clear, { passive: true });
-  document.addEventListener("pointercancel", clear, { passive: true });
-  document.addEventListener("scroll", clear, { passive: true });
+  document.addEventListener("pointerup", clearTouch, { passive: true });
+  document.addEventListener("pointercancel", clearTouch, { passive: true });
+  document.addEventListener("scroll", clearTouch, { passive: true });
 }
 
 /* MENU */
@@ -606,7 +606,12 @@ ${detailAlpaHtml}
   `;
 
   modalOverlay.style.display = "flex";
+  modalOverlay.classList.remove("is-closing");
   document.body.style.overflow = "hidden";
+
+  requestAnimationFrame(() => {
+    modalOverlay.classList.add("is-open");
+  });
 
   setupFloatingScrollHint();
 
@@ -789,9 +794,19 @@ function toggleAlpaDetail(button) {
 function closeDetailModal() {
   const modalOverlay = document.getElementById("modalOverlay");
 
-  if (modalOverlay) modalOverlay.style.display = "none";
+  if (!modalOverlay) {
+    document.body.style.overflow = "";
+    return;
+  }
 
-  document.body.style.overflow = "";
+  modalOverlay.classList.remove("is-open");
+  modalOverlay.classList.add("is-closing");
+
+  window.setTimeout(() => {
+    modalOverlay.style.display = "none";
+    modalOverlay.classList.remove("is-closing");
+    document.body.style.overflow = "";
+  }, 220);
 }
 
 function statusTone(value, context = "default") {
