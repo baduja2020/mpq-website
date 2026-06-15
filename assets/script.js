@@ -43,6 +43,7 @@ function getRevealSelector() {
     ".rekom-hero-card",
     ".rekom-summary-card",
     ".rekom-card",
+    ".rekom-row",
     ".rekom-item",
     ".footer-pro",
   ].join(",");
@@ -101,6 +102,7 @@ function setupAppleLiteTouch() {
     ".pedoman-card",
     ".footer-wa",
     ".rekom-card",
+    ".rekom-row",
     ".rekom-item",
     ".rekom-summary-card",
     ".rekom-filter-btn",
