@@ -20,55 +20,96 @@ document.addEventListener("DOMContentLoaded", function () {
   loadStats();
   loadPengumuman();
   setupRekomPage();
-  setupSmoothReveal();
+  setupAppleSmoothReveal();
+  setupAppleTouchFeedback();
 });
 
 
-function setupSmoothReveal() {
+function setupAppleSmoothReveal() {
+  const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (reduceMotion) return;
+
   const selector = [
-    '.intro-section .about-card',
-    '.section-heading',
-    '.info-card',
-    '.stat-card',
-    '.announcement-card',
-    '.content-card',
-    '.accordion',
-    '.pedoman-card',
-    '.search-header-pro',
-    '.search-card',
-    '.search-empty-card',
-    '.rekom-hero-card',
-    '.rekom-summary-card',
-    '.rekom-card',
-    '.rekom-item',
-    '.footer-pro'
-  ].join(',');
+    ".section-heading",
+    ".intro-section .about-card",
+    ".info-card",
+    ".stat-card",
+    ".announcement-card",
+    ".content-card",
+    ".accordion",
+    ".pedoman-card",
+    ".search-card",
+    ".search-empty-card",
+    ".rekom-hero-card",
+    ".rekom-summary-card",
+    ".rekom-card",
+    ".rekom-item",
+    ".footer-pro"
+  ].join(",");
 
   const elements = Array.from(document.querySelectorAll(selector))
-    .filter(el => !el.classList.contains('apple-reveal'));
+    .filter((el) => !el.classList.contains("apple-smooth-reveal"));
 
   if (!elements.length) return;
 
-  elements.forEach((el) => el.classList.add('apple-reveal'));
+  elements.forEach((el) => {
+    el.classList.add("apple-smooth-reveal");
+  });
 
-  if (!('IntersectionObserver' in window)) {
-    elements.forEach((el) => el.classList.add('apple-reveal-visible'));
+  if (!("IntersectionObserver" in window)) {
+    elements.forEach((el) => el.classList.add("is-visible"));
     return;
   }
 
   const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('apple-reveal-visible');
-        observer.unobserve(entry.target);
-      }
-    });
+    for (const entry of entries) {
+      if (!entry.isIntersecting) continue;
+
+      window.requestAnimationFrame(() => {
+        entry.target.classList.add("is-visible");
+      });
+
+      observer.unobserve(entry.target);
+    }
   }, {
-    threshold: 0.08,
-    rootMargin: '0px 0px -8% 0px'
+    threshold: 0.01,
+    rootMargin: "0px 0px -12% 0px"
   });
 
   elements.forEach((el) => observer.observe(el));
+}
+
+function setupAppleTouchFeedback() {
+  const selector = [
+    ".hero-btn",
+    ".info-card",
+    ".stat-card",
+    ".announcement-card",
+    ".search-card",
+    ".search-detail-btn",
+    ".pedoman-card",
+    ".footer-wa",
+    ".rekom-card",
+    ".rekom-item",
+    ".rekom-summary-card",
+    ".btn"
+  ].join(",");
+
+  const clear = () => {
+    document.querySelectorAll(".apple-touching").forEach((el) => {
+      el.classList.remove("apple-touching");
+    });
+  };
+
+  document.addEventListener("pointerdown", (event) => {
+    const target = event.target.closest(selector);
+    if (!target) return;
+    target.classList.add("apple-touching");
+  }, { passive: true });
+
+  document.addEventListener("pointerup", clear, { passive: true });
+  document.addEventListener("pointercancel", clear, { passive: true });
+  document.addEventListener("scroll", clear, { passive: true });
 }
 
 /* MENU */
