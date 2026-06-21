@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Rekom Santri - MPQ Al Falah</title>
+  <meta name="description" content="Halaman track record rekom santri MPQ Al Falah dengan filter kelas, ADNA, kamar, status rekom, dan detail rekom santri.">
+  <link rel="canonical" href="https://www.mpq.my.id/rekom/">
+  <meta property="og:title" content="Data Rekom Santri - MPQ Al Falah">
+  <meta property="og:description" content="Cek track record rekom santri MPQ Al Falah secara ringkas dan mobile friendly.">
+  <meta property="og:image" content="https://www.mpq.my.id/assets/og-image.png">
+  <meta property="og:url" content="https://www.mpq.my.id/rekom/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="MPQ Al Falah">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Data Rekom Santri - MPQ Al Falah">
+  <meta name="twitter:description" content="Cek track record rekom santri MPQ Al Falah secara ringkas dan mobile friendly.">
+  <meta name="twitter:image" content="https://www.mpq.my.id/assets/og-image.png">
+  <meta name="theme-color" content="#f5f5f7">
+  <link rel="icon" href="/assets/favicon.png">
+<link rel="stylesheet" href="/assets/style.css">
+<script src="/assets/script.js" defer></script>
+<link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
+</head>
+<body>
+<header class="navbar">
+  <a href="/" class="brand">
+    <img src="/assets/logo-mpq.png" alt="Logo MPQ">
+    <div>
+      <strong>MPQ Al Falah</strong>
+      <span>Ploso Mojo Kediri</span>
+    </div>
+  </a>
+
+  <button class="menu-toggle" id="menuToggle" type="button" aria-label="Buka menu navigasi">
+    <i class="ri-menu-line"></i>
+  </button>
+
+  <nav id="mainNav">
+  <a href="/">Beranda</a>
+  <a href="/pedoman-mpq/">Pedoman MPQ</a>
+  <a href="/cek-santri/">Cek Santri</a>
+  <a href="/faq/">FAQ</a>
+</nav>
+</header>
+
+<main class="page rekom-page" id="rekomApp">
+  <div class="content-card rekom-shell-card">
+    <section class="rekom-hero-card">
+      <div class="label">Track Record Rekom</div>
+      <h1>Data Rekom Santri</h1>
+      <p>
+        Halaman ini digunakan untuk melihat track record rekom santri aktif.
+        Tampilan awal hanya memuat identitas santri. Ketuk nama santri untuk membuka detail rekom.
+      </p>
+    </section>
+
+    <section class="rekom-toolbar" aria-label="Filter data rekom">
+      <input id="rekomSearchInput" type="search" placeholder="Cari nama santri">
+      <select id="rekomKelasFilter"><option value="">Semua Kelas</option></select>
+      <select id="rekomAdnaFilter"><option value="">Semua ADNA</option></select>
+      <select id="rekomKamarFilter"><option value="">Semua Kamar</option></select>
+      <select id="rekomStatusFilter"><option value="">Semua Status</option></select>
+      <select id="rekomSelesaiFilter"><option value="">Semua</option></select>
+      <button id="rekomResetButton" class="rekom-reset-btn" type="button">Reset</button>
+    </section>
+
+    <div class="rekom-summary" id="rekomSummary">Memuat data rekom...</div>
+    <section class="rekom-list" id="rekomList" aria-live="polite"></section>
+  </div>
+</main>
+
+<footer class="footer-pro">
+  <strong>MPQ Al Falah</strong>
+  <span>Portal Informasi dan Layanan Digital Santri</span>
+  <span>PP Al Falah Ploso Mojo Kediri</span>
+  <a class="footer-wa" target="_blank" rel="noopener" href="https://wa.me/6285126031867">
+    <i class="ri-whatsapp-line"></i>
+    Hubungi WA Bot MPQ
+  </a>
+  <small>© 2026 MPQ Al Falah</small>
+</footer>
+</body>
+</html>
