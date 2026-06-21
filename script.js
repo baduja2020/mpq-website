@@ -1,12 +1,15 @@
-MPQ Apple Smooth Full Redesign
+REDESIGN APPLE STYLE V1 - MPQ
 
-Cara pakai:
-1. Upload/replace seluruh isi folder mpq-website-main ke repository GitHub.
-2. Pastikan file lama tertimpa.
-3. Setelah deploy, buka browser incognito atau hard refresh agar cache CSS lama hilang.
+Yang diubah:
+1. Navbar menjadi: Beranda, Pedoman MPQ, Cek Santri, FAQ.
+2. Menu Kurikulum dan Tata Tertib digabung dalam halaman baru /pedoman-mpq/.
+3. Beranda dibuat lebih minimal, bersih, dan mobile-first.
+4. Font global diganti ke system font ala Apple agar lebih ringan dan elegan.
+5. Card, tombol, section, search, FAQ, Pedoman, dan Data Rekom dipoles secara global.
+6. Logika data rekom tidak diubah. Perubahan utama ada di tampilan dan struktur halaman.
+
+Cara pasang:
+Upload isi folder ini ke repository/web MPQ panjenengan, atau replace project lama dengan versi ini.
 
 Catatan:
-- Logika pencarian santri dan rekom tetap menggunakan script asli.
-- Perubahan fokus pada tampilan, animasi ringan, navbar, card, modal/popup, dan smooth touch.
-- Logo besar di Beranda sudah dihapus dari index.html.
-- Popup detail dan filter dibuat masuk/keluar lebih halus.
+Folder /kurikulum/ dan /tata-tertib/ tetap ada agar link lama tidak rusak, tetapi navbar utama sekarang memakai /pedoman-mpq/.
