@@ -433,6 +433,8 @@ function showDetail(index) {
 
   const detailAlpaHtml = renderDetailAlpa(s);
   const hasDetailAlpa = detailAlpaHtml.trim() !== "";
+  const displayStatusRekom = getDisplayStatusRekom(s);
+  const displayStatusSelesai = getDisplayStatusSelesai(s);
 
   modalContent.innerHTML = `
     <div class="modal-profile">
@@ -483,14 +485,14 @@ function showDetail(index) {
     ${badgeStatus(s.statusSantri, "santri")}
   </div>
 
-  <div class="status-detail-row ${getStatusRowClass(s.statusRekom, "rekom")}">
+  <div class="status-detail-row ${getStatusRowClass(displayStatusRekom, "rekom")}">
     <span><i class="ri-flag-line"></i> Tanggungan Rekom</span>
-    ${badgeStatus(s.statusRekom, "rekom")}
+    ${badgeStatus(displayStatusRekom, "rekom")}
   </div>
 
-  <div class="status-detail-row ${getStatusRowClass(s.statusSelesai, "selesai")}">
+  <div class="status-detail-row ${getStatusRowClass(displayStatusSelesai, "selesai")}">
     <span><i class="ri-checkbox-circle-line"></i> Status Selesai</span>
-    ${badgeStatus(s.statusSelesai, "selesai")}
+    ${badgeStatus(displayStatusSelesai, "selesai")}
   </div>
 
   ${
@@ -582,28 +584,12 @@ function setupFloatingScrollHint() {
   setTimeout(updateHint, 150);
 }
 function renderDetailAlpa(s) {
-  const statusRekom = String(s.statusRekom || "").trim().toUpperCase();
-  const statusSelesai = String(s.statusSelesai || "").trim().toUpperCase();
+  const rincian = getEffectiveRincianTanggungan(s);
 
-  const rincian = Array.isArray(s.rincianTanggungan)
-    ? s.rincianTanggungan
-    : [];
-
-  const isTidakRekom =
-    statusRekom === "TIDAK REKOM" ||
-    statusRekom === "-" ||
-    statusRekom === "";
-
-  const hasRincianValid = rincian.some(item => {
-    const label = String(item.label || "").trim();
-    const alpa = Number(item.alpa || 0);
-
-    return label !== "" && alpa > 0;
-  });
-
-  if (isTidakRekom || !hasRincianValid) {
+  if (rincian.length === 0) {
     return "";
   }
+
   return `
     <div class="alpa-detail-box">
       <button class="alpa-detail-summary" type="button" onclick="toggleAlpaDetail(this)">
@@ -634,8 +620,8 @@ function renderDetailAlpa(s) {
             return `
               <div class="rekom-detail-item ${selesai ? "is-done" : "is-pending"}">
                 <div>
-                  <strong>${item.label}</strong>
-                  <span>Alpa: ${item.alpa}</span>
+                  <strong>${escapeHtml(item.label)}</strong>
+                  <span>Alpa: ${escapeHtml(item.alpa)}</span>
                 </div>
 
                 <em>${selesai ? "Selesai" : "Belum"}</em>
@@ -753,56 +739,13 @@ function toIndicatorNumber(value) {
 }
 
 function hasAnyRekomDetail(item = {}) {
-  const rincian = Array.isArray(item.rincianTanggungan) ? item.rincianTanggungan : [];
-  const hasRincian = rincian.some((row) => {
-    const label = String(row?.label || "").trim();
-    const alpa = toIndicatorNumber(row?.alpa);
-    return label !== "" && alpa > 0;
-  });
-
-  const periodKeys = [
-    "alpaPenertiban",
-    "alpa1",
-    "alpa2",
-    "alpa3",
-    "alpa4",
-    "ALPA !!!",
-    "ALPA_!!!",
-    "ALPA 1",
-    "ALPA_1",
-    "ALPA 2",
-    "ALPA_2",
-    "ALPA 3",
-    "ALPA_3",
-    "ALPA 4",
-    "ALPA_4",
-  ];
-
-  const hasPeriodAlpa = periodKeys.some((key) => toIndicatorNumber(item?.[key]) > 0);
-
-  const statusNorm = normalizeSearchText(item?.statusRekom || item?.["STATUS REKOM"] || item?.["STATUS_REKOM"] || "");
-  const hasRekomStatus = Boolean(statusNorm) &&
-    statusNorm !== "-" &&
-    statusNorm !== "TIDAK REKOM" &&
-    statusNorm !== "TIDAK ADA REKOM" &&
-    (statusNorm.includes("REKOM") ||
-      statusNorm.includes("R1") ||
-      statusNorm.includes("R2") ||
-      statusNorm.includes("R3") ||
-      statusNorm.includes("R4") ||
-      statusNorm.includes("PENERTIBAN"));
-
-  return hasRincian || hasPeriodAlpa || hasRekomStatus;
+  return getEffectiveRincianTanggungan(item).length > 0 || getEffectiveRekomPeriods(item).length > 0;
 }
 
 function getRekomIndicatorTone(item = {}) {
-  const statusRekomText = item?.statusRekom || item?.["STATUS REKOM"] || item?.["STATUS_REKOM"] || "";
-  const statusSelesaiText = getOverallSelesaiText(item);
-
-  if (isNoRekomStatus(statusRekomText) || isNoRekomStatus(statusSelesaiText)) return "";
-  if (isOverallSelesai(item)) return "done";
-  if (isOverallBelum(item)) return "active";
   if (!hasAnyRekomDetail(item)) return "";
+  if (getDisplayStatusSelesai(item) === "SELESAI") return "done";
+  if (getDisplayStatusSelesai(item) === "BELUM") return "active";
 
   return "active";
 }
@@ -1230,8 +1173,8 @@ function populateRekomFilters(data) {
   fillSelect("rekomKelasFilter", uniqueSorted(data.map((item) => item.kelas)), "Semua Kelas");
   fillSelect("rekomAdnaFilter", uniqueSorted(data.map((item) => item.adna)), "Semua ADNA");
   fillSelect("rekomKamarFilter", uniqueSorted(data.map((item) => item.kamar)), "Semua Kamar");
-  fillSelect("rekomStatusFilter", uniqueSorted(data.map((item) => item.statusRekom)), "Semua");
-  fillSelect("rekomSelesaiFilter", uniqueSorted(data.map((item) => item.statusSelesai)), "Semua");
+  fillSelect("rekomStatusFilter", uniqueSorted(data.map((item) => getDisplayStatusRekom(item))), "Semua");
+  fillSelect("rekomSelesaiFilter", uniqueSorted(data.map((item) => getDisplayStatusSelesai(item))), "Semua");
 }
 
 function fillSelect(id, items, defaultText) {
@@ -1547,8 +1490,8 @@ function applyRekomFilters() {
     if (kelas && normalizeSearchText(item.kelas) !== kelas) return false;
     if (adna && normalizeSearchText(item.adna) !== adna) return false;
     if (kamar && normalizeSearchText(item.kamar) !== kamar) return false;
-    if (status && normalizeSearchText(item.statusRekom) !== status) return false;
-    if (selesai && normalizeSearchText(item.statusSelesai) !== selesai) return false;
+    if (status && normalizeSearchText(getDisplayStatusRekom(item)) !== status) return false;
+    if (selesai && normalizeSearchText(getDisplayStatusSelesai(item)) !== selesai) return false;
     return true;
   });
 
@@ -1571,8 +1514,8 @@ function updateRekomSummary() {
     Sebab ada santri yang punya catatan/alpa lama tetapi status akhirnya TIDAK REKOM.
     Kalau dihitung dari angka alpa, jumlah "Belum" bisa membengkak.
   */
-  const selesai = rekomState.filtered.filter((item) => isOverallSelesai(item)).length;
-  const belum = rekomState.filtered.filter((item) => isOverallBelum(item)).length;
+  const selesai = rekomState.filtered.filter((item) => getDisplayStatusSelesai(item) === "SELESAI").length;
+  const belum = rekomState.filtered.filter((item) => getDisplayStatusSelesai(item) === "BELUM").length;
 
   summary.innerHTML = `
     <div class="rekom-summary-card total">
@@ -1595,11 +1538,11 @@ function updateRekomSummary() {
 
 
 const REKOM_PERIODS = [
-  { label: "Penertiban", alpaKey: "alpaPenertiban", statusKey: "sPenertiban" },
-  { label: "Rekom 1", alpaKey: "alpa1", statusKey: "s1" },
-  { label: "Rekom 2", alpaKey: "alpa2", statusKey: "s2" },
-  { label: "Rekom 3", alpaKey: "alpa3", statusKey: "s3" },
-  { label: "Rekom 4", alpaKey: "alpa4", statusKey: "s4" },
+  { label: "Penertiban", code: "PENERTIBAN", alpaKey: "alpaPenertiban", statusKey: "sPenertiban", batas: 3, aliases: ["PENERTIBAN"] },
+  { label: "Rekom 1", code: "R1", alpaKey: "alpa1", statusKey: "s1", batas: 5, aliases: ["R1", "REKOM 1"] },
+  { label: "Rekom 2", code: "R2", alpaKey: "alpa2", statusKey: "s2", batas: 5, aliases: ["R2", "REKOM 2"] },
+  { label: "Rekom 3", code: "R3", alpaKey: "alpa3", statusKey: "s3", batas: 4, aliases: ["R3", "REKOM 3"] },
+  { label: "Rekom 4", code: "R4", alpaKey: "alpa4", statusKey: "s4", batas: 5, aliases: ["R4", "REKOM 4"] },
 ];
 
 function toRekomNumber(value) {
@@ -1608,10 +1551,88 @@ function toRekomNumber(value) {
   return Number.isFinite(num) ? num : 0;
 }
 
-function hasRekomPeriodData(item, period) {
+function getItemStatusRekomText(item = {}) {
+  return String(item.statusRekom || item["STATUS REKOM"] || item["STATUS_REKOM"] || "").trim();
+}
+
+function isNoRekomItem(item = {}) {
+  return isNoRekomStatus(getItemStatusRekomText(item)) || isNoRekomStatus(getOverallSelesaiText(item));
+}
+
+function getRekomPeriodByLabel(label = "") {
+  const norm = normalizeSearchText(label);
+  return REKOM_PERIODS.find((period) => {
+    if (norm === normalizeSearchText(period.label) || norm === normalizeSearchText(period.code)) return true;
+    return period.aliases.some((alias) => norm.includes(normalizeSearchText(alias)));
+  });
+}
+
+function statusMentionsPeriod(item = {}, period) {
+  const statusNorm = normalizeSearchText(getItemStatusRekomText(item));
+  if (!statusNorm || isNoRekomStatus(statusNorm)) return false;
+  return period.aliases.some((alias) => statusNorm.includes(normalizeSearchText(alias)));
+}
+
+function isEffectiveRekomPeriod(item, period) {
+  if (!period || isNoRekomItem(item)) return false;
+
   const alpa = toRekomNumber(item?.[period.alpaKey]);
-  const status = normalizeSearchText(item?.[period.statusKey] || "");
-  return alpa > 0 || status === "S" || status === "SELESAI";
+  const status = item?.[period.statusKey] || "";
+
+  return alpa >= period.batas || statusMentionsPeriod(item, period);
+}
+
+function hasRekomPeriodData(item, period) {
+  return isEffectiveRekomPeriod(item, period);
+}
+
+function getEffectiveRekomPeriods(item = {}) {
+  return REKOM_PERIODS.filter((period) => isEffectiveRekomPeriod(item, period));
+}
+
+function getEffectiveRincianTanggungan(item = {}) {
+  const rincian = Array.isArray(item.rincianTanggungan) ? item.rincianTanggungan : [];
+  if (isNoRekomItem(item)) return [];
+
+  return rincian.filter((row) => {
+    const label = String(row?.label || "").trim();
+    const alpa = toRekomNumber(row?.alpa);
+    if (!label) return false;
+
+    const period = getRekomPeriodByLabel(label);
+    if (!period) return alpa > 0;
+
+    return alpa >= period.batas || statusMentionsPeriod(item, period);
+  });
+}
+
+function isItemPeriodDone(item = {}, period) {
+  if (!period) return false;
+  return isPeriodMarkedDone(item?.[period.statusKey]) || (isOverallSelesai(item) && isEffectiveRekomPeriod(item, period));
+}
+
+function getActiveRekomPeriods(item = {}) {
+  if (isOverallSelesai(item)) return [];
+  return getEffectiveRekomPeriods(item).filter((period) => !isItemPeriodDone(item, period));
+}
+
+function getDisplayStatusRekom(item = {}) {
+  const effective = getEffectiveRekomPeriods(item);
+  if (effective.length === 0) return "TIDAK REKOM";
+  if (isOverallSelesai(item)) return "SELESAI";
+
+  const active = getActiveRekomPeriods(item);
+  if (active.length === 0) return "SELESAI";
+
+  return active.map((period) => period.code).join(", ");
+}
+
+function getDisplayStatusSelesai(item = {}) {
+  const effective = getEffectiveRekomPeriods(item);
+  if (effective.length === 0) return "TIDAK REKOM";
+  if (isOverallSelesai(item)) return "SELESAI";
+  if (isOverallBelum(item)) return "BELUM";
+  return getActiveRekomPeriods(item).length > 0 ? "BELUM" : "SELESAI";
 }
 
 function getVisibleRekomPeriods(data = []) {
@@ -1662,11 +1683,13 @@ function getRekomKey(item) {
 
 
 function getItemRekomPeriods(item) {
-  const periods = (rekomState.visiblePeriods && rekomState.visiblePeriods.length)
+  const effective = getEffectiveRekomPeriods(item);
+  const visible = (rekomState.visiblePeriods && rekomState.visiblePeriods.length)
     ? rekomState.visiblePeriods
-    : REKOM_PERIODS.slice(0, 2);
+    : REKOM_PERIODS;
+  const visibleLabels = new Set(visible.map((period) => period.label));
 
-  return periods.filter((period) => hasRekomPeriodData(item, period));
+  return effective.filter((period) => visibleLabels.has(period.label));
 }
 
 function getStatusClass(value = "") {
@@ -1714,14 +1737,14 @@ function renderRekomCard(item) {
   const key = getRekomKey(item);
   const isOpen = rekomState.openedKey === key;
   const periodItems = getItemRekomPeriods(item);
-  const statusClass = getStatusClass(item.statusRekom);
-  const selesaiClass = getSelesaiClass(item.statusSelesai);
+  const displayStatusRekom = getDisplayStatusRekom(item);
+  const displayStatusSelesai = getDisplayStatusSelesai(item);
+  const statusClass = getStatusClass(displayStatusRekom);
+  const selesaiClass = getSelesaiClass(displayStatusSelesai);
   const indicatorTone = getRekomIndicatorTone(item);
 
-  const overallSelesai = isOverallSelesai(item);
-
   const periodHtml = periodItems.length
-    ? periodItems.map((period) => renderRekomPeriod(period.label, item[period.alpaKey], item[period.statusKey], overallSelesai)).join("")
+    ? periodItems.map((period) => renderRekomPeriod(period, item)).join("")
     : `
       <div class="rekom-no-detail">
         <i class="ri-check-double-line"></i>
@@ -1755,8 +1778,8 @@ function renderRekomCard(item) {
 
         <div class="rekom-total-strip">
           <span class="info-total">Total Alpa: <strong>${escapeHtml(item.totalAlpa || "0")}</strong></span>
-          <span class="info-status ${statusClass}">Status: <strong>${escapeHtml(item.statusRekom || "-")}</strong></span>
-          <span class="info-selesai ${selesaiClass}">Selesai: <strong>${escapeHtml(item.statusSelesai || "-")}</strong></span>
+          <span class="info-status ${statusClass}">Status: <strong>${escapeHtml(displayStatusRekom || "-")}</strong></span>
+          <span class="info-selesai ${selesaiClass}">Selesai: <strong>${escapeHtml(displayStatusSelesai || "-")}</strong></span>
         </div>
 
         ${item.keterangan ? `<p class="rekom-note"><strong>Keterangan:</strong> ${escapeHtml(item.keterangan)}</p>` : ""}
@@ -1765,9 +1788,9 @@ function renderRekomCard(item) {
   `;
 }
 
-function renderRekomPeriod(label, alpa, status, overallSelesai = false) {
-  const isDone = isPeriodMarkedDone(status) || overallSelesai;
-  const alpaNumber = toRekomNumber(alpa);
+function renderRekomPeriod(period, item) {
+  const isDone = isItemPeriodDone(item, period);
+  const alpaNumber = toRekomNumber(item?.[period.alpaKey]);
   const hasAlpa = alpaNumber > 0;
   const statusText = isDone ? "Selesai" : "Belum";
   const icon = isDone ? "ri-checkbox-circle-line" : "ri-error-warning-line";
@@ -1775,7 +1798,7 @@ function renderRekomPeriod(label, alpa, status, overallSelesai = false) {
   return `
     <div class="rekom-period ${isDone ? "done" : "pending"}">
       <div class="rekom-period-top">
-        <span>${escapeHtml(label)}</span>
+        <span>${escapeHtml(period.label)}</span>
         <i class="${icon}"></i>
       </div>
       <strong>${escapeHtml(String(alpaNumber))}</strong>
