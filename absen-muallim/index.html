@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rekap Absen Muallim - MPQ Al Falah</title>
+  <meta name="description" content="Dashboard rekap absen muallim MPQ Al Falah dengan filter bulan, ADNA, dan pencarian nama muallim.">
+  <link rel="canonical" href="https://www.mpq.my.id/absen-muallim/">
+  <meta property="og:title" content="Rekap Absen Muallim - MPQ Al Falah">
+  <meta property="og:description" content="Pantau rekap kehadiran muallim MPQ Al Falah secara ringkas dan mobile friendly.">
+  <meta property="og:image" content="https://www.mpq.my.id/assets/og-image.png">
+  <meta property="og:url" content="https://www.mpq.my.id/absen-muallim/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="MPQ Al Falah">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#f5f5f7">
+  <link rel="icon" href="/assets/favicon.png">
+  <link rel="stylesheet" href="/assets/style.css">
+  <link rel="stylesheet" href="/assets/absen-muallim.css">
+  <script src="/assets/script.js" defer></script>
+  <script src="/assets/absen-muallim.js" defer></script>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
+</head>
+<body>
+<header class="navbar">
+  <a href="/" class="brand">
+    <img src="/assets/logo-mpq.png" alt="Logo MPQ">
+    <div>
+      <strong>MPQ Al Falah</strong>
+      <span>Ploso Mojo Kediri</span>
+    </div>
+  </a>
+
+  <button class="menu-toggle" id="menuToggle" type="button" aria-label="Buka menu navigasi">
+    <i class="ri-menu-line"></i>
+  </button>
+
+  <nav id="mainNav">
+    <a href="/">Beranda</a>
+    <a href="/pedoman-mpq/">Pedoman MPQ</a>
+    <a href="/cek-santri/">Cek Santri</a>
+    <a href="/rekom/">Data Rekom</a>
+    <a href="/absen-muallim/" class="active">Absen Muallim</a>
+    <a href="/faq/">FAQ</a>
+  </nav>
+</header>
+
+<main class="page absen-muallim-page" id="absenMuallimApp">
+  <section class="absen-hero-card content-card">
+    <div class="label green">Rekap Absen Muallim</div>
+    <h1>Dashboard Kehadiran Muallim</h1>
+    <p>
+      Pantau rekap kehadiran muallim MPQ per bulan, lengkap dengan filter ADNA,
+      pencarian nama, total S/I/A, dan persentase kehadiran.
+    </p>
+  </section>
+
+  <section class="absen-panel content-card">
+    <div class="absen-toolbar" aria-label="Filter rekap absen muallim">
+      <label>
+        <span>Bulan</span>
+        <select id="absenBulanFilter">
+          <option value="">Memuat bulan...</option>
+        </select>
+      </label>
+
+      <label>
+        <span>ADNA</span>
+        <select id="absenAdnaFilter">
+          <option value="">Semua ADNA</option>
+        </select>
+      </label>
+
+      <label class="absen-search-wrap">
+        <span>Cari Muallim</span>
+        <input id="absenSearchInput" type="search" placeholder="Cari nama muallim atau ADNA...">
+      </label>
+
+      <button id="absenResetButton" class="absen-reset-btn" type="button">
+        <i class="ri-refresh-line"></i>
+        Reset
+      </button>
+    </div>
+
+    <div class="absen-meta" id="absenMeta">Memuat data rekap...</div>
+    <div class="absen-summary-grid" id="absenSummaryGrid"></div>
+
+    <section class="absen-mobile-list" id="absenMobileList" aria-live="polite"></section>
+
+    <div class="absen-table-wrap" id="absenTableWrap">
+      <table class="absen-table">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Muallim</th>
+            <th>ADNA</th>
+            <th>Hari</th>
+            <th>S</th>
+            <th>I</th>
+            <th>A</th>
+            <th>Hadir</th>
+            <th>%</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="absenTableBody">
+          <tr><td colspan="10">Memuat data...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<footer class="footer-pro">
+  <strong>MPQ Al Falah</strong>
+  <span>Portal Informasi dan Layanan Digital Santri</span>
+  <span>PP Al Falah Ploso Mojo Kediri</span>
+  <a class="footer-wa" target="_blank" rel="noopener" href="https://wa.me/6285126031867">
+    <i class="ri-whatsapp-line"></i>
+    Hubungi WA Bot MPQ
+  </a>
+  <small>© 2026 MPQ Al Falah</small>
+</footer>
+</body>
+</html>
