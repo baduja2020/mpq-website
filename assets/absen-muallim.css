@@ -1,0 +1,440 @@
+/* ================= REKAP ABSEN MUALLIM ================= */
+.absen-muallim-page{
+  padding:46px 8% 70px;
+}
+
+.absen-muallim-page .content-card{
+  max-width:1180px;
+  margin-left:auto;
+  margin-right:auto;
+}
+
+.absen-hero-card{
+  margin-bottom:18px;
+  overflow:hidden;
+  position:relative;
+}
+
+.absen-hero-card::after{
+  content:"";
+  position:absolute;
+  right:-90px;
+  top:-110px;
+  width:260px;
+  height:260px;
+  border-radius:999px;
+  background:radial-gradient(circle,rgba(22,101,52,.13),transparent 68%);
+  pointer-events:none;
+}
+
+.absen-hero-card h1{
+  font-size:clamp(30px,4vw,48px);
+  line-height:1.05;
+  letter-spacing:-.04em;
+  margin-bottom:12px;
+}
+
+.absen-hero-card p{
+  max-width:760px;
+  color:var(--muted);
+  line-height:1.8;
+  font-weight:500;
+}
+
+.absen-panel{
+  display:block;
+}
+
+.absen-toolbar{
+  display:grid;
+  grid-template-columns:180px 180px minmax(260px,1fr) auto;
+  gap:12px;
+  align-items:end;
+  margin-bottom:16px;
+}
+
+.absen-toolbar label{
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+  color:var(--muted);
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+}
+
+.absen-toolbar select,
+.absen-toolbar input{
+  width:100%;
+  min-height:48px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:#fff;
+  color:var(--text);
+  outline:none;
+  padding:0 15px;
+  font:inherit;
+  font-size:14px;
+  font-weight:700;
+  box-shadow:0 8px 24px rgba(16,32,22,.04);
+}
+
+.absen-toolbar select:focus,
+.absen-toolbar input:focus{
+  border-color:rgba(22,101,52,.42);
+  box-shadow:0 0 0 4px rgba(22,101,52,.09);
+}
+
+.absen-reset-btn{
+  min-height:48px;
+  border:0;
+  border-radius:16px;
+  padding:0 18px;
+  background:var(--primary);
+  color:#fff;
+  font-weight:900;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  box-shadow:0 12px 28px rgba(22,101,52,.16);
+}
+
+.absen-reset-btn:hover{
+  background:var(--primary-2);
+}
+
+.absen-meta{
+  color:var(--muted);
+  font-size:13px;
+  font-weight:700;
+  margin-bottom:16px;
+}
+
+.absen-summary-grid{
+  display:grid;
+  grid-template-columns:repeat(6,minmax(0,1fr));
+  gap:12px;
+  margin-bottom:18px;
+}
+
+.absen-summary-card{
+  border:1px solid var(--line);
+  border-radius:20px;
+  background:linear-gradient(180deg,#fff,rgba(255,255,255,.84));
+  padding:15px;
+  box-shadow:0 12px 28px rgba(16,32,22,.05);
+}
+
+.absen-summary-card span{
+  display:block;
+  color:var(--muted);
+  font-size:12px;
+  font-weight:800;
+  margin-bottom:6px;
+}
+
+.absen-summary-card strong{
+  display:block;
+  color:var(--text);
+  font-size:28px;
+  letter-spacing:-.04em;
+}
+
+.absen-summary-card em{
+  display:block;
+  color:var(--muted);
+  font-size:11px;
+  font-style:normal;
+  font-weight:700;
+  margin-top:4px;
+}
+
+.absen-summary-card.good strong{color:#15803d;}
+.absen-summary-card.warn strong{color:#b45309;}
+.absen-summary-card.bad strong{color:#b91c1c;}
+
+.absen-table-wrap{
+  overflow:auto;
+  border:1px solid var(--line);
+  border-radius:22px;
+  background:#fff;
+  box-shadow:0 12px 30px rgba(16,32,22,.05);
+}
+
+.absen-table{
+  width:100%;
+  border-collapse:separate;
+  border-spacing:0;
+  min-width:900px;
+}
+
+.absen-table th,
+.absen-table td{
+  padding:13px 14px;
+  border-bottom:1px solid #edf3ee;
+  text-align:left;
+  font-size:13px;
+  vertical-align:middle;
+}
+
+.absen-table th{
+  position:sticky;
+  top:0;
+  z-index:1;
+  background:#f6fbf7;
+  color:#355343;
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+}
+
+.absen-table td:nth-child(1),
+.absen-table td:nth-child(4),
+.absen-table td:nth-child(5),
+.absen-table td:nth-child(6),
+.absen-table td:nth-child(7),
+.absen-table td:nth-child(8),
+.absen-table td:nth-child(9){
+  text-align:center;
+}
+
+.absen-table tr:last-child td{
+  border-bottom:0;
+}
+
+.absen-muallim-name{
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+}
+
+.absen-muallim-name strong{
+  color:var(--text);
+  font-size:13px;
+}
+
+.absen-muallim-name small{
+  color:var(--muted);
+  font-size:11px;
+  font-weight:700;
+}
+
+.absen-percent-pill,
+.absen-status-pill{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  border-radius:999px;
+  padding:7px 10px;
+  font-size:12px;
+  font-weight:900;
+  white-space:nowrap;
+}
+
+.absen-percent-pill.good,
+.absen-status-pill.good{
+  color:#166534;
+  background:#e8f6ed;
+}
+
+.absen-percent-pill.warn,
+.absen-status-pill.warn{
+  color:#92400e;
+  background:#fff7dd;
+}
+
+.absen-percent-pill.bad,
+.absen-status-pill.bad{
+  color:#991b1b;
+  background:#fee2e2;
+}
+
+.absen-mobile-list{
+  display:none;
+}
+
+.absen-card{
+  border:1px solid var(--line);
+  background:#fff;
+  border-radius:22px;
+  padding:16px;
+  box-shadow:0 12px 28px rgba(16,32,22,.05);
+}
+
+.absen-card + .absen-card{
+  margin-top:12px;
+}
+
+.absen-card-top{
+  display:flex;
+  justify-content:space-between;
+  gap:14px;
+  margin-bottom:12px;
+}
+
+.absen-card h3{
+  font-size:16px;
+  line-height:1.28;
+  letter-spacing:-.02em;
+  margin-bottom:5px;
+}
+
+.absen-card .adna-chip{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  border-radius:999px;
+  padding:6px 10px;
+  background:var(--primary-soft);
+  color:var(--primary);
+  font-size:12px;
+  font-weight:900;
+  white-space:nowrap;
+}
+
+.absen-progress{
+  height:10px;
+  border-radius:999px;
+  background:#eef3ef;
+  overflow:hidden;
+  margin:10px 0 13px;
+}
+
+.absen-progress span{
+  display:block;
+  height:100%;
+  width:var(--percent-width,0%);
+  max-width:100%;
+  border-radius:999px;
+  background:#15803d;
+}
+
+.absen-card.warn .absen-progress span{background:#d97706;}
+.absen-card.bad .absen-progress span{background:#dc2626;}
+
+.absen-card-grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:8px;
+}
+
+.absen-mini-stat{
+  background:#f8fbf9;
+  border:1px solid #edf3ee;
+  border-radius:15px;
+  padding:10px;
+  text-align:center;
+}
+
+.absen-mini-stat span{
+  display:block;
+  color:var(--muted);
+  font-size:11px;
+  font-weight:800;
+  margin-bottom:4px;
+}
+
+.absen-mini-stat strong{
+  font-size:17px;
+}
+
+.absen-note{
+  margin-top:10px;
+  border-radius:14px;
+  padding:10px 12px;
+  background:#fff7dd;
+  color:#7c4a03;
+  font-size:12px;
+  font-weight:700;
+  line-height:1.5;
+}
+
+.absen-empty-card,
+.absen-error-card,
+.absen-loading-card{
+  grid-column:1/-1;
+  border:1px dashed var(--line);
+  border-radius:22px;
+  padding:24px;
+  text-align:center;
+  color:var(--muted);
+  background:#fff;
+}
+
+.absen-error-card{
+  border-color:#fecaca;
+  background:#fff7f7;
+  color:#7f1d1d;
+}
+
+.absen-error-card strong,
+.absen-empty-card strong,
+.absen-loading-card strong{
+  display:block;
+  color:var(--text);
+  font-size:18px;
+  margin-bottom:8px;
+}
+
+.absen-error-card code{
+  display:inline-block;
+  margin-top:8px;
+  background:#fff;
+  border:1px solid #fecaca;
+  padding:5px 8px;
+  border-radius:8px;
+  color:#991b1b;
+}
+
+@media (max-width:1100px){
+  .absen-summary-grid{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+  }
+}
+
+@media (max-width:820px){
+  .absen-muallim-page{
+    padding:28px 16px 56px;
+  }
+
+  .absen-toolbar{
+    grid-template-columns:1fr;
+  }
+
+  .absen-summary-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+
+  .absen-table-wrap{
+    display:none;
+  }
+
+  .absen-mobile-list{
+    display:block;
+  }
+}
+
+@media (max-width:460px){
+  .absen-summary-grid{
+    grid-template-columns:1fr 1fr;
+    gap:9px;
+  }
+
+  .absen-summary-card{
+    border-radius:18px;
+    padding:13px;
+  }
+
+  .absen-summary-card strong{
+    font-size:24px;
+  }
+
+  .absen-card-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+}
