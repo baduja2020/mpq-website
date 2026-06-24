@@ -90,14 +90,33 @@ function setupAbsenMuallimPage() {
     if (event.key === "Escape") closeAbsenFilterModal();
   });
 
-  document.addEventListener("click", function (event) {
-    const head = event.target.closest(".absen-row-head");
-    if (!head) return;
-    const row = head.closest(".absen-row");
-    if (!row) return;
-    row.classList.toggle("open");
+ // GANTI BLOK 'document.addEventListener("click", ...)' yang lama dengan ini:
+document.addEventListener("click", function (event) {
+  const head = event.target.closest(".absen-row-head");
+  if (!head) return;
+  
+  const row = head.closest(".absen-row");
+  if (!row) return;
+
+  const isOpen = row.classList.contains("open");
+
+  // TUTUP SEMUA CARD LAIN (Exclusive Accordion)
+  document.querySelectorAll(".absen-row").forEach(el => {
+    if (el !== row) el.classList.remove("open");
   });
 
+  // BUKA ATAU TUTUP CARD YANG DIKLIK
+  if (isOpen) {
+    row.classList.remove("open");
+  } else {
+    row.classList.add("open");
+    
+    // EFEK APPLE: AUTO-SCROLL KE POSISI PALING NYAMAN
+    setTimeout(() => {
+      row.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }, 200);
+  }
+});
   loadAbsenMuallimData();
 }
 
