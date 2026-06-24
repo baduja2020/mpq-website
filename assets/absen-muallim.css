@@ -1041,15 +1041,65 @@ body.absen-filter-locked{
 }
 
 
-/* --- 2. KEPALA BARIS ABSEN (GRID LAYOUT ANTI-TUMPANG TINDIH) --- */
+/* --- GAYA APPLE: POSISI INDIKATOR KE KANAN --- */
 #absenList .absen-row-head {
   display: grid;
-  grid-template-columns: 1fr auto; /* Kolom Kiri (Nama), Kolom Kanan (Pill/Tombol) */
-  grid-template-rows: auto auto;   /* Baris Atas, Baris Bawah */
-  gap: 8px 16px;
-  padding: 1.1rem 1.25rem;
-  text-align: left;
+  grid-template-columns: auto 1fr auto; /* [Indikator][Nama][Side-Action] */
+  gap: 12px;
   align-items: center;
+  padding: 1.25rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+/* Indikator Bulat di Pojok Kiri */
+#absenList .absen-indicator-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10b981; /* Hijau */
+  order: 1; /* Pindah ke paling kiri */
+}
+
+/* Group Nama Pindah ke tengah */
+#absenList .absen-row-main {
+  order: 2;
+  flex: 1;
+}
+
+/* Side Action (Persentase + Status + Plus) Pindah ke Kanan */
+#absenList .absen-row-side {
+  order: 3;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* --- GAYA APPLE: EFEK CARD BERSIH --- */
+#absenList .absen-row {
+  background: #ffffff;
+  border-radius: 16px;
+  margin-bottom: 12px;
+  border: 1px solid rgba(0,0,0,0.04);
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  overflow: hidden;
+}
+
+#absenList .absen-row.open {
+  box-shadow: 0 10px 25px -5px rgba(0,0,0,0.08);
+  border-color: rgba(0,0,0,0.1);
+}
+
+/* Indikator posisi disesuaikan agar rapi */
+#absenList .absen-row-toggle {
+  order: 4; /* Paling kanan */
+}
+
+/* Detail Box (Isi Accordion) dikasih jarak napas */
+#absenList .absen-row-detail {
+  padding: 0 1.25rem 1.25rem 1.25rem;
+  border-top: 1px solid #f1f5f9;
+  margin-top: -10px;
 }
 
 /* Kelompok Kiri: Nama Ustaz + Keterangan Meta */
