@@ -1004,114 +1004,224 @@ body.absen-filter-locked{
     grid-template-columns:1fr;
   }
 }
-/* ==========================================
-   STYLING TOP 5 RANKING PODIUM
-========================================== */
-.absen-ranking-wrapper {
-  margin: 1.25rem 0;
-  background: #ffffff;
-  border-radius: 16px;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  padding: 1.1rem;
-  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.03);
-}
+/* =========================================================
+   MASTER PATCH V2.2: CLEAN SPECIFICITY (TANPA !IMPORTANT)
+========================================================= */
 
-.absen-ranking-header {
+/* --- 1. MENGOBATI TABRAKAN DI KEPALA BARIS (ROW HEAD) --- */
+/* Prefix #absenList otomatis mengalahkan class template bawaan */
+
+#absenList .absen-row-head {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  position: relative;
+  gap: 12px;
 }
 
-.absen-ranking-header i {
-  font-size: 1.8rem;
-  color: #f59e0b; /* Warna Emas Piala */
-  background: #fef3c7;
-  padding: 0.4rem;
-  border-radius: 12px;
+#absenList .absen-row-main {
+  flex: 1;
+  padding-right: 4px;
 }
 
-.absen-ranking-header h2 {
-  font-size: 1rem;
-  font-weight: 700;
-  color: #111827;
-  margin: 0;
-}
-
-.absen-ranking-header p {
-  font-size: 0.75rem;
-  color: #6b7280;
-  margin: 0;
-}
-
-.absen-ranking-scroller {
+#absenList .absen-row-side {
   display: flex;
-  gap: 0.75rem;
+  align-items: center;
+  gap: 8px;
+  position: static;
+  transform: none;
+}
+
+#absenList .absen-status-pill {
+  width: auto;
+  height: auto;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+#absenList .absen-row-toggle {
+  position: static;
+  font-size: 1.35rem;
+  color: #047857;
+  margin-left: 2px;
+}
+
+/* --- 2. REDESIGN TOTAL TOP 5 RANKING (PREMIUM LOOK) --- */
+
+#absenRankingSection .absen-ranking-box {
+  background: #ffffff;
+  border-radius: 20px;
+  border: 1px solid rgba(4, 120, 87, 0.12);
+  padding: 1.25rem;
+  box-shadow: 0 10px 30px -5px rgba(4, 120, 87, 0.05);
+  margin: 1.5rem 0;
+}
+
+#absenRankingSection .absen-ranking-header {
+  margin-bottom: 1.25rem;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 1rem;
+}
+
+#absenRankingSection .header-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+#absenRankingSection .trophy-icon-wrapper {
+  background: linear-gradient(135deg, #047857 0%, #064e3b 100%); 
+  color: #fbbf24;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  box-shadow: 0 4px 12px rgba(4, 120, 87, 0.25);
+}
+
+#absenRankingSection .header-title-group h2 {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+  letter-spacing: -0.3px;
+}
+
+#absenRankingSection .header-title-group p {
+  font-size: 0.8rem;
+  color: #64748b;
+  margin: 2px 0 0 0;
+}
+
+#absenRankingSection .header-title-group p span {
+  font-weight: 700;
+  color: #047857;
+}
+
+#absenRankingSection .absen-ranking-track {
+  display: flex;
+  gap: 0.85rem;
   overflow-x: auto;
   padding-bottom: 0.5rem;
   scroll-snap-type: x mandatory;
-  scrollbar-width: none; /* Firefox */
+  scrollbar-width: none;
 }
-.absen-ranking-scroller::-webkit-scrollbar { display: none; /* Chrome/Safari */ }
 
-.absen-rank-card {
-  flex: 0 0 165px;
+#absenRankingSection .absen-ranking-track::-webkit-scrollbar { 
+  display: none; 
+}
+
+#absenRankingSection .absen-rank-card {
+  flex: 0 0 180px;
   scroll-snap-align: start;
   background: #f8fafc;
   border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 0.8rem;
+  border-radius: 16px;
+  padding: 1rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  transition: transform 0.2s ease;
+  position: relative;
+  transition: all 0.2s ease;
 }
 
-/* Kasta Warna Kartu Juara */
-.absen-rank-card.rank-1 { background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border-color: #fde68a; }
-.absen-rank-card.rank-2 { background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%); border-color: #cbd5e1; }
-.absen-rank-card.rank-3 { background: linear-gradient(135deg, #fef2f2 0%, #ffedd5 100%); border-color: #fed7aa; }
+#absenRankingSection .absen-rank-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+  border-color: #cbd5e1;
+}
 
-.rank-card-head {
+#absenRankingSection .rank-card-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.6rem;
+  margin-bottom: 0.75rem;
 }
 
-.rank-medal { font-size: 1.2rem; }
-
-.rank-adna-badge {
-  font-size: 0.65rem;
-  font-weight: 700;
-  background: rgba(0, 0, 0, 0.06);
-  padding: 2px 6px;
-  border-radius: 4px;
-  color: #475569;
+#absenRankingSection .rank-badge {
+  font-size: 0.75rem;
+  font-weight: 900;
+  padding: 4px 8px;
+  border-radius: 8px;
+  letter-spacing: 0.5px;
 }
 
-.rank-name {
-  display: block;
-  font-size: 0.85rem;
-  color: #0f172a;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+#absenRankingSection .absen-rank-card.rank-1 { background: #fffbeb; border-color: #fde68a; }
+#absenRankingSection .absen-rank-card.rank-1 .rank-badge { background: #f59e0b; color: #ffffff; }
 
-.rank-score {
-  display: block;
-  font-size: 1.05rem;
-  font-weight: 800;
-  color: #059669;
-  margin-top: 0.2rem;
-}
+#absenRankingSection .absen-rank-card.rank-2 { background: #f1f5f9; border-color: #cbd5e1; }
+#absenRankingSection .absen-rank-card.rank-2 .rank-badge { background: #64748b; color: #ffffff; }
 
-.rank-score small {
+#absenRankingSection .absen-rank-card.rank-3 { background: #fef2f2; border-color: #fecaca; }
+#absenRankingSection .absen-rank-card.rank-3 .rank-badge { background: #dc2626; color: #ffffff; }
+
+#absenRankingSection .absen-rank-card.rank-4 .rank-badge, 
+#absenRankingSection .absen-rank-card.rank-5 .rank-badge { background: #e2e8f0; color: #475569; }
+
+#absenRankingSection .rank-adna {
   font-size: 0.7rem;
-  font-weight: 500;
-  color: #64748b;
+  font-weight: 700;
+  color: #475569;
+  background: rgba(0,0,0,0.05);
+  padding: 2px 6px;
+  border-radius: 6px;
 }
 
-/* Efek visual khusus bagi yang 100% sempurna */
-.absen-rank-card.is-perfect .rank-score { color: #0284c7; }
+#absenRankingSection .rank-name {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #1e293b;
+  line-height: 1.3;
+  margin-bottom: 0.75rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+#absenRankingSection .rank-card-bot {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  border-top: 1px dashed rgba(0,0,0,0.08);
+  padding-top: 0.6rem;
+}
+
+#absenRankingSection .rank-stat {
+  display: flex;
+  flex-direction: column;
+}
+
+#absenRankingSection .rank-pct {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #047857;
+  line-height: 1;
+}
+
+#absenRankingSection .rank-ratio {
+  font-size: 0.7rem;
+  color: #64748b;
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+#absenRankingSection .perfect-icon {
+  font-size: 1.2rem;
+  color: #059669;
+}
+
+#absenRankingSection .absen-rank-card.is-perfect .rank-pct { 
+  color: #0284c7; 
+}
