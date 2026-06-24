@@ -1,116 +1,303 @@
-/* =========================================================
-   MPQ ABSEN MUALLIM - APPLE-STYLE CLEAN (FULL REWRITE)
-   ========================================================= */
+:root{
+  --primary:#15803d;
+  --primary-dark:#14532d;
+  --success:#16a34a;
+  --warning:#ca8a04;
+  --danger:#dc2626;
 
-/* --- 1. RESET & GRID --- */
-#absenList, #absenList .absen-row, #absenList .absen-row-head {
-    box-sizing: border-box;
+  --bg:#f5f7f6;
+  --card:#ffffff;
+  --border:#e5e7eb;
+  --text:#111827;
+  --muted:#6b7280;
+
+  --radius:20px;
 }
 
-/* --- 2. KARTU ABSEN (APPLE CARD) --- */
-#absenList {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
 }
 
-#absenList .absen-row {
-    background: #ffffff;
-    border-radius: 16px;
-    border: 1px solid rgba(0,0,0,0.05);
-    overflow: hidden;
-    transition: all 0.3s ease;
+body{
+  font-family:Inter,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.6;
 }
 
-#absenList .absen-row.open {
-    box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+.container{
+  max-width:1200px;
+  margin:auto;
+  padding:24px;
 }
 
-/* --- 3. KEPALA CARD (GRID LAYOUT) --- */
-#absenList .absen-row-head {
-    display: grid;
-    grid-template-columns: 20px 1fr auto; /* Dot | Nama | Action */
-    align-items: flex-start;
-    padding: 1.25rem;
-    cursor: pointer;
-    gap: 12px;
+/* HERO */
+
+.hero{
+  background:linear-gradient(
+    135deg,
+    #111827,
+    #166534,
+    #34a853
+  );
+
+  color:white;
+
+  padding:60px;
+  border-radius:32px;
+  margin-bottom:24px;
+
+  position:relative;
+  overflow:hidden;
 }
 
-/* Indikator Titik (Kiri Atas) */
-#absenList .absen-indicator-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #10b981;
-    margin-top: 6px;
+.hero::after{
+  content:"";
+  position:absolute;
+  width:250px;
+  height:250px;
+  border-radius:50%;
+  background:rgba(255,255,255,.08);
+  top:-60px;
+  right:-60px;
 }
 
-/* Nama & Info */
-#absenList .absen-row-main {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+.hero h1{
+  font-size:3rem;
+  font-weight:800;
+  margin-bottom:12px;
 }
 
-#absenList .absen-row-name {
-    font-size: 0.95rem;
-    font-weight: 700;
-    color: #0f172a;
+.hero p{
+  max-width:700px;
+  opacity:.9;
 }
 
-#absenList .absen-row-meta {
-    font-size: 0.8rem;
-    color: #64748b;
+/* TOOLBAR */
+
+.toolbar{
+  display:flex;
+  gap:12px;
+  margin-bottom:24px;
+  flex-wrap:wrap;
 }
 
-/* Action Side (Persentase & Tombol) */
-#absenList .absen-row-side {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+.search-box{
+  flex:1;
 }
 
-/* Tombol Accordion */
-#absenList .absen-row-toggle {
-    background: none;
-    border: none;
-    color: #94a3b8;
-    font-size: 1.2rem;
-    cursor: pointer;
-    transition: transform 0.3s ease;
+.search-box input{
+  width:100%;
+  padding:14px 18px;
+  border:1px solid var(--border);
+  border-radius:16px;
+  font-size:15px;
 }
 
-#absenList .absen-row.open .absen-row-toggle {
-    transform: rotate(45deg);
-    color: #ef4444;
+.btn{
+  border:none;
+  cursor:pointer;
+  padding:14px 22px;
+  border-radius:16px;
+  font-weight:600;
 }
 
-/* --- 4. WARNA ADAPTIF (STATUS) --- */
-.absen-percent-pill {
-    padding: 4px 10px;
-    border-radius: 8px;
-    font-size: 0.8rem;
-    font-weight: 700;
+.btn-filter{
+  background:#e8f5eb;
+  color:var(--primary);
 }
 
-#absenList .absen-row.good .absen-percent-pill { background: #dcfce7; color: #166534; }
-#absenList .absen-row.warn .absen-percent-pill { background: #fef9c3; color: #854d0e; }
-#absenList .absen-row.bad .absen-percent-pill { background: #fee2e2; color: #991b1b; }
-
-/* Status "Baik" / "Perhatian" */
-.absen-status-pill {
-    font-size: 0.8rem;
-    font-weight: 500;
-    color: #64748b;
+.btn-reset{
+  background:#f3f4f6;
 }
 
-/* --- 5. DETAIL CARD (ACCORDION) --- */
-#absenList .absen-row-detail {
-    padding: 0 1.25rem 1.25rem 1.25rem;
-    border-top: 1px solid #f1f5f9;
-    display: none; /* Default tutup */
+/* STATS */
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:16px;
+  margin-bottom:24px;
 }
 
-#absenList .absen-row.open .absen-row-detail {
-    display: block; /* Buka saat class 'open' ada */
+.stat-card{
+  background:white;
+  border-radius:20px;
+  padding:20px;
+  border:1px solid var(--border);
+}
+
+.stat-label{
+  color:var(--muted);
+  font-size:13px;
+}
+
+.stat-value{
+  font-size:2rem;
+  font-weight:800;
+  margin-top:6px;
+}
+
+/* MUALLIM CARD */
+
+.muallim-list{
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+
+.muallim-card{
+  background:white;
+  border:1px solid var(--border);
+  border-radius:20px;
+  overflow:hidden;
+}
+
+.muallim-header{
+  padding:20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  cursor:pointer;
+}
+
+.muallim-name{
+  font-size:18px;
+  font-weight:700;
+}
+
+.muallim-sub{
+  color:var(--muted);
+  font-size:14px;
+}
+
+.muallim-detail{
+  padding:20px;
+  border-top:1px solid var(--border);
+}
+
+.detail-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:12px;
+}
+
+.detail-item{
+  background:#f9fafb;
+  border-radius:12px;
+  padding:14px;
+}
+
+.detail-title{
+  font-size:13px;
+  color:var(--muted);
+}
+
+.detail-value{
+  font-size:22px;
+  font-weight:700;
+}
+
+/* BADGES */
+
+.badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:6px 12px;
+  border-radius:999px;
+  font-size:13px;
+  font-weight:600;
+}
+
+.badge-success{
+  background:#dcfce7;
+  color:#166534;
+}
+
+.badge-warning{
+  background:#fef3c7;
+  color:#92400e;
+}
+
+.badge-danger{
+  background:#fee2e2;
+  color:#991b1b;
+}
+
+/* FILTER MODAL */
+
+.filter-modal{
+  background:white;
+  border-radius:24px;
+  padding:24px;
+  max-width:900px;
+  width:100%;
+}
+
+.filter-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+}
+
+.filter-card{
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:16px;
+}
+
+/* TABLE */
+
+.table-wrap{
+  overflow:auto;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+th{
+  background:#f3f4f6;
+  text-align:left;
+}
+
+th,td{
+  padding:14px;
+  border-bottom:1px solid var(--border);
+}
+
+/* MOBILE */
+
+@media(max-width:768px){
+
+.hero{
+  padding:32px 24px;
+}
+
+.hero h1{
+  font-size:2rem;
+}
+
+.toolbar{
+  flex-direction:column;
+}
+
+.stats{
+  grid-template-columns:1fr 1fr;
+}
+
+.filter-grid{
+  grid-template-columns:1fr;
+}
+
+.muallim-header{
+  flex-direction:column;
+  align-items:flex-start;
+  gap:10px;
+}
+
 }
