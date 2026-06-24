@@ -1005,52 +1005,116 @@ body.absen-filter-locked{
   }
 }
 /* =========================================================
-   MASTER PATCH V2.2: CLEAN SPECIFICITY (TANPA !IMPORTANT)
+   UPDATE V2.3: SUMMARY CENTERED & ACCORDION POJOK BAWAH
 ========================================================= */
 
-/* --- 1. MENGOBATI TABRAKAN DI KEPALA BARIS (ROW HEAD) --- */
-/* Prefix #absenList otomatis mengalahkan class template bawaan */
+/* --- 1. KARTU RINGKASAN (SUMMARY CARDS) RAPI DI TENGAH --- */
+#absenSummaryGrid .absen-summary-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 1.25rem 1rem;
+}
 
+#absenSummaryGrid .absen-summary-card span {
+  font-size: 0.75rem;
+  color: #64748b;
+  margin-bottom: 0.25rem;
+  width: 100%;
+}
+
+#absenSummaryGrid .absen-summary-card strong {
+  font-size: 1.85rem;
+  font-weight: 800;
+  line-height: 1.1;
+  margin: 0.1rem 0;
+  width: 100%;
+}
+
+#absenSummaryGrid .absen-summary-card em {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  margin-top: 0.2rem;
+  width: 100%;
+}
+
+
+/* --- 2. KEPALA BARIS ABSEN (GRID LAYOUT ANTI-TUMPANG TINDIH) --- */
 #absenList .absen-row-head {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto; /* Kolom Kiri (Nama), Kolom Kanan (Pill/Tombol) */
+  grid-template-rows: auto auto;   /* Baris Atas, Baris Bawah */
+  gap: 8px 16px;
+  padding: 1.1rem 1.25rem;
+  text-align: left;
   align-items: center;
-  justify-content: space-between;
-  padding: 1rem 1.25rem;
-  position: relative;
-  gap: 12px;
 }
 
+/* Kelompok Kiri: Nama Ustaz + Keterangan Meta */
 #absenList .absen-row-main {
-  flex: 1;
-  padding-right: 4px;
+  grid-column: 1 / 2;
+  grid-row: 1 / 3; /* Membentang mengisi penuh dari baris atas sampai bawah */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
+#absenList .absen-row-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 4px;
+}
+
+/* Kelompok Kanan Atas: Persentase & Status (Baik/Perhatian) */
 #absenList .absen-row-side {
+  grid-column: 2 / 3;
+  grid-row: 1 / 2;
   display: flex;
   align-items: center;
-  gap: 8px;
-  position: static;
-  transform: none;
+  gap: 6px;
+  justify-self: end; /* Duduk di pojok kanan atas */
 }
 
 #absenList .absen-status-pill {
-  width: auto;
-  height: auto;
   padding: 4px 10px;
   border-radius: 20px;
   font-size: 0.75rem;
   font-weight: 700;
-  letter-spacing: 0.2px;
-  display: inline-flex;
-  align-items: center;
   white-space: nowrap;
 }
 
+/* Kelompok Kanan Bawah: Tombol Accordion Bulat Minimalis */
 #absenList .absen-row-toggle {
-  position: static;
-  font-size: 1.35rem;
-  color: #047857;
-  margin-left: 2px;
+  grid-column: 2 / 3;
+  grid-row: 2 / 3;
+  justify-self: end; /* Duduk manis di pojok kanan bawah */
+
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  color: #64748b;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  margin: 0;
+}
+
+#absenList .absen-row:hover .absen-row-toggle {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+/* Animasi: Tombol (+) berputar 135 derajat otomatis jadi tanda silang (×) saat terbuka */
+#absenList .absen-row.open .absen-row-toggle {
+  transform: rotate(135deg);
+  background: #fee2e2;
+  color: #ef4444; 
 }
 
 /* --- 2. REDESIGN TOTAL TOP 5 RANKING (PREMIUM LOOK) --- */
