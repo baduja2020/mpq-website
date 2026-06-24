@@ -642,17 +642,13 @@ function escapeHtml(value) {
     .replace(/'/g, "&#039;");
 }
 // ==========================================
-// FITUR PODIUM RANKING TOP 5 MUALLIM
+// FITUR PODIUM RANKING TOP 5 (VERSI 2.0 - CLEAN)
 // ==========================================
 function renderAbsenMuallimRanking() {
   const container = document.getElementById("absenRankingSection");
   if (!container) return;
 
-  // 1. Ambil data yang sedang aktif ter-filter
-  const data = [...absenMuallimState.filtered];
-
-  // 2. Buang guru yang jumlah harinya 0 (mencegah error pembagian)
-  const validData = data.filter((item) => item.jumlahHari > 0);
+  const validData = absenMuallimState.filtered.filter((item) => item.jumlahHari > 0);
 
   if (validData.length === 0) {
     container.innerHTML = "";
@@ -660,29 +656,57 @@ function renderAbsenMuallimRanking() {
     return;
   }
 
-  // 3. Algoritma Keadilan: Persentase -> Jumlah Hadir -> Abjad
   const ranked = validData.sort((a, b) => {
     if (b.persentase !== a.persentase) return b.persentase - a.persentase;
     if (b.jumlahHadir !== a.jumlahHadir) return b.jumlahHadir - a.jumlahHadir;
     return String(a.muallim || "").localeCompare(String(b.muallim || ""), "id-ID");
-  }).slice(0, 5); // Ambil 5 Teratas saja
-
-  const medals = ["🥇", "🥈", "🥉", "4️⃣", "5️⃣"];
+  }).slice(0, 5);
 
   const cardsHtml = ranked.map((item, idx) => {
     const isPerfect = item.persentase >= 1;
+    const rankNum = String(idx + 1).padStart(2, '0'); // Menghasilkan "01", "02", dst
     return `
       <div class="absen-rank-card rank-${idx + 1} ${isPerfect ? 'is-perfect' : ''}">
-        <div class="rank-card-head">
-          <span class="rank-medal">${medals[idx]}</span>
-          <span class="rank-adna-badge">${escapeHtml(item.adna || "-")}</span>
+        <div class="rank-card-top">
+          <span class="rank-badge">${rankNum}</span>
+          <span class="rank-adna">${escapeHtml(item.adna || "-")}</span>
         </div>
-        <div class="rank-card-body">
+        <div class="rank-card-mid">
           <strong class="rank-name" title="${escapeHtml(item.muallim)}">${escapeHtml(item.muallim)}</strong>
-          <span class="rank-score">${formatPercent(item.persentase)} <small>(${item.jumlahHadir}/${item.jumlahHari})</small></span>
+        </div>
+        <div class="rank-card-bot">
+          <div class="rank-stat">
+            <span class="rank-pct">${formatPercent(item.persentase)}</span>
+            <span class="rank-ratio">${item.jumlahHadir}/${item.jumlahHari} hari</span>
+          </div>
+          ${isPerfect ? `<i class="ri-verified-badge-fill perfect-icon" title="Hadir 100%"></i>` : ''}
         </div>
       </div>
     `;
+  }).join("");
+
+  const bulanLabel = absenMuallimState.filters.bulan || "Semua Bulan";
+
+  container.style.display = "block";
+  container.innerHTML = `
+    <div class="absen-ranking-box">
+      <header class="absen-ranking-header">
+        <div class="header-title-group">
+          <div class="trophy-icon-wrapper">
+            <i class="ri-trophy-fill"></i>
+          </div>
+          <div>
+            <h2>Top 5 Kehadiran Muallim</h2>
+            <p>Periode: <span>${escapeHtml(bulanLabel)}</span></p>
+          </div>
+        </div>
+      </header>
+      <div class="absen-ranking-track">
+        ${cardsHtml}
+      </div>
+    </div>
+  `;
+}
   }).join("");
 
   const bulanLabel = absenMuallimState.filters.bulan || "Semua Bulan";
