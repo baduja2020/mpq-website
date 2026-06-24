@@ -1042,23 +1042,50 @@ body.absen-filter-locked{
 
 
 /* --- GAYA APPLE: POSISI INDIKATOR KE KANAN --- */
+/* --- 1. Indikator di Kiri Atas & Tombol Accordion Minimalis --- */
 #absenList .absen-row-head {
   display: grid;
-  grid-template-columns: auto 1fr auto; /* [Indikator][Nama][Side-Action] */
+  grid-template-columns: 8px 1fr auto; /* [Dot][Nama][Action] */
   gap: 12px;
-  align-items: center;
-  padding: 1.25rem;
-  cursor: pointer;
-  transition: background 0.3s ease;
+  align-items: flex-start; /* Indikator di atas */
+  padding: 1rem;
 }
 
-/* Indikator Bulat di Pojok Kiri */
 #absenList .absen-indicator-dot {
+  grid-column: 1;
+  margin-top: 6px; /* Geser ke atas */
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #10b981; /* Hijau */
-  order: 1; /* Pindah ke paling kiri */
+}
+
+#absenList .absen-row-toggle {
+  grid-column: 3;
+  background: none !important;
+  color: #94a3b8;
+  font-size: 1.5rem;
+  padding: 0 4px;
+}
+
+/* --- 2. Warna Adaptif: Persentase Mengikuti Status Card --- */
+/* Status 'good' (Hijau) */
+#absenList .absen-row.good .absen-percent-pill { 
+  background: #dcfce7; color: #166534; 
+}
+/* Status 'warn' (Kuning) */
+#absenList .absen-row.warn .absen-percent-pill { 
+  background: #fef9c3; color: #854d0e; 
+}
+/* Status 'bad' (Merah) */
+#absenList .absen-row.bad .absen-percent-pill { 
+  background: #fee2e2; color: #991b1b; 
+}
+
+/* --- 3. Membersihkan Status Pill agar lebih elegan --- */
+#absenList .absen-status-pill {
+  background: transparent !important;
+  color: #64748b !important;
+  font-weight: 500 !important;
 }
 
 /* Group Nama Pindah ke tengah */
