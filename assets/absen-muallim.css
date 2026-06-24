@@ -1,69 +1,74 @@
 /* =========================================================
-   MPQ ABSEN MUALLIM - APPLE-STYLE DESIGN (V3.0)
+   MPQ ABSEN MUALLIM - APPLE-STYLE FULL CSS (V4.2)
    ========================================================= */
 
-/* --- 1. KARTU RINGKASAN (SUMMARY CARDS) --- */
-#absenSummaryGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 12px;
-  margin-bottom: 20px;
+/* --- 1. KARTU RINGKASAN (SUMMARY) --- */
+#absenSummaryGrid { 
+  display: grid; 
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); 
+  gap: 12px; 
+  margin-bottom: 20px; 
 }
-
-#absenSummaryGrid .absen-summary-card {
-  background: #ffffff;
-  padding: 1.25rem 1rem;
-  border-radius: 16px;
-  border: 1px solid rgba(0,0,0,0.04);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
+#absenSummaryGrid .absen-summary-card { 
+  background: #ffffff; 
+  padding: 1.25rem 1rem; 
+  border-radius: 16px; 
+  border: 1px solid rgba(0,0,0,0.04); 
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  justify-content: center; 
+  text-align: center; 
 }
-
 #absenSummaryGrid .absen-summary-card span { font-size: 0.75rem; color: #64748b; }
 #absenSummaryGrid .absen-summary-card strong { font-size: 1.75rem; font-weight: 800; color: #1e293b; margin: 4px 0; }
 #absenSummaryGrid .absen-summary-card em { font-size: 0.75rem; color: #94a3b8; }
 
-/* --- 2. ROW ABSEN (APPLE-STYLE CARD) --- */
-#absenList { display: flex; flex-direction: column; gap: 12px; }
-
-#absenList .absen-row {
-  background: #ffffff;
-  border-radius: 16px;
-  border: 1px solid rgba(0,0,0,0.04);
-  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-  overflow: hidden;
+/* --- 2. RANKING PODIUM --- */
+#absenRankingSection .absen-ranking-box { 
+  background: #ffffff; 
+  border-radius: 20px; 
+  border: 1px solid rgba(0,0,0,0.05); 
+  padding: 1.25rem; 
+  margin: 1.5rem 0; 
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03); 
 }
+#absenRankingSection .absen-ranking-header { margin-bottom: 1rem; }
+#absenRankingSection .header-title-group { display: flex; align-items: center; gap: 0.8rem; }
+#absenRankingSection .trophy-icon-wrapper { background: #047857; color: #fbbf24; width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+#absenRankingSection .absen-ranking-track { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; }
+#absenRankingSection .absen-rank-card { flex: 0 0 160px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 1rem; display: flex; flex-direction: column; gap: 8px; }
+#absenRankingSection .rank-badge { font-weight: 800; font-size: 0.7rem; background: #e2e8f0; padding: 2px 6px; border-radius: 6px; }
+#absenRankingSection .rank-name { font-size: 0.85rem; font-weight: 700; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+#absenRankingSection .rank-pct { font-weight: 800; color: #047857; }
 
+/* --- 3. ROW ABSEN (APPLE-STYLE) --- */
+#absenList { display: flex; flex-direction: column; gap: 12px; }
+#absenList .absen-row { background: #ffffff; border-radius: 16px; border: 1px solid rgba(0,0,0,0.04); transition: all 0.4s ease; overflow: hidden; }
 #absenList .absen-row.open { box-shadow: 0 10px 25px -5px rgba(0,0,0,0.08); }
 
-#absenList .absen-row-head {
-  display: grid;
-  grid-template-columns: 8px 1fr auto;
-  gap: 12px;
-  align-items: flex-start;
-  padding: 1.25rem;
-  cursor: pointer;
+/* Posisi Indikator Kiri Atas */
+#absenList .absen-row-head { 
+  display: grid; 
+  grid-template-columns: 8px 1fr auto; 
+  gap: 12px; 
+  align-items: flex-start; 
+  padding: 1.25rem; 
+  cursor: pointer; 
+}
+#absenList .absen-indicator-dot { 
+  grid-column: 1; 
+  margin-top: 6px; 
+  width: 8px; 
+  height: 8px; 
+  border-radius: 50%; 
+  background: #10b981; 
 }
 
-/* Indikator Bulat (Kiri Atas) */
-#absenList .absen-indicator-dot {
-  margin-top: 6px;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #10b981;
-}
-
-/* Nama & Meta */
-#absenList .absen-row-main { display: flex; flex-direction: column; }
+#absenList .absen-row-main { grid-column: 2; display: flex; flex-direction: column; }
 #absenList .absen-row-name { font-size: 0.95rem; font-weight: 700; color: #0f172a; margin-bottom: 4px; }
 #absenList .absen-row-meta { font-size: 0.8rem; color: #64748b; }
-
-/* Action Side (Persentase + Status + Tombol) */
-#absenList .absen-row-side { display: flex; align-items: center; gap: 8px; }
+#absenList .absen-row-side { grid-column: 3; display: flex; align-items: center; gap: 8px; }
 
 /* Warna Adaptif Teks Persentase */
 #absenList .absen-row.good .absen-percent-pill { background: #dcfce7; color: #166534; }
@@ -74,17 +79,14 @@
 .absen-status-pill { font-size: 0.8rem; font-weight: 500; color: #64748b; }
 
 /* Tombol Accordion Minimalis */
-#absenList .absen-row-toggle {
-  background: none !important;
-  color: #94a3b8;
-  font-size: 1.4rem;
-  padding: 0;
-  transition: transform 0.3s ease;
+#absenList .absen-row-toggle { 
+  background: none !important; 
+  color: #94a3b8; 
+  font-size: 1.4rem; 
+  padding: 0; 
+  transition: transform 0.3s ease; 
 }
 #absenList .absen-row.open .absen-row-toggle { transform: rotate(45deg); color: #ef4444; }
 
-/* --- 3. DETAIL CARD (APPLE-STYLE) --- */
-#absenList .absen-row-detail {
-  padding: 0 1.25rem 1.25rem 1.25rem;
-  border-top: 1px solid #f1f5f9;
-}
+/* --- 4. DETAIL CARD --- */
+#absenList .absen-row-detail { padding: 0 1.25rem 1.25rem 1.25rem; border-top: 1px solid #f1f5f9; }
