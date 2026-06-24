@@ -220,6 +220,7 @@ function applyAbsenMuallimFilters(updateUrl = true) {
   }).sort(compareAbsenRows);
 
   renderAbsenMuallimSummary();
+  renderAbsenMuallimRanking();
   renderAbsenMuallimRows();
   updateAbsenMuallimMeta();
   updateAbsenFilterLabels();
@@ -639,4 +640,64 @@ function escapeHtml(value) {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
+}
+// ==========================================
+// FITUR PODIUM RANKING TOP 5 MUALLIM
+// ==========================================
+function renderAbsenMuallimRanking() {
+  const container = document.getElementById("absenRankingSection");
+  if (!container) return;
+
+  // 1. Ambil data yang sedang aktif ter-filter
+  const data = [...absenMuallimState.filtered];
+
+  // 2. Buang guru yang jumlah harinya 0 (mencegah error pembagian)
+  const validData = data.filter((item) => item.jumlahHari > 0);
+
+  if (validData.length === 0) {
+    container.innerHTML = "";
+    container.style.display = "none";
+    return;
+  }
+
+  // 3. Algoritma Keadilan: Persentase -> Jumlah Hadir -> Abjad
+  const ranked = validData.sort((a, b) => {
+    if (b.persentase !== a.persentase) return b.persentase - a.persentase;
+    if (b.jumlahHadir !== a.jumlahHadir) return b.jumlahHadir - a.jumlahHadir;
+    return String(a.muallim || "").localeCompare(String(b.muallim || ""), "id-ID");
+  }).slice(0, 5); // Ambil 5 Teratas saja
+
+  const medals = ["🥇", "🥈", "🥉", "4️⃣", "5️⃣"];
+
+  const cardsHtml = ranked.map((item, idx) => {
+    const isPerfect = item.persentase >= 1;
+    return `
+      <div class="absen-rank-card rank-${idx + 1} ${isPerfect ? 'is-perfect' : ''}">
+        <div class="rank-card-head">
+          <span class="rank-medal">${medals[idx]}</span>
+          <span class="rank-adna-badge">${escapeHtml(item.adna || "-")}</span>
+        </div>
+        <div class="rank-card-body">
+          <strong class="rank-name" title="${escapeHtml(item.muallim)}">${escapeHtml(item.muallim)}</strong>
+          <span class="rank-score">${formatPercent(item.persentase)} <small>(${item.jumlahHadir}/${item.jumlahHari})</small></span>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  const bulanLabel = absenMuallimState.filters.bulan || "Semua Bulan";
+
+  container.style.display = "block";
+  container.innerHTML = `
+    <header class="absen-ranking-header">
+      <i class="ri-trophy-line"></i>
+      <div>
+        <h2>Top 5 Kehadiran Muallim</h2>
+        <p>Bulan aktif: <strong>${escapeHtml(bulanLabel)}</strong></p>
+      </div>
+    </header>
+    <div class="absen-ranking-scroller">
+      ${cardsHtml}
+    </div>
+  `;
 }
