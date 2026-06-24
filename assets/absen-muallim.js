@@ -1,6 +1,5 @@
 /*
-  MPQ - Rekap Absen Muallim V2
-  PENTING: ganti ABSEN_MUALLIM_API_URL dengan URL Web App Apps Script panjenengan.
+  MPQ - Rekap Absen Muallim V2 (STITCHED & VERIFIED BY GEMINI)
 */
 const ABSEN_MUALLIM_API_URL = "https://script.google.com/macros/s/AKfycbzAgrbS8PxxqGF1qPC2ibcQ-hOF939cvJbczv75j73xQx13TRvhXUdT5yPA2eW5ebw/exec";
 const ABSEN_MUALLIM_API_MODE = "absenMuallim";
@@ -220,7 +219,7 @@ function applyAbsenMuallimFilters(updateUrl = true) {
   }).sort(compareAbsenRows);
 
   renderAbsenMuallimSummary();
-  renderAbsenMuallimRanking();
+  renderAbsenMuallimRanking(); // <-- [Fungsi Podium dipanggil disini]
   renderAbsenMuallimRows();
   updateAbsenMuallimMeta();
   updateAbsenFilterLabels();
@@ -641,6 +640,7 @@ function escapeHtml(value) {
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
 }
+
 // ==========================================
 // FITUR PODIUM RANKING TOP 5 (VERSI 2.0 - CLEAN)
 // ==========================================
@@ -656,7 +656,8 @@ function renderAbsenMuallimRanking() {
     return;
   }
 
-  const ranked = validData.sort((a, b) => {
+  // Clone array dengan [...] agar sort() tidak merusak urutan tabel utama
+  const ranked = [...validData].sort((a, b) => {
     if (b.persentase !== a.persentase) return b.persentase - a.persentase;
     if (b.jumlahHadir !== a.jumlahHadir) return b.jumlahHadir - a.jumlahHadir;
     return String(a.muallim || "").localeCompare(String(b.muallim || ""), "id-ID");
@@ -664,7 +665,7 @@ function renderAbsenMuallimRanking() {
 
   const cardsHtml = ranked.map((item, idx) => {
     const isPerfect = item.persentase >= 1;
-    const rankNum = String(idx + 1).padStart(2, '0'); // Menghasilkan "01", "02", dst
+    const rankNum = String(idx + 1).padStart(2, '0');
     return `
       <div class="absen-rank-card rank-${idx + 1} ${isPerfect ? 'is-perfect' : ''}">
         <div class="rank-card-top">
@@ -704,24 +705,6 @@ function renderAbsenMuallimRanking() {
       <div class="absen-ranking-track">
         ${cardsHtml}
       </div>
-    </div>
-  `;
-}
-  }).join("");
-
-  const bulanLabel = absenMuallimState.filters.bulan || "Semua Bulan";
-
-  container.style.display = "block";
-  container.innerHTML = `
-    <header class="absen-ranking-header">
-      <i class="ri-trophy-line"></i>
-      <div>
-        <h2>Top 5 Kehadiran Muallim</h2>
-        <p>Bulan aktif: <strong>${escapeHtml(bulanLabel)}</strong></p>
-      </div>
-    </header>
-    <div class="absen-ranking-scroller">
-      ${cardsHtml}
     </div>
   `;
 }
