@@ -1,69 +1,28 @@
-/* =========================================================
-   FIX TOTAL: MEMATIKAN SEMUA GAYA LAMA
-   ========================================================= */
-
-#absenList .absen-row {
-    display: block !important;
-    background: #ffffff !important;
-    border-radius: 16px !important;
-    border: 1px solid rgba(0,0,0,0.05) !important;
-    margin-bottom: 12px !important;
-    padding: 0 !important;
-    overflow: hidden !important;
+/* MPQ ABSEN MUALLIM - CLEAN & STABLE V5.0 */
+#absenList { display: flex; flex-direction: column; gap: 12px; }
+#absenList .absen-row { background: #fff; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; }
+#absenList .absen-row-head { 
+    display: grid; 
+    grid-template-columns: 20px 1fr auto; 
+    align-items: center; 
+    padding: 16px 20px; 
+    gap: 12px; 
+    cursor: pointer; 
 }
+#absenList .absen-indicator-dot { width: 8px; height: 8px; border-radius: 50%; background: #10b981; }
+#absenList .absen-row-main { display: flex; flex-direction: column; }
+#absenList .absen-row-name { font-size: 0.95rem; font-weight: 700; color: #0f172a; }
+#absenList .absen-row-meta { font-size: 0.8rem; color: #64748b; }
+#absenList .absen-row-side { display: flex; align-items: center; gap: 8px; }
 
-#absenList .absen-row-head {
-    display: grid !important;
-    grid-template-columns: 20px 1fr auto !important; /* Dot, Nama, Action */
-    align-items: start !important;
-    padding: 20px !important;
-    cursor: pointer !important;
-    gap: 10px !important;
-}
+/* Status Pill */
+.absen-percent-pill { padding: 4px 10px; border-radius: 8px; font-size: 0.8rem; font-weight: 700; }
+#absenList .absen-row.good .absen-percent-pill { background: #dcfce7; color: #166534; }
+#absenList .absen-row.warn .absen-percent-pill { background: #fef9c3; color: #854d0e; }
+#absenList .absen-row.bad .absen-percent-pill { background: #fee2e2; color: #991b1b; }
+.absen-status-pill { font-size: 0.8rem; font-weight: 500; color: #64748b; }
 
-/* Memaksa indikator ke kiri atas */
-#absenList .absen-indicator-dot {
-    grid-column: 1 !important;
-    margin-top: 6px !important;
-    width: 8px !important;
-    height: 8px !important;
-    border-radius: 50% !important;
-    background: #10b981 !important;
-}
-
-/* Memaksa teks di kolom tengah */
-#absenList .absen-row-main {
-    grid-column: 2 !important;
-    display: flex !important;
-    flex-direction: column !important;
-    text-align: left !important;
-}
-
-/* Memaksa Action Side (Persentase + Tombol) ke kanan */
-#absenList .absen-row-side {
-    grid-column: 3 !important;
-    display: flex !important;
-    align-items: center !important;
-    gap: 10px !important;
-}
-
-/* Memaksa tombol accordion simpel */
-#absenList .absen-row-toggle {
-    background: none !important;
-    border: none !important;
-    color: #94a3b8 !important;
-    font-size: 1.5rem !important;
-    padding: 0 !important;
-    margin: 0 !important;
-}
-
-/* Memaksa elemen Detail agar tidak aneh */
-#absenList .absen-row-detail {
-    display: none !important;
-    padding: 0 20px 20px 20px !important;
-    border-top: 1px solid #f1f5f9 !important;
-}
-
-#absenList .absen-row.open .absen-row-detail {
-    display: block !important;
-}
+/* Accordion */
+#absenList .absen-row-toggle { background: none; border: none; color: #94a3b8; font-size: 1.4rem; cursor: pointer; }
+#absenList .absen-row-detail { display: none; padding: 14px 20px; border-top: 1px solid #f1f5f9; }
+#absenList .absen-row.open .absen-row-detail { display: block; }
