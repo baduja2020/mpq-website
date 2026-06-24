@@ -414,8 +414,10 @@ function closeAbsenFilterModal() {
   overlay.classList.remove("is-open");
   overlay.setAttribute("aria-hidden", "true");
   document.body.classList.remove("absen-filter-locked");
-}
 
+  // [BARIS TAMBAHAN] Membunuh sisa fokus kursor yang tertinggal:
+  if (document.activeElement) document.activeElement.blur();
+}
 function resetAbsenMuallimFilters() {
   setDefaultAbsenFilters();
   const searchInput = document.getElementById("absenSearchInput");
