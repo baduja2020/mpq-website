@@ -1004,3 +1004,114 @@ body.absen-filter-locked{
     grid-template-columns:1fr;
   }
 }
+/* ==========================================
+   STYLING TOP 5 RANKING PODIUM
+========================================== */
+.absen-ranking-wrapper {
+  margin: 1.25rem 0;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  padding: 1.1rem;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.03);
+}
+
+.absen-ranking-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.absen-ranking-header i {
+  font-size: 1.8rem;
+  color: #f59e0b; /* Warna Emas Piala */
+  background: #fef3c7;
+  padding: 0.4rem;
+  border-radius: 12px;
+}
+
+.absen-ranking-header h2 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+}
+
+.absen-ranking-header p {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.absen-ranking-scroller {
+  display: flex;
+  gap: 0.75rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none; /* Firefox */
+}
+.absen-ranking-scroller::-webkit-scrollbar { display: none; /* Chrome/Safari */ }
+
+.absen-rank-card {
+  flex: 0 0 165px;
+  scroll-snap-align: start;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s ease;
+}
+
+/* Kasta Warna Kartu Juara */
+.absen-rank-card.rank-1 { background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border-color: #fde68a; }
+.absen-rank-card.rank-2 { background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%); border-color: #cbd5e1; }
+.absen-rank-card.rank-3 { background: linear-gradient(135deg, #fef2f2 0%, #ffedd5 100%); border-color: #fed7aa; }
+
+.rank-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.6rem;
+}
+
+.rank-medal { font-size: 1.2rem; }
+
+.rank-adna-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  background: rgba(0, 0, 0, 0.06);
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: #475569;
+}
+
+.rank-name {
+  display: block;
+  font-size: 0.85rem;
+  color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rank-score {
+  display: block;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #059669;
+  margin-top: 0.2rem;
+}
+
+.rank-score small {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: #64748b;
+}
+
+/* Efek visual khusus bagi yang 100% sempurna */
+.absen-rank-card.is-perfect .rank-score { color: #0284c7; }
