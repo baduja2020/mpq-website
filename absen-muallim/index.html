@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Rekap Absen Muallim - MPQ Al Falah</title>
-  <meta name="description" content="Dashboard rekap absen muallim MPQ Al Falah dengan filter bulan, ADNA, dan pencarian nama muallim.">
+  <meta name="description" content="Dashboard rekap absen muallim MPQ Al Falah dengan filter bulan, ADNA, pencarian nama, dan status kehadiran.">
   <link rel="canonical" href="https://www.mpq.my.id/absen-muallim/">
   <meta property="og:title" content="Rekap Absen Muallim - MPQ Al Falah">
   <meta property="og:description" content="Pantau rekap kehadiran muallim MPQ Al Falah secara ringkas dan mobile friendly.">
@@ -46,70 +46,116 @@
 </header>
 
 <main class="page absen-muallim-page" id="absenMuallimApp">
-  <section class="absen-hero-card content-card">
+  <section class="absen-hero-card">
     <div class="label green">Rekap Absen Muallim</div>
     <h1>Dashboard Kehadiran Muallim</h1>
     <p>
-      Pantau rekap kehadiran muallim MPQ per bulan, lengkap dengan filter ADNA,
-      pencarian nama, total S/I/A, dan persentase kehadiran.
+      Pantau rekap kehadiran muallim MPQ per bulan. Gunakan pencarian dan filter
+      untuk melihat data berdasarkan ADNA, bulan, atau status kehadiran.
     </p>
   </section>
 
-  <section class="absen-panel content-card">
-    <div class="absen-toolbar" aria-label="Filter rekap absen muallim">
-      <label>
-        <span>Bulan</span>
-        <select id="absenBulanFilter">
-          <option value="">Memuat bulan...</option>
-        </select>
+  <section class="absen-shell" aria-label="Data rekap absen muallim">
+    <div class="absen-toolbar">
+      <label class="absen-search-field" for="absenSearchInput">
+        <i class="ri-search-line"></i>
+        <input id="absenSearchInput" type="search" placeholder="Cari nama muallim atau ADNA..." autocomplete="off">
       </label>
 
-      <label>
-        <span>ADNA</span>
-        <select id="absenAdnaFilter">
-          <option value="">Semua ADNA</option>
-        </select>
-      </label>
-
-      <label class="absen-search-wrap">
-        <span>Cari Muallim</span>
-        <input id="absenSearchInput" type="search" placeholder="Cari nama muallim atau ADNA...">
-      </label>
-
-      <button id="absenResetButton" class="absen-reset-btn" type="button">
-        <i class="ri-refresh-line"></i>
-        Reset
+      <button id="absenFilterButton" class="absen-filter-btn" type="button" aria-haspopup="dialog" aria-controls="absenFilterOverlay">
+        <i class="ri-equalizer-2-line"></i>
+        Filter
+        <span id="absenActiveFilterCount">0</span>
       </button>
+
+      <button id="absenResetButton" class="absen-reset-btn" type="button">Reset</button>
     </div>
 
+    <div class="absen-summary-strip" id="absenSummaryGrid" aria-live="polite"></div>
     <div class="absen-meta" id="absenMeta">Memuat data rekap...</div>
-    <div class="absen-summary-grid" id="absenSummaryGrid"></div>
 
-    <section class="absen-mobile-list" id="absenMobileList" aria-live="polite"></section>
-
-    <div class="absen-table-wrap" id="absenTableWrap">
-      <table class="absen-table">
-        <thead>
-          <tr>
-            <th>No</th>
-            <th>Muallim</th>
-            <th>ADNA</th>
-            <th>Hari</th>
-            <th>S</th>
-            <th>I</th>
-            <th>A</th>
-            <th>Hadir</th>
-            <th>%</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody id="absenTableBody">
-          <tr><td colspan="10">Memuat data...</td></tr>
-        </tbody>
-      </table>
-    </div>
+    <section class="absen-rekap-list" id="absenList" aria-live="polite">
+      <div class="absen-skeleton-list">
+        <div class="absen-skeleton-row"></div>
+        <div class="absen-skeleton-row"></div>
+        <div class="absen-skeleton-row"></div>
+      </div>
+    </section>
   </section>
 </main>
+
+<div class="absen-filter-overlay" id="absenFilterOverlay" aria-hidden="true">
+  <div class="absen-filter-backdrop" data-absen-close-filter></div>
+  <section class="absen-filter-modal" role="dialog" aria-modal="true" aria-labelledby="absenFilterTitle">
+    <div class="absen-filter-handle" aria-hidden="true"></div>
+    <header class="absen-filter-header">
+      <div>
+        <h2 id="absenFilterTitle">Filter Data</h2>
+        <p>Buka kategori, cari pilihan, lalu terapkan.</p>
+      </div>
+      <button class="absen-filter-close" type="button" data-absen-close-filter aria-label="Tutup filter">
+        <i class="ri-close-line"></i>
+      </button>
+    </header>
+
+    <div class="absen-filter-content">
+      <section class="absen-filter-section is-open" data-filter-section>
+        <button class="absen-filter-section-head" type="button" data-filter-toggle>
+          <span class="absen-filter-icon"><i class="ri-calendar-line"></i></span>
+          <span>
+            <strong>Bulan</strong>
+            <small id="absenBulanLabel">Semua Bulan</small>
+          </span>
+          <i class="ri-arrow-down-s-line"></i>
+        </button>
+        <div class="absen-filter-section-body">
+          <label class="absen-option-search" for="absenBulanSearch">
+            <i class="ri-search-line"></i>
+            <input id="absenBulanSearch" type="search" placeholder="Cari bulan...">
+          </label>
+          <div class="absen-option-grid" id="absenBulanOptions"></div>
+        </div>
+      </section>
+
+      <section class="absen-filter-section" data-filter-section>
+        <button class="absen-filter-section-head" type="button" data-filter-toggle>
+          <span class="absen-filter-icon"><i class="ri-book-open-line"></i></span>
+          <span>
+            <strong>ADNA</strong>
+            <small id="absenAdnaLabel">Semua ADNA</small>
+          </span>
+          <i class="ri-arrow-down-s-line"></i>
+        </button>
+        <div class="absen-filter-section-body">
+          <label class="absen-option-search" for="absenAdnaSearch">
+            <i class="ri-search-line"></i>
+            <input id="absenAdnaSearch" type="search" placeholder="Cari ADNA...">
+          </label>
+          <div class="absen-option-grid" id="absenAdnaOptions"></div>
+        </div>
+      </section>
+
+      <section class="absen-filter-section" data-filter-section>
+        <button class="absen-filter-section-head" type="button" data-filter-toggle>
+          <span class="absen-filter-icon"><i class="ri-shield-check-line"></i></span>
+          <span>
+            <strong>Status Kehadiran</strong>
+            <small id="absenStatusLabel">Semua Status</small>
+          </span>
+          <i class="ri-arrow-down-s-line"></i>
+        </button>
+        <div class="absen-filter-section-body">
+          <div class="absen-option-grid absen-status-option-grid" id="absenStatusOptions"></div>
+        </div>
+      </section>
+    </div>
+
+    <footer class="absen-filter-actions">
+      <button id="absenFilterResetModal" type="button" class="absen-filter-reset">Reset</button>
+      <button id="absenFilterApply" type="button" class="absen-filter-apply">Terapkan</button>
+    </footer>
+  </section>
+</div>
 
 <footer class="footer-pro">
   <strong>MPQ Al Falah</strong>

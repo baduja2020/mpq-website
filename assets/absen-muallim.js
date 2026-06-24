@@ -1,6 +1,6 @@
 /*
-  MPQ - Rekap Absen Muallim
-  Ganti ABSEN_MUALLIM_API_URL setelah Apps Script di-deploy.
+  MPQ - Rekap Absen Muallim V2
+  PENTING: ganti ABSEN_MUALLIM_API_URL dengan URL Web App Apps Script panjenengan.
 */
 const ABSEN_MUALLIM_API_URL = "https://script.google.com/macros/s/AKfycbzAgrbS8PxxqGF1qPC2ibcQ-hOF939cvJbczv75j73xQx13TRvhXUdT5yPA2eW5ebw/exec";
 const ABSEN_MUALLIM_API_MODE = "absenMuallim";
@@ -20,6 +20,13 @@ const HIJRI_MONTH_ORDER = [
   "DZULHIJJAH",
 ];
 
+const ABSEN_STATUS_OPTIONS = [
+  { value: "", label: "Semua Status", note: "Semua persentase" },
+  { value: "good", label: "Baik", note: "90% ke atas" },
+  { value: "warn", label: "Perhatian", note: "75% - 89%" },
+  { value: "bad", label: "Tindak lanjut", note: "di bawah 75%" },
+];
+
 const absenMuallimState = {
   data: [],
   filtered: [],
@@ -27,6 +34,13 @@ const absenMuallimState = {
   adnas: [],
   loaded: false,
   generatedAt: "",
+  activeMonth: "",
+  filters: {
+    bulan: "",
+    adna: "",
+    status: "",
+    q: "",
+  },
 };
 
 document.addEventListener("DOMContentLoaded", setupAbsenMuallimPage);
@@ -35,26 +49,55 @@ function setupAbsenMuallimPage() {
   const app = document.getElementById("absenMuallimApp");
   if (!app) return;
 
-  const bulanFilter = document.getElementById("absenBulanFilter");
-  const adnaFilter = document.getElementById("absenAdnaFilter");
   const searchInput = document.getElementById("absenSearchInput");
   const resetButton = document.getElementById("absenResetButton");
+  const filterButton = document.getElementById("absenFilterButton");
+  const filterApply = document.getElementById("absenFilterApply");
+  const filterResetModal = document.getElementById("absenFilterResetModal");
+  const bulanSearch = document.getElementById("absenBulanSearch");
+  const adnaSearch = document.getElementById("absenAdnaSearch");
 
-  [bulanFilter, adnaFilter, searchInput].forEach((el) => {
-    if (!el) return;
-    el.addEventListener("input", applyAbsenMuallimFilters);
-    el.addEventListener("change", applyAbsenMuallimFilters);
-  });
-
-  if (resetButton) {
-    resetButton.addEventListener("click", function () {
-      const activeMonth = getDefaultBulan();
-      if (bulanFilter) bulanFilter.value = activeMonth;
-      if (adnaFilter) adnaFilter.value = "";
-      if (searchInput) searchInput.value = "";
-      applyAbsenMuallimFilters();
+  if (searchInput) {
+    searchInput.addEventListener("input", function () {
+      absenMuallimState.filters.q = searchInput.value || "";
+      applyAbsenMuallimFilters(true);
     });
   }
+
+  if (resetButton) resetButton.addEventListener("click", resetAbsenMuallimFilters);
+  if (filterButton) filterButton.addEventListener("click", openAbsenFilterModal);
+  if (filterApply) filterApply.addEventListener("click", function () {
+    applyAbsenMuallimFilters(true);
+    closeAbsenFilterModal();
+  });
+  if (filterResetModal) filterResetModal.addEventListener("click", resetAbsenMuallimFilters);
+
+  document.querySelectorAll("[data-absen-close-filter]").forEach((el) => {
+    el.addEventListener("click", closeAbsenFilterModal);
+  });
+
+  document.querySelectorAll("[data-filter-toggle]").forEach((button) => {
+    button.addEventListener("click", function () {
+      const section = button.closest("[data-filter-section]");
+      if (!section) return;
+      section.classList.toggle("is-open");
+    });
+  });
+
+  if (bulanSearch) bulanSearch.addEventListener("input", renderAbsenFilterOptions);
+  if (adnaSearch) adnaSearch.addEventListener("input", renderAbsenFilterOptions);
+
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape") closeAbsenFilterModal();
+  });
+
+  document.addEventListener("click", function (event) {
+    const head = event.target.closest(".absen-row-head");
+    if (!head) return;
+    const row = head.closest(".absen-row");
+    if (!row) return;
+    row.classList.toggle("open");
+  });
 
   loadAbsenMuallimData();
 }
@@ -88,8 +131,9 @@ async function loadAbsenMuallimData() {
     absenMuallimState.activeMonth = normalizeUpper(json.activeMonth || "");
     absenMuallimState.loaded = true;
 
-    populateAbsenMuallimFilters();
+    setDefaultAbsenFilters();
     applyAbsenMuallimParamsFromUrl();
+    renderAbsenFilterOptions();
     applyAbsenMuallimFilters(false);
   } catch (error) {
     renderAbsenMuallimError(
@@ -128,23 +172,11 @@ function normalizeAbsenMuallimRow(row = {}) {
   };
 }
 
-function populateAbsenMuallimFilters() {
-  const bulanFilter = document.getElementById("absenBulanFilter");
-  const adnaFilter = document.getElementById("absenAdnaFilter");
-
-  if (bulanFilter) {
-    bulanFilter.innerHTML = absenMuallimState.months.length
-      ? absenMuallimState.months.map((bulan) => `<option value="${escapeHtml(bulan)}">${escapeHtml(bulan)}</option>`).join("")
-      : `<option value="">Semua Bulan</option>`;
-
-    const defaultBulan = getDefaultBulan();
-    if (defaultBulan) bulanFilter.value = defaultBulan;
-  }
-
-  if (adnaFilter) {
-    adnaFilter.innerHTML = `<option value="">Semua ADNA</option>` +
-      absenMuallimState.adnas.map((adna) => `<option value="${escapeHtml(adna)}">${escapeHtml(adna)}</option>`).join("");
-  }
+function setDefaultAbsenFilters() {
+  absenMuallimState.filters.bulan = getDefaultBulan();
+  absenMuallimState.filters.adna = "";
+  absenMuallimState.filters.status = "";
+  absenMuallimState.filters.q = "";
 }
 
 function getDefaultBulan() {
@@ -157,29 +189,32 @@ function applyAbsenMuallimParamsFromUrl() {
   const params = new URLSearchParams(window.location.search);
   const bulan = normalizeUpper(params.get("bulan") || "");
   const adna = normalizeAdnaLabel(params.get("adna") || "");
+  const status = normalizeSearchText(params.get("status") || "");
   const q = params.get("q") || "";
 
-  const bulanFilter = document.getElementById("absenBulanFilter");
-  const adnaFilter = document.getElementById("absenAdnaFilter");
-  const searchInput = document.getElementById("absenSearchInput");
+  if (bulan && absenMuallimState.months.includes(bulan)) absenMuallimState.filters.bulan = bulan;
+  if (adna && absenMuallimState.adnas.includes(adna)) absenMuallimState.filters.adna = adna;
+  if (["good", "warn", "bad"].includes(status)) absenMuallimState.filters.status = status;
+  if (q) absenMuallimState.filters.q = q;
 
-  if (bulanFilter && bulan && absenMuallimState.months.includes(bulan)) bulanFilter.value = bulan;
-  if (adnaFilter && adna && absenMuallimState.adnas.includes(adna)) adnaFilter.value = adna;
-  if (searchInput && q) searchInput.value = q;
+  const searchInput = document.getElementById("absenSearchInput");
+  if (searchInput) searchInput.value = absenMuallimState.filters.q;
 }
 
 function applyAbsenMuallimFilters(updateUrl = true) {
   if (!absenMuallimState.loaded) return;
 
-  const bulan = normalizeUpper(document.getElementById("absenBulanFilter")?.value || "");
-  const adna = normalizeSearchText(document.getElementById("absenAdnaFilter")?.value || "");
-  const q = normalizeSearchText(document.getElementById("absenSearchInput")?.value || "");
+  const bulan = normalizeUpper(absenMuallimState.filters.bulan || "");
+  const adna = normalizeSearchText(absenMuallimState.filters.adna || "");
+  const status = normalizeSearchText(absenMuallimState.filters.status || "");
+  const q = normalizeSearchText(absenMuallimState.filters.q || "");
 
   absenMuallimState.filtered = absenMuallimState.data.filter((item) => {
     const searchable = normalizeSearchText([item.muallim, item.adna, item.bulan].join(" "));
 
     if (bulan && normalizeUpper(item.bulan) !== bulan) return false;
     if (adna && normalizeSearchText(item.adna) !== adna) return false;
+    if (status && getTone(item.persentase) !== status) return false;
     if (q && !searchable.includes(q)) return false;
     return true;
   }).sort(compareAbsenRows);
@@ -187,17 +222,19 @@ function applyAbsenMuallimFilters(updateUrl = true) {
   renderAbsenMuallimSummary();
   renderAbsenMuallimRows();
   updateAbsenMuallimMeta();
+  updateAbsenFilterLabels();
+  updateActiveFilterCount();
+  renderAbsenFilterOptions();
   if (updateUrl) updateAbsenMuallimUrl();
 }
 
 function updateAbsenMuallimUrl() {
   const params = new URLSearchParams();
-  const bulan = document.getElementById("absenBulanFilter")?.value || "";
-  const adna = document.getElementById("absenAdnaFilter")?.value || "";
-  const q = document.getElementById("absenSearchInput")?.value || "";
+  const { bulan, adna, status, q } = absenMuallimState.filters;
 
   if (bulan) params.set("bulan", bulan);
   if (adna) params.set("adna", adna);
+  if (status) params.set("status", status);
   if (q) params.set("q", q);
 
   const nextUrl = `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ""}`;
@@ -208,12 +245,12 @@ function updateAbsenMuallimMeta() {
   const meta = document.getElementById("absenMeta");
   if (!meta) return;
 
-  const bulan = document.getElementById("absenBulanFilter")?.value || "Semua bulan";
-  const adna = document.getElementById("absenAdnaFilter")?.value || "Semua ADNA";
+  const { bulan, adna, status } = absenMuallimState.filters;
   const count = absenMuallimState.filtered.length;
+  const statusLabel = getStatusFilterLabel(status) || "Semua Status";
   const generated = absenMuallimState.generatedAt ? ` • Update: ${formatAbsenDate(absenMuallimState.generatedAt)}` : "";
 
-  meta.textContent = `Menampilkan ${count} muallim • Bulan ${bulan} • ${adna}${generated}`;
+  meta.innerHTML = `Menampilkan <strong>${count}</strong> muallim • Bulan ${escapeHtml(bulan || "Semua Bulan")} • ${escapeHtml(adna || "Semua ADNA")} • ${escapeHtml(statusLabel)}${escapeHtml(generated)}`;
 }
 
 function renderAbsenMuallimSummary() {
@@ -223,17 +260,15 @@ function renderAbsenMuallimSummary() {
   const data = absenMuallimState.filtered;
   const total = data.length;
   const avgPercent = total ? data.reduce((sum, item) => sum + item.persentase, 0) / total : 0;
-  const totalSakit = data.reduce((sum, item) => sum + item.sakit, 0);
-  const totalIzin = data.reduce((sum, item) => sum + item.izin, 0);
   const totalAlpa = data.reduce((sum, item) => sum + item.alpa, 0);
+  const totalIzin = data.reduce((sum, item) => sum + item.izin, 0);
   const perhatian = data.filter((item) => item.persentase < 0.75).length;
 
   container.innerHTML = [
-    summaryCard("Total Muallim", total, "baris data", ""),
-    summaryCard("Rata-rata Hadir", formatPercent(avgPercent), "kehadiran", getTone(avgPercent)),
-    summaryCard("Sakit", totalSakit, "total S", ""),
-    summaryCard("Izin", totalIzin, "total I", ""),
-    summaryCard("Alpa", totalAlpa, "total A", totalAlpa > 0 ? "warn" : "good"),
+    summaryCard("Menampilkan", total, "muallim", ""),
+    summaryCard("Rata-rata", formatPercent(avgPercent), "kehadiran", getTone(avgPercent)),
+    summaryCard("Izin", totalIzin, "total I", totalIzin > 0 ? "warn" : "good"),
+    summaryCard("Alpa", totalAlpa, "total A", totalAlpa > 0 ? "bad" : "good"),
     summaryCard("Perhatian", perhatian, "di bawah 75%", perhatian > 0 ? "bad" : "good"),
   ].join("");
 }
@@ -249,97 +284,98 @@ function summaryCard(label, value, note, tone) {
 }
 
 function renderAbsenMuallimRows() {
-  const tableBody = document.getElementById("absenTableBody");
-  const mobileList = document.getElementById("absenMobileList");
+  const list = document.getElementById("absenList");
   const data = absenMuallimState.filtered;
+  if (!list) return;
 
   if (!data.length) {
-    const empty = `
+    list.innerHTML = `
       <div class="absen-empty-card">
+        <i class="ri-search-line"></i>
         <strong>Data tidak ditemukan</strong>
-        <p>Coba ubah filter bulan, ADNA, atau kata pencarian.</p>
+        <p>Coba ubah filter bulan, ADNA, status, atau kata pencarian.</p>
       </div>
     `;
-
-    if (tableBody) tableBody.innerHTML = `<tr><td colspan="10">Data tidak ditemukan.</td></tr>`;
-    if (mobileList) mobileList.innerHTML = empty;
     return;
   }
 
-  if (tableBody) {
-    tableBody.innerHTML = data.map((item, index) => renderAbsenTableRow(item, index)).join("");
-  }
-
-  if (mobileList) {
-    mobileList.innerHTML = data.map((item, index) => renderAbsenCard(item, index)).join("");
-  }
+  list.innerHTML = data.map((item, index) => renderAbsenRow(item, index)).join("");
 }
 
-function renderAbsenTableRow(item, index) {
+function renderAbsenRow(item, index) {
   const tone = getTone(item.persentase);
+  const statusLabel = getStatusLabel(item.persentase);
+  const alpaTone = item.alpa > 0 ? "bad" : "good";
+  const izinTone = item.izin > 0 ? "warn" : "good";
+  const hadirTone = tone;
+
   return `
-    <tr>
-      <td>${index + 1}</td>
-      <td>
-        <div class="absen-muallim-name">
-          <strong>${escapeHtml(item.muallim || "-")}</strong>
-          ${item.catatan ? `<small>${escapeHtml(item.catatan)}</small>` : ""}
+    <article class="absen-row ${tone}">
+      <button class="absen-row-head" type="button" aria-label="Buka detail absen ${escapeHtml(item.muallim || "muallim")}">
+        <span class="absen-indicator-dot" aria-hidden="true"></span>
+        <span class="absen-row-main">
+          <strong class="absen-row-name">${escapeHtml(item.muallim || "-")}</strong>
+          <span class="absen-row-meta">${escapeHtml(item.adna || "-")} • Bulan ${escapeHtml(item.bulan || "-")} • Hadir ${formatNumber(item.jumlahHadir)}/${formatNumber(item.jumlahHari)} • S/I/A ${formatNumber(item.sakit)}/${formatNumber(item.izin)}/${formatNumber(item.alpa)}</span>
+        </span>
+        <span class="absen-row-side">
+          <span class="absen-percent-pill ${tone}">${formatPercent(item.persentase)}</span>
+          <span class="absen-status-pill ${tone}">${escapeHtml(statusLabel)}</span>
+        </span>
+        <i class="ri-add-line absen-row-toggle" aria-hidden="true"></i>
+      </button>
+
+      <div class="absen-row-detail">
+        <div class="absen-detail-title">
+          <span>Detail Kehadiran</span>
+          <small>Data dihitung dari rekap absen muallim pada bulan terpilih.</small>
         </div>
-      </td>
-      <td>${escapeHtml(item.adna || "-")}</td>
-      <td>${formatNumber(item.jumlahHari)}</td>
-      <td>${formatNumber(item.sakit)}</td>
-      <td>${formatNumber(item.izin)}</td>
-      <td>${formatNumber(item.alpa)}</td>
-      <td>${formatNumber(item.jumlahHadir)}</td>
-      <td><span class="absen-percent-pill ${tone}">${formatPercent(item.persentase)}</span></td>
-      <td><span class="absen-status-pill ${tone}">${getStatusLabel(item.persentase)}</span></td>
-    </tr>
+
+        <div class="absen-detail-grid-mini">
+          ${detailBox("Jumlah Hari", item.jumlahHari, "hari aktif", "", "ri-calendar-check-line")}
+          ${detailBox("Hadir", item.jumlahHadir, "jumlah hadir", hadirTone, "ri-user-follow-line")}
+          ${detailBox("Izin", item.izin, "total I", izinTone, "ri-flag-line")}
+          ${detailBox("Alpa", item.alpa, "total A", alpaTone, "ri-error-warning-line")}
+        </div>
+
+        <div class="absen-total-strip">
+          <span class="success">ADNA: <strong>${escapeHtml(item.adna || "-")}</strong></span>
+          <span class="${tone === "bad" ? "danger" : tone === "warn" ? "warning" : "success"}">Persentase: <strong>${formatPercent(item.persentase)}</strong></span>
+          <span>Status: <strong>${escapeHtml(statusLabel)}</strong></span>
+          <span>No: <strong>${index + 1}</strong></span>
+        </div>
+
+        ${item.catatan ? `<div class="absen-note">Catatan: ${escapeHtml(item.catatan)}</div>` : ""}
+      </div>
+    </article>
   `;
 }
 
-function renderAbsenCard(item) {
-  const tone = getTone(item.persentase);
-  const percentWidth = Math.max(0, Math.min(item.persentase * 100, 100));
-
+function detailBox(label, value, note, tone, icon) {
   return `
-    <article class="absen-card ${tone}" style="--percent-width:${percentWidth}%">
-      <div class="absen-card-top">
-        <div>
-          <h3>${escapeHtml(item.muallim || "-")}</h3>
-          <span class="absen-status-pill ${tone}">${getStatusLabel(item.persentase)}</span>
-        </div>
-        <span class="adna-chip"><i class="ri-book-open-line"></i>${escapeHtml(item.adna || "-")}</span>
+    <div class="absen-period ${tone || ""}">
+      <div class="absen-period-top">
+        <span>${escapeHtml(label)}</span>
+        <i class="${escapeHtml(icon || "ri-information-line")}"></i>
       </div>
-
-      <div class="absen-progress"><span></span></div>
-
-      <div class="absen-card-grid">
-        <div class="absen-mini-stat"><span>Hadir</span><strong>${formatNumber(item.jumlahHadir)}</strong></div>
-        <div class="absen-mini-stat"><span>Hari</span><strong>${formatNumber(item.jumlahHari)}</strong></div>
-        <div class="absen-mini-stat"><span>S/I/A</span><strong>${formatNumber(item.sakit)}/${formatNumber(item.izin)}/${formatNumber(item.alpa)}</strong></div>
-        <div class="absen-mini-stat"><span>Persen</span><strong>${formatPercent(item.persentase)}</strong></div>
-      </div>
-
-      ${item.catatan ? `<div class="absen-note">${escapeHtml(item.catatan)}</div>` : ""}
-    </article>
+      <strong>${escapeHtml(String(formatNumber(value)))}</strong>
+      <em>${escapeHtml(note)}</em>
+    </div>
   `;
 }
 
 function renderAbsenMuallimLoading() {
   const meta = document.getElementById("absenMeta");
   const summary = document.getElementById("absenSummaryGrid");
-  const tableBody = document.getElementById("absenTableBody");
-  const mobileList = document.getElementById("absenMobileList");
+  const list = document.getElementById("absenList");
 
   if (meta) meta.textContent = "Memuat data rekap absen muallim...";
   if (summary) summary.innerHTML = "";
-  if (tableBody) tableBody.innerHTML = `<tr><td colspan="10">Memuat data...</td></tr>`;
-  if (mobileList) {
-    mobileList.innerHTML = `
-      <div class="absen-loading-card">
-        <strong>Memuat data</strong>
-        <p>Mengambil rekap absen muallim dari Google Sheets.</p>
+  if (list) {
+    list.innerHTML = `
+      <div class="absen-skeleton-list">
+        <div class="absen-skeleton-row"></div>
+        <div class="absen-skeleton-row"></div>
+        <div class="absen-skeleton-row"></div>
       </div>
     `;
   }
@@ -348,22 +384,153 @@ function renderAbsenMuallimLoading() {
 function renderAbsenMuallimError(title, message) {
   const meta = document.getElementById("absenMeta");
   const summary = document.getElementById("absenSummaryGrid");
-  const tableBody = document.getElementById("absenTableBody");
-  const mobileList = document.getElementById("absenMobileList");
+  const list = document.getElementById("absenList");
 
   if (meta) meta.textContent = "Data belum bisa dimuat.";
   if (summary) summary.innerHTML = "";
-  if (tableBody) tableBody.innerHTML = `<tr><td colspan="10">${escapeHtml(title)}</td></tr>`;
+  if (list) {
+    list.innerHTML = `
+      <div class="absen-error-card">
+        <i class="ri-error-warning-line"></i>
+        <strong>${escapeHtml(title)}</strong>
+        <p>${escapeHtml(message)}</p>
+        <code>assets/absen-muallim.js</code>
+      </div>
+    `;
+  }
+}
 
-  const html = `
-    <div class="absen-error-card">
-      <strong>${escapeHtml(title)}</strong>
-      <p>${escapeHtml(message)}</p>
-      <code>assets/absen-muallim.js</code>
-    </div>
-  `;
+function openAbsenFilterModal() {
+  const overlay = document.getElementById("absenFilterOverlay");
+  if (!overlay) return;
+  overlay.classList.add("is-open");
+  overlay.setAttribute("aria-hidden", "false");
+  document.body.classList.add("absen-filter-locked");
+}
 
-  if (mobileList) mobileList.innerHTML = html;
+function closeAbsenFilterModal() {
+  const overlay = document.getElementById("absenFilterOverlay");
+  if (!overlay) return;
+  overlay.classList.remove("is-open");
+  overlay.setAttribute("aria-hidden", "true");
+  document.body.classList.remove("absen-filter-locked");
+}
+
+function resetAbsenMuallimFilters() {
+  setDefaultAbsenFilters();
+  const searchInput = document.getElementById("absenSearchInput");
+  const bulanSearch = document.getElementById("absenBulanSearch");
+  const adnaSearch = document.getElementById("absenAdnaSearch");
+  if (searchInput) searchInput.value = "";
+  if (bulanSearch) bulanSearch.value = "";
+  if (adnaSearch) adnaSearch.value = "";
+  applyAbsenMuallimFilters(true);
+}
+
+function renderAbsenFilterOptions() {
+  renderChipOptions({
+    containerId: "absenBulanOptions",
+    values: ["", ...absenMuallimState.months],
+    activeValue: absenMuallimState.filters.bulan,
+    searchValue: document.getElementById("absenBulanSearch")?.value || "",
+    emptyLabel: "Semua Bulan",
+    onSelect: (value) => {
+      absenMuallimState.filters.bulan = value;
+      applyAbsenMuallimFilters(false);
+    },
+  });
+
+  renderChipOptions({
+    containerId: "absenAdnaOptions",
+    values: ["", ...absenMuallimState.adnas],
+    activeValue: absenMuallimState.filters.adna,
+    searchValue: document.getElementById("absenAdnaSearch")?.value || "",
+    emptyLabel: "Semua ADNA",
+    onSelect: (value) => {
+      absenMuallimState.filters.adna = value;
+      applyAbsenMuallimFilters(false);
+    },
+  });
+
+  const statusContainer = document.getElementById("absenStatusOptions");
+  if (statusContainer) {
+    statusContainer.innerHTML = ABSEN_STATUS_OPTIONS.map((option) => `
+      <button class="absen-option-btn ${absenMuallimState.filters.status === option.value ? "is-active" : ""}" type="button" data-status-value="${escapeHtml(option.value)}">
+        <span>
+          ${escapeHtml(option.label)}
+          <small>${escapeHtml(option.note)}</small>
+        </span>
+      </button>
+    `).join("");
+
+    statusContainer.querySelectorAll("[data-status-value]").forEach((button) => {
+      button.addEventListener("click", function () {
+        absenMuallimState.filters.status = button.getAttribute("data-status-value") || "";
+        applyAbsenMuallimFilters(false);
+      });
+    });
+  }
+
+  updateAbsenFilterLabels();
+  updateActiveFilterCount();
+}
+
+function renderChipOptions({ containerId, values, activeValue, searchValue, emptyLabel, onSelect }) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  const normalizedSearch = normalizeSearchText(searchValue || "");
+  const filteredValues = values.filter((value) => {
+    if (!value) return true;
+    return !normalizedSearch || normalizeSearchText(value).includes(normalizedSearch);
+  });
+
+  if (!filteredValues.length) {
+    container.innerHTML = `<div class="absen-empty-card"><strong>Tidak ada pilihan</strong><p>Coba kata pencarian lain.</p></div>`;
+    return;
+  }
+
+  container.innerHTML = filteredValues.map((value) => {
+    const label = value || emptyLabel;
+    return `
+      <button class="absen-option-btn ${String(activeValue || "") === String(value || "") ? "is-active" : ""}" type="button" data-filter-value="${escapeHtml(value)}">
+        ${escapeHtml(label)}
+      </button>
+    `;
+  }).join("");
+
+  container.querySelectorAll("[data-filter-value]").forEach((button) => {
+    button.addEventListener("click", function () {
+      onSelect(button.getAttribute("data-filter-value") || "");
+    });
+  });
+}
+
+function updateAbsenFilterLabels() {
+  const bulanLabel = document.getElementById("absenBulanLabel");
+  const adnaLabel = document.getElementById("absenAdnaLabel");
+  const statusLabel = document.getElementById("absenStatusLabel");
+
+  if (bulanLabel) bulanLabel.textContent = absenMuallimState.filters.bulan || "Semua Bulan";
+  if (adnaLabel) adnaLabel.textContent = absenMuallimState.filters.adna || "Semua ADNA";
+  if (statusLabel) statusLabel.textContent = getStatusFilterLabel(absenMuallimState.filters.status) || "Semua Status";
+}
+
+function updateActiveFilterCount() {
+  const badge = document.getElementById("absenActiveFilterCount");
+  if (!badge) return;
+
+  let count = 0;
+  if (absenMuallimState.filters.bulan) count += 1;
+  if (absenMuallimState.filters.adna) count += 1;
+  if (absenMuallimState.filters.status) count += 1;
+
+  badge.textContent = String(count);
+}
+
+function getStatusFilterLabel(value) {
+  const found = ABSEN_STATUS_OPTIONS.find((option) => option.value === value);
+  return found ? found.label : "";
 }
 
 function sortHijriMonths(months) {
