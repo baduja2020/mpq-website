@@ -1,637 +1,776 @@
+cat > /mnt/user-data/outputs/preview-apple-style.html << 'HTMLEOF'
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Preview — Absen Muallim Apple Style</title>
-<link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
-<style>
-/* ===== BASE (menggantikan style.css global MPQ) ===== */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rekap Absen Muallim - MPQ Al Falah</title>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
 
-:root {
-  --primary: #248a3d;
-  --primary-soft: #e8f9ee;
-  --text: #1d1d1f;
-  --muted: #6e6e73;
-  --line: rgba(0,0,0,.08);
-  --surface: #ffffff;
-  --shadow: 0 4px 20px rgba(0,0,0,.08);
-}
+  <style>
+  /* ============================================================
+     BASE STYLES  (menggantikan style.css global MPQ)
+     Sesuai dengan struktur navbar & footer asli di index.html
+     ============================================================ */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-html { font-size: 16px; }
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Inter, sans-serif;
-  background: #f5f5f7;
-  color: #1d1d1f;
-  -webkit-font-smoothing: antialiased;
-}
+  html { font-size: 16px; }
 
-/* ---- Navbar (minimal preview) ---- */
-.navbar {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  height: 52px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 24px;
-  background: rgba(245,245,247,.85);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(0,0,0,.07);
-}
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+                 "SF Pro Text", "Helvetica Neue", Inter, sans-serif;
+    background: #f5f5f7;
+    color: #1d1d1f;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  text-decoration: none;
-  color: inherit;
-}
+  /* ---- Navbar — struktur asli dari index.html ---- */
+  .navbar {
+    position: sticky;
+    top: 0;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    height: 52px;
+    background: rgba(245,245,247,.88);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(0,0,0,.07);
+  }
 
-.brand-avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  background: linear-gradient(135deg,#166534,#34c759);
-  display: grid;
-  place-items: center;
-  color: #fff;
-  font-size: 16px;
-  font-weight: 700;
-  flex-shrink: 0;
-}
+  /* .brand — a.brand > img + div (logo asli MPQ) */
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: inherit;
+  }
 
-.brand div strong {
-  display: block;
-  font-size: 14px;
-  font-weight: 700;
-  color: #1d1d1f;
-  letter-spacing: -.02em;
-}
+  /* Logo image — src="/assets/logo-mpq.png" */
+  .brand img {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    object-fit: contain;
+  }
 
-.brand div span {
-  display: block;
-  font-size: 11px;
-  color: #86868b;
-  font-weight: 400;
-}
+  /* Fallback jika logo tidak load (preview lokal) */
+  .brand img[src*="logo-mpq"]:not([src^="http"]) {
+    background: linear-gradient(135deg, #166534, #34c759);
+    /* img akan tetap tampil, fallback hanya background */
+  }
 
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
+  .brand div strong {
+    display: block;
+    font-size: 14px;
+    font-weight: 700;
+    color: #1d1d1f;
+    letter-spacing: -.02em;
+  }
 
-.nav-links a {
-  font-size: 13px;
-  font-weight: 500;
-  color: #1d1d1f;
-  text-decoration: none;
-  padding: 6px 12px;
-  border-radius: 8px;
-  transition: background .15s;
-}
+  .brand div span {
+    display: block;
+    font-size: 11px;
+    color: #86868b;
+    font-weight: 400;
+  }
 
-.nav-links a:hover { background: rgba(0,0,0,.06); }
-.nav-links a.active {
-  background: rgba(0,113,227,.1);
-  color: #0071e3;
-  font-weight: 600;
-}
+  /* Hamburger — mobile only */
+  .menu-toggle {
+    display: none;
+    border: none;
+    background: transparent;
+    font-size: 22px;
+    color: #1d1d1f;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 8px;
+  }
 
-/* ---- Footer ---- */
-.footer-pro {
-  text-align: center;
-  padding: 32px 24px;
-  background: rgba(0,0,0,.02);
-  border-top: 1px solid rgba(0,0,0,.07);
-  font-size: 13px;
-  color: #86868b;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  margin-top: 40px;
-}
+  /* Main nav */
+  #mainNav {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
 
-.footer-pro strong { color: #1d1d1f; font-size: 14px; font-weight: 600; }
+  #mainNav a {
+    font-size: 13px;
+    font-weight: 500;
+    color: #1d1d1f;
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: 8px;
+    transition: background .15s;
+  }
 
-.footer-wa {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 6px;
-  padding: 8px 18px;
-  background: #25d366;
-  color: #fff;
-  text-decoration: none;
-  border-radius: 999px;
-  font-size: 13px;
-  font-weight: 600;
-  align-self: center;
-  transition: opacity .15s;
-}
+  #mainNav a:hover { background: rgba(0,0,0,.06); }
 
-.footer-wa:hover { opacity: .9; }
-</style>
+  #mainNav a.active {
+    background: rgba(0,113,227,.1);
+    color: #0071e3;
+    font-weight: 600;
+  }
 
-<!-- Apple-Style Redesign CSS -->
-<style>
-/* ===================================================
-   REKAP ABSEN MUALLIM — Apple-Style Redesign
-   =================================================== */
-:root {
-  --apple-bg: #f5f5f7;
-  --apple-surface: #ffffff;
-  --apple-surface-2: #fbfbfd;
-  --apple-text: #1d1d1f;
-  --apple-text-2: #6e6e73;
-  --apple-text-3: #86868b;
-  --apple-blue: #0071e3;
-  --apple-blue-light: #e8f2fd;
-  --apple-green: #34c759;
-  --apple-green-dark: #248a3d;
-  --apple-green-soft: #e8f9ee;
-  --apple-amber: #ff9f0a;
-  --apple-amber-soft: #fff4e0;
-  --apple-red: #ff3b30;
-  --apple-red-soft: #fff0ef;
-  --apple-line: rgba(0,0,0,.08);
-  --apple-line-strong: rgba(0,0,0,.13);
-  --apple-shadow-sm: 0 2px 8px rgba(0,0,0,.06);
-  --apple-shadow-md: 0 4px 20px rgba(0,0,0,.08);
-  --apple-shadow-lg: 0 12px 40px rgba(0,0,0,.12);
-  --apple-radius-sm: 10px;
-  --apple-radius-md: 16px;
-  --apple-radius-lg: 22px;
-  --apple-radius-xl: 28px;
-  --apple-font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Inter, sans-serif;
-}
+  /* ---- Footer — struktur asli dari index.html ---- */
+  .footer-pro {
+    text-align: center;
+    padding: 32px 24px 40px;
+    background: rgba(0,0,0,.02);
+    border-top: 1px solid rgba(0,0,0,.07);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+  }
 
-.absen-muallim-page { width: min(1100px,calc(100% - 40px)); margin: 0 auto; padding: 52px 0 80px; font-family: var(--apple-font); }
+  .footer-pro strong {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1d1d1f;
+  }
 
-.absen-hero-card { position:relative; overflow:hidden; border-radius:var(--apple-radius-xl); padding:44px 48px; margin-bottom:24px; background:var(--apple-surface); border:1px solid var(--apple-line); box-shadow:var(--apple-shadow-md); }
-.absen-hero-card::before { content:""; position:absolute; inset:0; background:linear-gradient(135deg,#f0faf4 0%,#e8f5fe 60%,#f5f5f7 100%); z-index:0; }
-.absen-hero-card::after { content:""; position:absolute; right:-60px; top:-60px; width:260px; height:260px; border-radius:50%; background:radial-gradient(circle,rgba(52,199,89,.12),transparent 70%); pointer-events:none; z-index:0; }
-.absen-hero-card .label, .absen-hero-card h1, .absen-hero-card p { position:relative; z-index:1; }
-.absen-hero-card .label { display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--apple-green-dark); background:var(--apple-green-soft); border:1px solid rgba(52,199,89,.25); border-radius:999px; padding:5px 12px; margin-bottom:16px; }
-.absen-hero-card h1 { font-size:clamp(28px,4vw,48px); font-weight:700; letter-spacing:-.045em; line-height:1.06; color:var(--apple-text); margin:0 0 14px; }
-.absen-hero-card p { max-width:600px; color:var(--apple-text-2); font-size:17px; font-weight:400; line-height:1.65; margin:0; }
+  .footer-pro span {
+    font-size: 13px;
+    color: #86868b;
+  }
 
-.absen-toolbar { display:grid; grid-template-columns:1fr auto auto; gap:10px; align-items:center; padding:12px; background:var(--apple-surface); border:1px solid var(--apple-line); border-radius:var(--apple-radius-lg); box-shadow:var(--apple-shadow-sm); margin-bottom:16px; }
-.absen-search-field { position:relative; display:block; }
-.absen-search-field i { position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--apple-text-3); font-size:17px; pointer-events:none; }
-.absen-search-field input { width:100%; min-height:44px; border:1px solid var(--apple-line-strong); border-radius:var(--apple-radius-md); background:var(--apple-bg); color:var(--apple-text); font:inherit; font-size:15px; font-weight:400; padding:0 16px 0 42px; outline:none; transition:border-color .18s,box-shadow .18s,background .18s; }
-.absen-search-field input::placeholder { color:var(--apple-text-3); }
-.absen-search-field input:focus { border-color:var(--apple-blue); background:var(--apple-surface); box-shadow:0 0 0 3px rgba(0,113,227,.15); }
+  .footer-wa {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: 8px;
+    padding: 9px 20px;
+    background: #25d366;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 600;
+    transition: opacity .15s;
+  }
 
-.absen-filter-btn, .absen-reset-btn { min-height:44px; border:none; border-radius:var(--apple-radius-md); padding:0 18px; font:inherit; font-size:14px; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:7px; white-space:nowrap; transition:opacity .18s,transform .12s; }
-.absen-filter-btn:active, .absen-reset-btn:active { transform:scale(.97); }
-.absen-filter-btn { background:var(--apple-blue); color:#fff; }
-.absen-filter-btn span { min-width:20px; height:20px; border-radius:999px; display:inline-grid; place-items:center; background:rgba(255,255,255,.28); font-size:11px; font-weight:700; color:#fff; }
-.absen-reset-btn { background:var(--apple-bg); color:var(--apple-text-2); border:1px solid var(--apple-line-strong); }
+  .footer-wa:hover { opacity: .88; }
 
-.absen-summary-strip { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:14px; }
-.absen-summary-card { min-height:90px; padding:16px 18px; border-radius:var(--apple-radius-lg); background:var(--apple-surface); border:1px solid var(--apple-line); box-shadow:var(--apple-shadow-sm); display:flex; flex-direction:column; justify-content:space-between; }
-.absen-summary-card span { display:block; font-size:11px; font-weight:600; letter-spacing:.04em; text-transform:uppercase; color:var(--apple-text-3); margin-bottom:6px; }
-.absen-summary-card strong { display:block; font-size:30px; font-weight:700; letter-spacing:-.04em; color:var(--apple-text); line-height:1; }
-.absen-summary-card em { display:block; font-size:11px; font-style:normal; font-weight:500; color:var(--apple-text-3); margin-top:5px; }
-.absen-summary-card.good { border-color:rgba(52,199,89,.22); background:linear-gradient(160deg,#f0fbf3,var(--apple-surface)); }
-.absen-summary-card.good strong { color:var(--apple-green-dark); }
-.absen-summary-card.warn { border-color:rgba(255,159,10,.22); background:linear-gradient(160deg,#fff8ec,var(--apple-surface)); }
-.absen-summary-card.warn strong { color:#b45309; }
-.absen-summary-card.bad  { border-color:rgba(255,59,48,.18); background:linear-gradient(160deg,#fff5f4,var(--apple-surface)); }
-.absen-summary-card.bad strong { color:#c0392b; }
+  .footer-pro small {
+    font-size: 12px;
+    color: #86868b;
+    margin-top: 4px;
+  }
 
-.absen-meta { color:var(--apple-text-3); font-size:13px; font-weight:500; margin:2px 4px 14px; }
-.absen-meta strong { color:var(--apple-blue); font-weight:700; }
+  /* ---- Mobile nav ---- */
+  @media (max-width: 700px) {
+    .menu-toggle { display: grid; place-items: center; }
 
-.absen-rekap-list { display:grid; gap:8px; }
+    #mainNav {
+      display: none;
+      position: fixed;
+      inset: 52px 0 0;
+      background: rgba(245,245,247,.96);
+      backdrop-filter: blur(20px);
+      flex-direction: column;
+      align-items: stretch;
+      padding: 16px;
+      gap: 4px;
+      z-index: 199;
+    }
 
-.absen-row { position:relative; background:var(--apple-surface); border:1px solid var(--apple-line); border-radius:var(--apple-radius-lg); box-shadow:var(--apple-shadow-sm); overflow:hidden; transition:box-shadow .2s,border-color .2s; }
-.absen-row:hover { box-shadow:var(--apple-shadow-md); border-color:var(--apple-line-strong); }
-.absen-row-head { width:100%; border:none; background:transparent; text-align:left; font:inherit; cursor:pointer; display:grid; grid-template-columns:1fr auto; align-items:center; gap:12px; padding:16px 20px; transition:background .15s; }
-.absen-row-head:hover { background:var(--apple-bg); }
-.absen-row-main { min-width:0; padding-right:32px; }
-.absen-row-name { display:block; font-size:15px; font-weight:600; color:var(--apple-text); letter-spacing:-.013em; line-height:1.35; }
-.absen-row-meta { display:block; font-size:12px; font-weight:400; color:var(--apple-text-3); margin-top:3px; line-height:1.4; }
-.absen-row-side { display:flex; align-items:center; gap:8px; }
+    #mainNav.is-open { display: flex; }
 
-.absen-indicator-dot { position:absolute; top:50%; transform:translateY(-50%); right:52px; width:7px; height:7px; border-radius:50%; background:var(--apple-green); }
-.absen-row.warn .absen-indicator-dot { background:var(--apple-amber); }
-.absen-row.bad  .absen-indicator-dot { background:var(--apple-red); }
+    #mainNav a {
+      font-size: 16px;
+      padding: 12px 16px;
+      border-radius: 12px;
+    }
+  }
+  </style>
 
-.absen-row-toggle { position:absolute; right:16px; top:50%; transform:translateY(-50%); width:28px; height:28px; display:grid; place-items:center; border-radius:50%; background:var(--apple-bg); color:var(--apple-text-3); font-size:20px; transition:transform .2s,background .15s; }
-.absen-row.open .absen-row-toggle { transform:translateY(-50%) rotate(180deg); background:var(--apple-blue-light); color:var(--apple-blue); }
+  <!-- Apple-Style Redesign CSS (file yang dikirim ke proyek) -->
+  <style>
+  /* ===============================================================
+     REKAP ABSEN MUALLIM — Apple-Style Redesign v3
+     =============================================================== */
+  :root {
+    --apple-bg:           #f5f5f7;
+    --apple-surface:      #ffffff;
+    --apple-surface-2:    #fbfbfd;
+    --apple-text:         #1d1d1f;
+    --apple-text-2:       #6e6e73;
+    --apple-text-3:       #86868b;
+    --apple-blue:         #0071e3;
+    --apple-blue-light:   #e8f2fd;
+    --apple-green:        #34c759;
+    --apple-green-dark:   #248a3d;
+    --apple-green-soft:   #e8f9ee;
+    --apple-amber:        #ff9f0a;
+    --apple-amber-soft:   #fff4e0;
+    --apple-red:          #ff3b30;
+    --apple-red-soft:     #fff0ef;
+    --apple-line:         rgba(0,0,0,.08);
+    --apple-line-strong:  rgba(0,0,0,.13);
+    --apple-shadow-sm:    0 2px 8px rgba(0,0,0,.06);
+    --apple-shadow-md:    0 4px 20px rgba(0,0,0,.08);
+    --apple-r-sm:  10px;
+    --apple-r-md:  16px;
+    --apple-r-lg:  22px;
+    --apple-r-xl:  28px;
+    --apple-font:  -apple-system, BlinkMacSystemFont, "SF Pro Display",
+                   "SF Pro Text", "Helvetica Neue", Inter, sans-serif;
+  }
 
-.absen-percent-pill, .absen-status-pill { display:inline-flex; align-items:center; gap:4px; border-radius:999px; padding:5px 11px; font-size:12px; font-weight:600; letter-spacing:-.01em; white-space:nowrap; }
-.absen-percent-pill.good, .absen-status-pill.good { color:var(--apple-green-dark); background:var(--apple-green-soft); }
-.absen-percent-pill.warn, .absen-status-pill.warn { color:#92400e; background:var(--apple-amber-soft); }
-.absen-percent-pill.bad,  .absen-status-pill.bad  { color:#c0392b; background:var(--apple-red-soft); }
+  .absen-muallim-page { width: min(1100px,calc(100% - 40px)); margin: 0 auto; padding: 52px 0 80px; font-family: var(--apple-font); }
 
-.absen-row-detail { display:none; padding:0 20px 18px; border-top:1px solid var(--apple-line); background:var(--apple-surface-2); }
-.absen-row.open .absen-row-detail { display:block; animation:absenDetailIn .2s ease; }
-@keyframes absenDetailIn { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
+  .absen-hero-card { position:relative; overflow:hidden; border-radius:var(--apple-r-xl); padding:44px 48px; margin-bottom:24px; background:var(--apple-surface); border:1px solid var(--apple-line); box-shadow:var(--apple-shadow-md); }
+  .absen-hero-card::before { content:""; position:absolute; inset:0; background:linear-gradient(135deg,#f0faf4 0%,#e8f5fe 60%,#f5f5f7 100%); z-index:0; }
+  .absen-hero-card::after { content:""; position:absolute; right:-60px; top:-60px; width:280px; height:280px; border-radius:50%; background:radial-gradient(circle,rgba(52,199,89,.13),transparent 70%); pointer-events:none; z-index:0; }
+  .absen-hero-card > * { position:relative; z-index:1; }
+  .absen-hero-card .label { display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--apple-green-dark); background:var(--apple-green-soft); border:1px solid rgba(52,199,89,.28); border-radius:999px; padding:5px 14px; margin-bottom:16px; }
+  .absen-hero-card h1 { font-size:clamp(28px,4vw,48px); font-weight:700; letter-spacing:-.045em; line-height:1.06; color:var(--apple-text); margin:0 0 14px; }
+  .absen-hero-card p { max-width:600px; color:var(--apple-text-2); font-size:17px; font-weight:400; line-height:1.65; margin:0; }
 
-.absen-detail-title { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; padding-top:15px; margin-bottom:12px; }
-.absen-detail-title span { font-size:13px; font-weight:600; color:var(--apple-text); }
-.absen-detail-title small { font-size:11px; font-weight:500; color:var(--apple-text-3); text-align:right; line-height:1.5; }
+  .absen-shell { margin-top:0; }
 
-.absen-detail-grid-mini { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
-.absen-period { min-height:80px; padding:12px 14px; border-radius:var(--apple-radius-md); border:1px solid var(--apple-line); background:var(--apple-surface); text-align:left; }
-.absen-period.good { border-color:rgba(52,199,89,.22); background:linear-gradient(160deg,#f0fbf3,#fff); }
-.absen-period.warn { border-color:rgba(255,159,10,.22); background:linear-gradient(160deg,#fff8ec,#fff); }
-.absen-period.bad  { border-color:rgba(255,59,48,.18); background:linear-gradient(160deg,#fff5f4,#fff); }
-.absen-period-top { display:flex; align-items:center; justify-content:space-between; gap:6px; }
-.absen-period span { display:block; font-size:10.5px; font-weight:600; letter-spacing:.04em; text-transform:uppercase; color:var(--apple-text-3); }
-.absen-period strong { display:block; font-size:26px; font-weight:700; letter-spacing:-.04em; line-height:1; color:var(--apple-text); margin:7px 0 4px; }
-.absen-period em { display:block; font-size:11px; font-style:normal; font-weight:500; color:var(--apple-text-3); }
-.absen-period.good em, .absen-period.good .absen-period-top i { color:var(--apple-green-dark); }
-.absen-period.warn em, .absen-period.warn .absen-period-top i { color:#92400e; }
-.absen-period.bad  em, .absen-period.bad  .absen-period-top i { color:#c0392b; }
+  .absen-toolbar { display:grid; grid-template-columns:minmax(280px,1fr) auto auto; gap:10px; align-items:center; padding:12px; background:var(--apple-surface); border:1px solid var(--apple-line); border-radius:var(--apple-r-lg); box-shadow:var(--apple-shadow-sm); margin-bottom:16px; }
+  .absen-search-field { position:relative; display:block; }
+  .absen-search-field i { position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--apple-text-3); font-size:17px; pointer-events:none; }
+  .absen-search-field input { width:100%; min-height:44px; border:1px solid var(--apple-line-strong); border-radius:var(--apple-r-md); background:var(--apple-bg); color:var(--apple-text); font:inherit; font-size:15px; padding:0 16px 0 42px; outline:none; transition:border-color .18s,box-shadow .18s,background .18s; }
+  .absen-search-field input::placeholder { color:var(--apple-text-3); }
+  .absen-search-field input:focus { border-color:var(--apple-blue); background:var(--apple-surface); box-shadow:0 0 0 3px rgba(0,113,227,.15); }
 
-.absen-total-strip { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
-.absen-total-strip span { flex:1 1 140px; padding:10px 14px; border-radius:var(--apple-radius-sm); background:var(--apple-bg); color:var(--apple-text-2); font-size:12px; font-weight:500; }
-.absen-total-strip strong { color:var(--apple-blue); font-weight:700; }
-.absen-total-strip .danger  { background:var(--apple-red-soft);   color:#c0392b; }
-.absen-total-strip .warning { background:var(--apple-amber-soft); color:#92400e; }
-.absen-total-strip .success { background:var(--apple-green-soft); color:var(--apple-green-dark); }
+  .absen-filter-btn,.absen-reset-btn { min-height:44px; border:none; border-radius:var(--apple-r-md); padding:0 18px; font:inherit; font-size:14px; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:7px; white-space:nowrap; transition:opacity .18s,transform .12s; }
+  .absen-filter-btn:active,.absen-reset-btn:active { transform:scale(.97); }
+  .absen-filter-btn { background:var(--apple-blue); color:#fff; }
+  .absen-filter-btn span { min-width:20px; height:20px; border-radius:999px; display:inline-grid; place-items:center; background:rgba(255,255,255,.28); font-size:11px; font-weight:700; color:#fff; }
+  .absen-reset-btn { background:var(--apple-bg); color:var(--apple-text-2); border:1px solid var(--apple-line-strong); }
+  .absen-filter-btn:hover { opacity:.9; }
+  .absen-reset-btn:hover { opacity:.8; }
 
-.absen-note { margin-top:10px; padding:12px 14px; border-radius:var(--apple-radius-sm); background:var(--apple-bg); color:var(--apple-text-3); font-size:12px; font-weight:400; line-height:1.65; }
+  .absen-summary-strip { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:10px; margin-bottom:14px; }
+  .absen-summary-card { min-height:90px; padding:16px 18px; border-radius:var(--apple-r-lg); background:var(--apple-surface); border:1px solid var(--apple-line); box-shadow:var(--apple-shadow-sm); display:flex; flex-direction:column; justify-content:space-between; font-family:var(--apple-font); }
+  .absen-summary-card span { display:block; font-size:11px; font-weight:600; letter-spacing:.04em; text-transform:uppercase; color:var(--apple-text-3); margin-bottom:6px; }
+  .absen-summary-card strong { display:block; font-size:28px; font-weight:700; letter-spacing:-.04em; color:var(--apple-text); line-height:1; }
+  .absen-summary-card em { display:block; font-size:11px; font-style:normal; font-weight:500; color:var(--apple-text-3); margin-top:5px; }
+  .absen-summary-card.good { border-color:rgba(52,199,89,.22); background:linear-gradient(160deg,#f0fbf3,var(--apple-surface)); }
+  .absen-summary-card.good strong { color:var(--apple-green-dark); }
+  .absen-summary-card.warn { border-color:rgba(255,159,10,.22); background:linear-gradient(160deg,#fff8ec,var(--apple-surface)); }
+  .absen-summary-card.warn strong { color:#b45309; }
+  .absen-summary-card.bad  { border-color:rgba(255,59,48,.18); background:linear-gradient(160deg,#fff5f4,var(--apple-surface)); }
+  .absen-summary-card.bad strong  { color:#c0392b; }
 
-.absen-skeleton-list { display:grid; gap:8px; }
-.absen-skeleton-row { min-height:70px; border-radius:var(--apple-radius-lg); background:linear-gradient(90deg,#f5f5f7 25%,#fafafa 50%,#f5f5f7 75%); background-size:200% 100%; animation:absenShimmer 1.3s infinite linear; }
-@keyframes absenShimmer { to{background-position:-200% 0} }
+  .absen-meta { color:var(--apple-text-3); font-size:13px; font-weight:500; margin:2px 4px 14px; font-family:var(--apple-font); }
+  .absen-meta strong { color:var(--apple-blue); font-weight:700; }
 
-/* Filter overlay */
-.absen-filter-overlay { position:fixed; inset:0; z-index:9999; display:none; align-items:center; justify-content:center; padding:24px; }
-.absen-filter-overlay.is-open { display:flex; }
-.absen-filter-backdrop { position:absolute; inset:0; background:rgba(0,0,0,.35); backdrop-filter:blur(10px); }
-.absen-filter-modal { position:relative; width:min(740px,100%); max-height:min(82vh,760px); display:flex; flex-direction:column; overflow:hidden; border-radius:var(--apple-radius-xl); background:var(--apple-surface); box-shadow:0 32px 80px rgba(0,0,0,.24),0 0 0 1px var(--apple-line); animation:filterModalIn .22s ease; }
-@keyframes filterModalIn { from{opacity:0;transform:scale(.97) translateY(6px)} to{opacity:1;transform:scale(1) translateY(0)} }
-.absen-filter-handle { width:40px; height:4px; border-radius:999px; background:var(--apple-line-strong); margin:12px auto 0; }
-.absen-filter-header { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; padding:20px 24px 16px; border-bottom:1px solid var(--apple-line); }
-.absen-filter-header h2 { margin:0; font-size:19px; font-weight:700; letter-spacing:-.03em; color:var(--apple-text); }
-.absen-filter-header p { margin:3px 0 0; color:var(--apple-text-3); font-size:13px; font-weight:400; }
-.absen-filter-close { width:32px; height:32px; border:none; border-radius:50%; display:grid; place-items:center; background:var(--apple-bg); color:var(--apple-text-2); font-size:20px; cursor:pointer; flex-shrink:0; }
-.absen-filter-content { overflow:auto; padding:16px 24px; display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-.absen-filter-section { border:1px solid var(--apple-line); border-radius:var(--apple-radius-lg); background:var(--apple-surface); overflow:hidden; }
-.absen-filter-section.is-open { border-color:rgba(0,113,227,.25); box-shadow:0 4px 16px rgba(0,0,0,.06); }
-.absen-filter-section-head { width:100%; border:none; background:transparent; display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:12px; text-align:left; padding:14px 16px; cursor:pointer; font:inherit; }
-.absen-filter-icon { width:34px; height:34px; display:grid; place-items:center; border-radius:10px; background:var(--apple-blue-light); color:var(--apple-blue); font-size:17px; }
-.absen-filter-section-head strong { display:block; color:var(--apple-text); font-size:14px; font-weight:600; }
-.absen-filter-section-head small { display:block; color:var(--apple-text-3); font-size:12px; font-weight:400; margin-top:2px; }
-.absen-filter-section-head > i { width:28px; height:28px; display:grid; place-items:center; border-radius:8px; background:var(--apple-bg); color:var(--apple-text-3); font-size:18px; transition:transform .2s,color .15s; }
-.absen-filter-section.is-open .absen-filter-section-head > i { transform:rotate(180deg); color:var(--apple-blue); }
-.absen-filter-section-body { display:none; padding:0 14px 14px; }
-.absen-filter-section.is-open .absen-filter-section-body { display:block; }
-.absen-filter-section:first-child { grid-column:1/-1; }
-.absen-option-search { position:relative; display:block; margin-bottom:10px; }
-.absen-option-search i { position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--apple-text-3); font-size:16px; pointer-events:none; }
-.absen-option-search input { width:100%; min-height:40px; border:1px solid var(--apple-line-strong); border-radius:var(--apple-radius-sm); background:var(--apple-bg); font:inherit; font-size:13px; padding:0 13px 0 38px; outline:none; color:var(--apple-text); }
-.absen-option-search input:focus { border-color:var(--apple-blue); box-shadow:0 0 0 3px rgba(0,113,227,.12); }
-.absen-option-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:7px; max-height:230px; overflow:auto; }
-.absen-status-option-grid { grid-template-columns:1fr; max-height:none; }
-.absen-option-btn { min-height:38px; border:1px solid var(--apple-line); border-radius:var(--apple-radius-sm); background:var(--apple-bg); color:var(--apple-text); padding:7px 10px; display:flex; align-items:center; justify-content:space-between; gap:6px; font:inherit; font-size:13px; font-weight:500; cursor:pointer; text-align:left; transition:border-color .15s,background .15s; }
-.absen-option-btn::after { content:""; width:16px; height:16px; border-radius:50%; border:1.5px solid var(--apple-line-strong); flex-shrink:0; }
-.absen-option-btn.is-active { border-color:var(--apple-blue); background:var(--apple-blue-light); color:var(--apple-blue); }
-.absen-option-btn.is-active::after { background:var(--apple-blue); border-color:var(--apple-blue); }
-.absen-filter-actions { display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:14px 24px 18px; border-top:1px solid var(--apple-line); }
-.absen-filter-actions button { min-height:46px; border:none; border-radius:var(--apple-radius-md); font:inherit; font-size:15px; font-weight:600; cursor:pointer; }
-.absen-filter-reset { background:var(--apple-bg); color:var(--apple-text-2); border:1px solid var(--apple-line-strong) !important; }
-.absen-filter-apply { background:var(--apple-blue); color:#fff; }
+  .absen-rekap-list { display:grid; gap:8px; }
 
-@media(max-width:720px){
-  .absen-muallim-page{width:calc(100% - 24px);padding:28px 0 56px}
-  .absen-hero-card{padding:28px 24px;border-radius:var(--apple-radius-lg);margin-bottom:16px}
-  .absen-hero-card h1{font-size:26px}
-  .absen-hero-card p{font-size:15px}
-  .absen-toolbar{grid-template-columns:1fr auto;padding:10px}
-  .absen-search-field{grid-column:1/-1}
-  .absen-summary-strip{grid-template-columns:repeat(3,1fr);gap:8px}
-  .absen-summary-card{min-height:76px;border-radius:var(--apple-radius-md);padding:12px 14px}
-  .absen-summary-card strong{font-size:24px}
-  .absen-row-side .absen-status-pill{display:none}
-  .absen-detail-grid-mini{grid-template-columns:1fr 1fr}
-  .nav-links{display:none}
-}
-</style>
+  .absen-row { position:relative; background:var(--apple-surface); border:1px solid var(--apple-line); border-radius:var(--apple-r-lg); box-shadow:var(--apple-shadow-sm); overflow:hidden; transition:box-shadow .2s,border-color .2s; }
+  .absen-row:hover { box-shadow:var(--apple-shadow-md); border-color:var(--apple-line-strong); }
+  .absen-row-head { width:100%; border:none; background:transparent; text-align:left; font:inherit; font-family:var(--apple-font); cursor:pointer; display:grid; grid-template-columns:1fr auto; gap:12px; align-items:center; padding:16px 56px 16px 20px; transition:background .15s; }
+  .absen-row-head:hover { background:var(--apple-bg); }
+  .absen-row-main { min-width:0; }
+  .absen-row-name { display:block; font-size:15px; font-weight:600; color:var(--apple-text); letter-spacing:-.013em; line-height:1.35; }
+  .absen-row-meta { display:block; font-size:12px; font-weight:400; color:var(--apple-text-3); margin-top:3px; line-height:1.5; }
+  .absen-row-side { display:flex; align-items:center; gap:8px; }
+
+  .absen-indicator-dot { position:absolute; top:50%; transform:translateY(-50%); right:50px; width:7px; height:7px; border-radius:50%; background:var(--apple-green); box-shadow:0 0 0 3px rgba(52,199,89,.15); }
+  .absen-row.warn .absen-indicator-dot { background:var(--apple-amber); box-shadow:0 0 0 3px rgba(255,159,10,.15); }
+  .absen-row.bad  .absen-indicator-dot { background:var(--apple-red);   box-shadow:0 0 0 3px rgba(255,59,48,.15); }
+
+  .absen-row-toggle { position:absolute; right:16px; top:50%; transform:translateY(-50%); width:28px; height:28px; display:grid; place-items:center; border-radius:50%; background:var(--apple-bg); color:var(--apple-text-3); font-size:20px; transition:transform .22s,background .15s,color .15s; pointer-events:none; }
+  .absen-row.open .absen-row-toggle { transform:translateY(-50%) rotate(45deg); background:var(--apple-blue-light); color:var(--apple-blue); }
+
+  .absen-percent-pill,.absen-status-pill { display:inline-flex; align-items:center; gap:4px; border-radius:999px; padding:5px 11px; font-size:12px; font-weight:600; letter-spacing:-.01em; white-space:nowrap; font-family:var(--apple-font); }
+  .absen-percent-pill.good,.absen-status-pill.good { color:var(--apple-green-dark); background:var(--apple-green-soft); }
+  .absen-percent-pill.warn,.absen-status-pill.warn { color:#92400e; background:var(--apple-amber-soft); }
+  .absen-percent-pill.bad, .absen-status-pill.bad  { color:#c0392b; background:var(--apple-red-soft); }
+
+  .absen-row-detail { display:none; padding:0 20px 18px; border-top:1px solid var(--apple-line); background:var(--apple-surface-2); }
+  .absen-row.open .absen-row-detail { display:block; animation:absenDetailIn .2s ease; }
+  @keyframes absenDetailIn { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
+
+  .absen-detail-title { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; padding-top:15px; margin-bottom:12px; }
+  .absen-detail-title span { font-size:13px; font-weight:600; color:var(--apple-text); }
+  .absen-detail-title small { font-size:11px; font-weight:500; color:var(--apple-text-3); text-align:right; line-height:1.5; }
+
+  .absen-detail-grid-mini { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; }
+  .absen-period { min-height:80px; padding:12px 14px; border-radius:var(--apple-r-md); border:1px solid var(--apple-line); background:var(--apple-surface); text-align:left; }
+  .absen-period.good { border-color:rgba(52,199,89,.22); background:linear-gradient(160deg,#f0fbf3,#fff); }
+  .absen-period.warn { border-color:rgba(255,159,10,.22); background:linear-gradient(160deg,#fff8ec,#fff); }
+  .absen-period.bad  { border-color:rgba(255,59,48,.18); background:linear-gradient(160deg,#fff5f4,#fff); }
+  .absen-period-top { display:flex; align-items:center; justify-content:space-between; gap:6px; }
+  .absen-period span { display:block; font-size:10.5px; font-weight:600; letter-spacing:.04em; text-transform:uppercase; color:var(--apple-text-3); }
+  .absen-period strong { display:block; font-size:26px; font-weight:700; letter-spacing:-.04em; line-height:1; color:var(--apple-text); margin:7px 0 4px; }
+  .absen-period em { display:block; font-size:11px; font-style:normal; font-weight:500; color:var(--apple-text-3); }
+  .absen-period.good em,.absen-period.good .absen-period-top i { color:var(--apple-green-dark); }
+  .absen-period.warn em,.absen-period.warn .absen-period-top i { color:#92400e; }
+  .absen-period.bad  em,.absen-period.bad  .absen-period-top i { color:#c0392b; }
+
+  .absen-total-strip { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+  .absen-total-strip span { flex:1 1 140px; padding:10px 14px; border-radius:var(--apple-r-sm); background:var(--apple-bg); color:var(--apple-text-2); font-size:12px; font-weight:500; font-family:var(--apple-font); }
+  .absen-total-strip strong { color:var(--apple-blue); font-weight:700; }
+  .absen-total-strip .danger  { background:var(--apple-red-soft);   color:#c0392b; }
+  .absen-total-strip .warning { background:var(--apple-amber-soft); color:#92400e; }
+  .absen-total-strip .success { background:var(--apple-green-soft); color:var(--apple-green-dark); }
+
+  .absen-note { margin-top:10px; padding:12px 14px; border-radius:var(--apple-r-sm); background:var(--apple-bg); color:var(--apple-text-3); font-size:12px; line-height:1.65; font-family:var(--apple-font); }
+
+  .absen-empty-card,.absen-error-card,.absen-loading-card { text-align:center; padding:48px 24px; border:1px dashed var(--apple-line-strong); border-radius:var(--apple-r-xl); background:var(--apple-surface); color:var(--apple-text-3); font-family:var(--apple-font); }
+  .absen-empty-card i,.absen-error-card i,.absen-loading-card i { width:56px; height:56px; display:grid; place-items:center; margin:0 auto 16px; border-radius:18px; background:var(--apple-blue-light); color:var(--apple-blue); font-size:26px; }
+  .absen-error-card { border-color:rgba(255,59,48,.22); background:var(--apple-red-soft); color:#7f1d1d; }
+  .absen-error-card i { background:var(--apple-red-soft); color:var(--apple-red); }
+  .absen-error-card strong,.absen-empty-card strong,.absen-loading-card strong { display:block; font-size:17px; font-weight:600; color:var(--apple-text); margin-bottom:6px; }
+  .absen-error-card code { display:inline-block; margin-top:8px; background:#fff; border:1px solid rgba(255,59,48,.2); padding:5px 10px; border-radius:8px; color:var(--apple-red); font-size:12px; }
+
+  .absen-skeleton-list { display:grid; gap:8px; }
+  .absen-skeleton-row { min-height:70px; border-radius:var(--apple-r-lg); background:linear-gradient(90deg,#f5f5f7 25%,#fafafa 50%,#f5f5f7 75%); background-size:200% 100%; animation:absenShimmer 1.3s infinite linear; }
+  @keyframes absenShimmer { to{background-position:-200% 0} }
+
+  .absen-filter-overlay { position:fixed; inset:0; z-index:9999; display:none; align-items:center; justify-content:center; padding:24px; }
+  .absen-filter-overlay.is-open { display:flex; }
+  .absen-filter-backdrop { position:absolute; inset:0; background:rgba(0,0,0,.36); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); }
+  .absen-filter-modal { position:relative; width:min(740px,100%); max-height:min(82vh,760px); display:flex; flex-direction:column; overflow:hidden; border-radius:var(--apple-r-xl); background:var(--apple-surface); box-shadow:0 32px 80px rgba(0,0,0,.24),0 0 0 1px var(--apple-line); animation:filterModalIn .22s ease; }
+  @keyframes filterModalIn { from{opacity:0;transform:scale(.97) translateY(8px)} to{opacity:1;transform:scale(1) translateY(0)} }
+  .absen-filter-handle { width:40px; height:4px; border-radius:999px; background:var(--apple-line-strong); margin:12px auto 0; flex-shrink:0; }
+  .absen-filter-header { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; padding:20px 24px 16px; border-bottom:1px solid var(--apple-line); flex-shrink:0; }
+  .absen-filter-header h2 { margin:0; font-size:19px; font-weight:700; letter-spacing:-.03em; color:var(--apple-text); font-family:var(--apple-font); }
+  .absen-filter-header p { margin:3px 0 0; color:var(--apple-text-3); font-size:13px; font-family:var(--apple-font); }
+  .absen-filter-close { width:32px; height:32px; border:none; border-radius:50%; display:grid; place-items:center; background:var(--apple-bg); color:var(--apple-text-2); font-size:20px; cursor:pointer; flex-shrink:0; transition:background .15s; }
+  .absen-filter-close:hover { background:var(--apple-line-strong); }
+  .absen-filter-content { overflow:auto; padding:16px 24px; display:grid; grid-template-columns:1fr 1fr; gap:12px; flex:1; }
+  .absen-filter-section { border:1px solid var(--apple-line); border-radius:var(--apple-r-lg); background:var(--apple-surface); overflow:hidden; transition:border-color .18s,box-shadow .18s; }
+  .absen-filter-section.is-open { border-color:rgba(0,113,227,.25); box-shadow:0 4px 16px rgba(0,0,0,.06); }
+  .absen-filter-section-head { width:100%; border:none; background:transparent; display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:12px; text-align:left; padding:14px 16px; cursor:pointer; font:inherit; font-family:var(--apple-font); }
+  .absen-filter-icon { width:34px; height:34px; display:grid; place-items:center; border-radius:10px; background:var(--apple-blue-light); color:var(--apple-blue); font-size:17px; flex-shrink:0; }
+  .absen-filter-section-head strong { display:block; color:var(--apple-text); font-size:14px; font-weight:600; }
+  .absen-filter-section-head small { display:block; color:var(--apple-text-3); font-size:12px; margin-top:2px; }
+  .absen-filter-section-head > i { width:28px; height:28px; display:grid; place-items:center; border-radius:8px; background:var(--apple-bg); color:var(--apple-text-3); font-size:18px; transition:transform .2s,color .15s; flex-shrink:0; }
+  .absen-filter-section.is-open .absen-filter-section-head > i { transform:rotate(180deg); color:var(--apple-blue); }
+  .absen-filter-section-body { display:none; padding:0 14px 14px; }
+  .absen-filter-section.is-open .absen-filter-section-body { display:block; }
+  .absen-filter-section:first-child { grid-column:1/-1; }
+  .absen-option-search { position:relative; display:block; margin-bottom:10px; }
+  .absen-option-search i { position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--apple-text-3); font-size:16px; pointer-events:none; }
+  .absen-option-search input { width:100%; min-height:40px; border:1px solid var(--apple-line-strong); border-radius:var(--apple-r-sm); background:var(--apple-bg); font:inherit; font-size:13px; padding:0 13px 0 38px; outline:none; color:var(--apple-text); transition:border-color .15s,box-shadow .15s; }
+  .absen-option-search input:focus { border-color:var(--apple-blue); box-shadow:0 0 0 3px rgba(0,113,227,.12); }
+  .absen-option-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:7px; max-height:230px; overflow:auto; }
+  .absen-status-option-grid { grid-template-columns:1fr; max-height:none; }
+  .absen-option-btn { min-height:38px; border:1px solid var(--apple-line); border-radius:var(--apple-r-sm); background:var(--apple-bg); color:var(--apple-text); padding:7px 10px; display:flex; align-items:center; justify-content:space-between; gap:6px; font:inherit; font-size:13px; font-weight:500; cursor:pointer; text-align:left; transition:border-color .15s,background .15s; }
+  .absen-option-btn span { display:block; font-size:13px; font-weight:500; color:var(--apple-text); }
+  .absen-option-btn small { display:block; color:var(--apple-text-3); font-size:11px; margin-top:2px; }
+  .absen-option-btn::after { content:""; width:16px; height:16px; border-radius:50%; border:1.5px solid var(--apple-line-strong); flex-shrink:0; transition:background .15s,border-color .15s; }
+  .absen-option-btn:hover { border-color:var(--apple-blue); background:var(--apple-blue-light); }
+  .absen-option-btn.is-active { border-color:var(--apple-blue); background:var(--apple-blue-light); color:var(--apple-blue); }
+  .absen-option-btn.is-active span { color:var(--apple-blue); }
+  .absen-option-btn.is-active::after { background:var(--apple-blue); border-color:var(--apple-blue); }
+  .absen-filter-actions { display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:14px 24px 18px; border-top:1px solid var(--apple-line); flex-shrink:0; }
+  .absen-filter-actions button { min-height:46px; border:none; border-radius:var(--apple-r-md); font:inherit; font-size:15px; font-weight:600; cursor:pointer; transition:opacity .15s,transform .12s; }
+  .absen-filter-actions button:active { transform:scale(.98); }
+  .absen-filter-reset { background:var(--apple-bg); color:var(--apple-text-2); border:1px solid var(--apple-line-strong) !important; }
+  .absen-filter-apply { background:var(--apple-blue); color:#fff; }
+  .absen-filter-apply:hover { opacity:.9; }
+  body.absen-filter-locked { overflow:hidden; }
+
+  @media(max-width:1050px){
+    .absen-summary-strip{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .absen-filter-content{grid-template-columns:1fr}
+    .absen-filter-section:first-child{grid-column:auto}
+  }
+  @media(max-width:720px){
+    .absen-muallim-page{width:min(100% - 24px,1100px);padding:28px 0 56px}
+    .absen-hero-card{padding:28px 24px;border-radius:var(--apple-r-lg);margin-bottom:16px}
+    .absen-hero-card h1{font-size:26px}
+    .absen-hero-card p{font-size:15px}
+    .absen-toolbar{grid-template-columns:1fr auto;padding:10px}
+    .absen-search-field{grid-column:1/-1}
+    .absen-filter-btn,.absen-reset-btn{width:100%}
+    .absen-summary-strip{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+    .absen-summary-card{min-height:76px;border-radius:var(--apple-r-md);padding:12px 14px}
+    .absen-summary-card strong{font-size:22px}
+    .absen-row-side .absen-status-pill{display:none}
+    .absen-detail-title{display:block}
+    .absen-detail-title small{text-align:left;margin-top:4px}
+    .absen-detail-grid-mini{grid-template-columns:1fr 1fr}
+    .absen-filter-overlay{align-items:flex-end;padding:0}
+    .absen-filter-modal{width:100%;max-height:88vh;border-radius:24px 24px 0 0}
+    .absen-filter-header{padding:20px 18px 14px}
+    .absen-filter-content{padding:14px 16px}
+    .absen-filter-actions{padding:12px 16px 16px}
+    .absen-option-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  }
+  @media(max-width:430px){
+    .absen-summary-strip{grid-template-columns:1fr 1fr}
+    .absen-toolbar{grid-template-columns:1fr 1fr}
+    .absen-detail-grid-mini{grid-template-columns:1fr}
+  }
+  @media(prefers-reduced-motion:reduce){
+    .absen-skeleton-row{animation:none;background:#f5f5f7}
+    .absen-row.open .absen-row-detail{animation:none}
+    .absen-filter-modal{animation:none}
+  }
+  </style>
 </head>
 <body>
 
-<!-- Navbar -->
+<!-- ======================================================
+     NAVBAR — identik dengan index.html asli
+     Logo: /assets/logo-mpq.png (sesuai proyek asli)
+     ====================================================== -->
 <header class="navbar">
-  <a href="#" class="brand">
-    <div class="brand-avatar">M</div>
+  <a href="/" class="brand">
+    <img src="/assets/logo-mpq.png" alt="Logo MPQ">
     <div>
       <strong>MPQ Al Falah</strong>
       <span>Ploso Mojo Kediri</span>
     </div>
   </a>
-  <nav class="nav-links">
-    <a href="#">Beranda</a>
-    <a href="#">Pedoman MPQ</a>
-    <a href="#">Cek Santri</a>
-    <a href="#">Data Rekom</a>
-    <a href="#" class="active">Absen Muallim</a>
-    <a href="#">FAQ</a>
+
+  <button class="menu-toggle" id="menuToggle" type="button" aria-label="Buka menu navigasi">
+    <i class="ri-menu-line"></i>
+  </button>
+
+  <nav id="mainNav">
+    <a href="/">Beranda</a>
+    <a href="/pedoman-mpq/">Pedoman MPQ</a>
+    <a href="/cek-santri/">Cek Santri</a>
+    <a href="/rekom/">Data Rekom</a>
+    <a href="/absen-muallim/" class="active">Absen Muallim</a>
+    <a href="/faq/">FAQ</a>
   </nav>
 </header>
 
-<!-- Main Page -->
+<!-- ======================================================
+     MAIN PAGE — identik dengan index.html asli
+     Semua id= dan class= sesuai yang dipakai JS
+     ====================================================== -->
 <main class="page absen-muallim-page" id="absenMuallimApp">
 
   <!-- Hero -->
   <section class="absen-hero-card">
-    <div class="label green"><i class="ri-calendar-check-line"></i> Rekap Absen Muallim</div>
+    <div class="label green">Rekap Absen Muallim</div>
     <h1>Dashboard Kehadiran Muallim</h1>
-    <p>Pantau rekap kehadiran muallim MPQ per bulan. Gunakan pencarian dan filter untuk melihat data berdasarkan ADNA, bulan, atau status kehadiran.</p>
+    <p>
+      Pantau rekap kehadiran muallim MPQ per bulan. Gunakan pencarian dan filter
+      untuk melihat data berdasarkan ADNA, bulan, atau status kehadiran.
+    </p>
   </section>
 
   <!-- Shell -->
-  <section class="absen-shell">
+  <section class="absen-shell" aria-label="Data rekap absen muallim">
 
     <!-- Toolbar -->
     <div class="absen-toolbar">
-      <label class="absen-search-field">
+      <label class="absen-search-field" for="absenSearchInput">
         <i class="ri-search-line"></i>
-        <input type="search" placeholder="Cari nama muallim atau ADNA...">
+        <input id="absenSearchInput" type="search" placeholder="Cari nama muallim atau ADNA..." autocomplete="off">
       </label>
-      <button class="absen-filter-btn" onclick="document.getElementById('absenFilterOverlay').classList.add('is-open')">
-        <i class="ri-equalizer-2-line"></i> Filter <span>2</span>
+
+      <button id="absenFilterButton" class="absen-filter-btn" type="button"
+              aria-haspopup="dialog" aria-controls="absenFilterOverlay">
+        <i class="ri-equalizer-2-line"></i>
+        Filter
+        <span id="absenActiveFilterCount">0</span>
       </button>
-      <button class="absen-reset-btn">Reset</button>
+
+      <button id="absenResetButton" class="absen-reset-btn" type="button">Reset</button>
     </div>
 
-    <!-- Summary Strip -->
-    <div class="absen-summary-strip">
-      <div class="absen-summary-card">
-        <span>Total Muallim</span>
+    <!-- Summary strip — diisi JS: renderAbsenMuallimSummary() -->
+    <div class="absen-summary-strip" id="absenSummaryGrid" aria-live="polite">
+      <!-- Preview statis (JS akan override ini) -->
+      <article class="absen-summary-card">
+        <span>Menampilkan</span>
         <strong>48</strong>
-        <em>Data aktif bulan ini</em>
-      </div>
-      <div class="absen-summary-card good">
-        <span>Kehadiran Baik</span>
-        <strong>34</strong>
-        <em>≥ 90% hadir</em>
-      </div>
-      <div class="absen-summary-card warn">
-        <span>Perlu Perhatian</span>
-        <strong>9</strong>
-        <em>75% – 89% hadir</em>
-      </div>
-      <div class="absen-summary-card bad">
-        <span>Tindak Lanjut</span>
+        <em>muallim</em>
+      </article>
+      <article class="absen-summary-card good">
+        <span>Rata-rata</span>
+        <strong>91%</strong>
+        <em>kehadiran</em>
+      </article>
+      <article class="absen-summary-card warn">
+        <span>Izin</span>
+        <strong>12</strong>
+        <em>total I</em>
+      </article>
+      <article class="absen-summary-card bad">
+        <span>Alpa</span>
         <strong>5</strong>
-        <em>Di bawah 75%</em>
-      </div>
+        <em>total A</em>
+      </article>
+      <article class="absen-summary-card bad">
+        <span>Perhatian</span>
+        <strong>4</strong>
+        <em>di bawah 75%</em>
+      </article>
     </div>
 
-    <!-- Meta -->
-    <div class="absen-meta">Menampilkan <strong>48 muallim</strong> · Bulan: <strong>Rajab 1446</strong></div>
+    <!-- Meta — diisi JS: updateAbsenMuallimMeta() -->
+    <div class="absen-meta" id="absenMeta">Memuat data rekap...</div>
 
-    <!-- List -->
-    <section class="absen-rekap-list">
+    <!-- List — diisi JS: renderAbsenMuallimRows() -->
+    <section class="absen-rekap-list" id="absenList" aria-live="polite">
 
-      <!-- Row 1 — Good (open) -->
-      <div class="absen-row open">
-        <button class="absen-row-head" onclick="this.closest('.absen-row').classList.toggle('open')">
-          <div class="absen-row-main">
-            <span class="absen-row-name">Ust. Ahmad Fauzi Mahmud</span>
-            <span class="absen-row-meta">ADNA: B-2 · Rajab – Sya'ban 1446</span>
-          </div>
-          <div class="absen-row-side">
-            <span class="absen-status-pill good"><i class="ri-checkbox-circle-fill"></i> Baik</span>
-            <span class="absen-percent-pill good">96%</span>
-          </div>
-          <span class="absen-indicator-dot"></span>
-          <span class="absen-row-toggle"><i class="ri-arrow-down-s-line"></i></span>
+      <!-- Preview statis: contoh row yang dihasilkan JS renderAbsenRow() -->
+      <article class="absen-row good open">
+        <button class="absen-row-head" type="button" aria-label="Buka detail absen Ust. Ahmad Fauzi">
+          <span class="absen-indicator-dot" aria-hidden="true"></span>
+          <span class="absen-row-main">
+            <strong class="absen-row-name">Ust. Ahmad Fauzi Mahmud</strong>
+            <span class="absen-row-meta">B 02 • Bulan RAJAB • Hadir 68/72 • S/I/A 0/3/1</span>
+          </span>
+          <span class="absen-row-side">
+            <span class="absen-percent-pill good">94%</span>
+            <span class="absen-status-pill good">Baik</span>
+          </span>
+          <i class="ri-add-line absen-row-toggle" aria-hidden="true"></i>
         </button>
         <div class="absen-row-detail">
           <div class="absen-detail-title">
-            <span>Detail Kehadiran per Periode</span>
-            <small>Diperbarui: 20 Jun 2026<br>Sumber: Google Sheets</small>
+            <span>Detail Kehadiran</span>
+            <small>Data dihitung dari rekap absen muallim pada bulan terpilih.</small>
           </div>
           <div class="absen-detail-grid-mini">
-            <div class="absen-period good">
-              <div class="absen-period-top">
-                <span>Rajab I</span>
-                <i class="ri-arrow-up-line"></i>
-              </div>
-              <strong>18</strong>
-              <em>dari 18 pertemuan</em>
+            <div class="absen-period">
+              <div class="absen-period-top"><span>Jumlah Hari</span><i class="ri-calendar-check-line"></i></div>
+              <strong>72</strong><em>hari aktif</em>
             </div>
             <div class="absen-period good">
-              <div class="absen-period-top">
-                <span>Rajab II</span>
-                <i class="ri-arrow-up-line"></i>
-              </div>
-              <strong>17</strong>
-              <em>dari 18 pertemuan</em>
+              <div class="absen-period-top"><span>Hadir</span><i class="ri-user-follow-line"></i></div>
+              <strong>68</strong><em>jumlah hadir</em>
             </div>
             <div class="absen-period warn">
-              <div class="absen-period-top">
-                <span>Sya'ban I</span>
-                <i class="ri-arrow-right-line"></i>
-              </div>
-              <strong>15</strong>
-              <em>dari 18 pertemuan</em>
+              <div class="absen-period-top"><span>Izin</span><i class="ri-flag-line"></i></div>
+              <strong>3</strong><em>total I</em>
             </div>
             <div class="absen-period good">
-              <div class="absen-period-top">
-                <span>Sya'ban II</span>
-                <i class="ri-arrow-up-line"></i>
-              </div>
-              <strong>18</strong>
-              <em>dari 18 pertemuan</em>
+              <div class="absen-period-top"><span>Alpa</span><i class="ri-error-warning-line"></i></div>
+              <strong>1</strong><em>total A</em>
             </div>
           </div>
           <div class="absen-total-strip">
-            <span class="success">✓ Hadir: <strong>68</strong></span>
-            <span class="warning">⚡ Izin: <strong>3</strong></span>
-            <span class="danger">✗ Alfa: <strong>1</strong></span>
+            <span class="success">ADNA: <strong>B 02</strong></span>
+            <span class="success">Persentase: <strong>94%</strong></span>
+            <span>Status: <strong>Baik</strong></span>
+            <span>No: <strong>1</strong></span>
           </div>
-          <p class="absen-note">Muallim menunjukkan konsistensi kehadiran yang sangat baik. Satu alfa tercatat pada pertengahan Sya'ban.</p>
         </div>
-      </div>
+      </article>
 
-      <!-- Row 2 — Warn -->
-      <div class="absen-row warn">
-        <button class="absen-row-head" onclick="this.closest('.absen-row').classList.toggle('open')">
-          <div class="absen-row-main">
-            <span class="absen-row-name">Ust. Muhammad Rizal Hakim</span>
-            <span class="absen-row-meta">ADNA: C-1 · Rajab – Sya'ban 1446</span>
-          </div>
-          <div class="absen-row-side">
-            <span class="absen-status-pill warn"><i class="ri-error-warning-fill"></i> Perhatian</span>
+      <article class="absen-row warn">
+        <button class="absen-row-head" type="button" aria-label="Buka detail absen Ust. Muhammad Rizal">
+          <span class="absen-indicator-dot" aria-hidden="true"></span>
+          <span class="absen-row-main">
+            <strong class="absen-row-name">Ust. Muhammad Rizal Hakim</strong>
+            <span class="absen-row-meta">C 01 • Bulan RAJAB • Hadir 59/72 • S/I/A 0/8/5</span>
+          </span>
+          <span class="absen-row-side">
             <span class="absen-percent-pill warn">82%</span>
-          </div>
-          <span class="absen-indicator-dot"></span>
-          <span class="absen-row-toggle"><i class="ri-arrow-down-s-line"></i></span>
+            <span class="absen-status-pill warn">Perhatian</span>
+          </span>
+          <i class="ri-add-line absen-row-toggle" aria-hidden="true"></i>
         </button>
         <div class="absen-row-detail">
-          <div class="absen-detail-title">
-            <span>Detail Kehadiran per Periode</span>
-            <small>Diperbarui: 20 Jun 2026</small>
-          </div>
+          <div class="absen-detail-title"><span>Detail Kehadiran</span><small>Data dihitung dari rekap absen muallim.</small></div>
           <div class="absen-detail-grid-mini">
-            <div class="absen-period good"><div class="absen-period-top"><span>Rajab I</span></div><strong>16</strong><em>dari 18</em></div>
-            <div class="absen-period warn"><div class="absen-period-top"><span>Rajab II</span></div><strong>14</strong><em>dari 18</em></div>
-            <div class="absen-period warn"><div class="absen-period-top"><span>Sya'ban I</span></div><strong>13</strong><em>dari 18</em></div>
-            <div class="absen-period good"><div class="absen-period-top"><span>Sya'ban II</span></div><strong>16</strong><em>dari 18</em></div>
+            <div class="absen-period"><div class="absen-period-top"><span>Jumlah Hari</span><i class="ri-calendar-check-line"></i></div><strong>72</strong><em>hari aktif</em></div>
+            <div class="absen-period warn"><div class="absen-period-top"><span>Hadir</span><i class="ri-user-follow-line"></i></div><strong>59</strong><em>jumlah hadir</em></div>
+            <div class="absen-period warn"><div class="absen-period-top"><span>Izin</span><i class="ri-flag-line"></i></div><strong>8</strong><em>total I</em></div>
+            <div class="absen-period bad"><div class="absen-period-top"><span>Alpa</span><i class="ri-error-warning-line"></i></div><strong>5</strong><em>total A</em></div>
           </div>
           <div class="absen-total-strip">
-            <span class="success">✓ Hadir: <strong>59</strong></span>
-            <span class="warning">⚡ Izin: <strong>8</strong></span>
-            <span class="danger">✗ Alfa: <strong>5</strong></span>
+            <span class="success">ADNA: <strong>C 01</strong></span>
+            <span class="warning">Persentase: <strong>82%</strong></span>
+            <span>Status: <strong>Perhatian</strong></span>
+            <span>No: <strong>2</strong></span>
           </div>
         </div>
-      </div>
+      </article>
 
-      <!-- Row 3 — Bad -->
-      <div class="absen-row bad">
-        <button class="absen-row-head" onclick="this.closest('.absen-row').classList.toggle('open')">
-          <div class="absen-row-main">
-            <span class="absen-row-name">Ust. Hasan Basri Nawawi</span>
-            <span class="absen-row-meta">ADNA: A-3 · Rajab – Sya'ban 1446</span>
-          </div>
-          <div class="absen-row-side">
-            <span class="absen-status-pill bad"><i class="ri-close-circle-fill"></i> Tindak Lanjut</span>
+      <article class="absen-row bad">
+        <button class="absen-row-head" type="button" aria-label="Buka detail absen Ust. Hasan Basri">
+          <span class="absen-indicator-dot" aria-hidden="true"></span>
+          <span class="absen-row-main">
+            <strong class="absen-row-name">Ust. Hasan Basri Nawawi</strong>
+            <span class="absen-row-meta">A 03 • Bulan RAJAB • Hadir 49/72 • S/I/A 0/12/11</span>
+          </span>
+          <span class="absen-row-side">
             <span class="absen-percent-pill bad">68%</span>
-          </div>
-          <span class="absen-indicator-dot"></span>
-          <span class="absen-row-toggle"><i class="ri-arrow-down-s-line"></i></span>
+            <span class="absen-status-pill bad">Tindak lanjut</span>
+          </span>
+          <i class="ri-add-line absen-row-toggle" aria-hidden="true"></i>
         </button>
         <div class="absen-row-detail">
-          <div class="absen-detail-title">
-            <span>Detail Kehadiran per Periode</span>
-            <small>Diperbarui: 20 Jun 2026</small>
-          </div>
+          <div class="absen-detail-title"><span>Detail Kehadiran</span><small>Data dihitung dari rekap absen muallim.</small></div>
           <div class="absen-detail-grid-mini">
-            <div class="absen-period bad"><div class="absen-period-top"><span>Rajab I</span></div><strong>11</strong><em>dari 18</em></div>
-            <div class="absen-period bad"><div class="absen-period-top"><span>Rajab II</span></div><strong>12</strong><em>dari 18</em></div>
-            <div class="absen-period warn"><div class="absen-period-top"><span>Sya'ban I</span></div><strong>13</strong><em>dari 18</em></div>
-            <div class="absen-period bad"><div class="absen-period-top"><span>Sya'ban II</span></div><strong>13</strong><em>dari 18</em></div>
+            <div class="absen-period"><div class="absen-period-top"><span>Jumlah Hari</span><i class="ri-calendar-check-line"></i></div><strong>72</strong><em>hari aktif</em></div>
+            <div class="absen-period bad"><div class="absen-period-top"><span>Hadir</span><i class="ri-user-follow-line"></i></div><strong>49</strong><em>jumlah hadir</em></div>
+            <div class="absen-period warn"><div class="absen-period-top"><span>Izin</span><i class="ri-flag-line"></i></div><strong>12</strong><em>total I</em></div>
+            <div class="absen-period bad"><div class="absen-period-top"><span>Alpa</span><i class="ri-error-warning-line"></i></div><strong>11</strong><em>total A</em></div>
           </div>
           <div class="absen-total-strip">
-            <span class="success">✓ Hadir: <strong>49</strong></span>
-            <span class="warning">⚡ Izin: <strong>12</strong></span>
-            <span class="danger">✗ Alfa: <strong>11</strong></span>
+            <span class="success">ADNA: <strong>A 03</strong></span>
+            <span class="danger">Persentase: <strong>68%</strong></span>
+            <span>Status: <strong>Tindak lanjut</strong></span>
+            <span>No: <strong>3</strong></span>
           </div>
-          <p class="absen-note">Kehadiran di bawah batas minimal. Koordinasi lanjutan dengan koordinator ADNA diperlukan.</p>
+          <div class="absen-note">Catatan: Kehadiran di bawah batas minimal. Koordinasi lanjutan dengan koordinator ADNA diperlukan.</div>
         </div>
-      </div>
-
-      <!-- Row 4 — Good (closed) -->
-      <div class="absen-row">
-        <button class="absen-row-head" onclick="this.closest('.absen-row').classList.toggle('open')">
-          <div class="absen-row-main">
-            <span class="absen-row-name">Ust. Zainul Arifin Sholeh</span>
-            <span class="absen-row-meta">ADNA: B-1 · Rajab – Sya'ban 1446</span>
-          </div>
-          <div class="absen-row-side">
-            <span class="absen-status-pill good"><i class="ri-checkbox-circle-fill"></i> Baik</span>
-            <span class="absen-percent-pill good">100%</span>
-          </div>
-          <span class="absen-indicator-dot"></span>
-          <span class="absen-row-toggle"><i class="ri-arrow-down-s-line"></i></span>
-        </button>
-        <div class="absen-row-detail">
-          <div class="absen-detail-grid-mini">
-            <div class="absen-period good"><div class="absen-period-top"><span>Rajab I</span></div><strong>18</strong><em>dari 18</em></div>
-            <div class="absen-period good"><div class="absen-period-top"><span>Rajab II</span></div><strong>18</strong><em>dari 18</em></div>
-            <div class="absen-period good"><div class="absen-period-top"><span>Sya'ban I</span></div><strong>18</strong><em>dari 18</em></div>
-            <div class="absen-period good"><div class="absen-period-top"><span>Sya'ban II</span></div><strong>18</strong><em>dari 18</em></div>
-          </div>
-        </div>
-      </div>
+      </article>
 
     </section>
   </section>
 </main>
 
-<!-- Filter Overlay -->
-<div class="absen-filter-overlay" id="absenFilterOverlay">
-  <div class="absen-filter-backdrop" onclick="document.getElementById('absenFilterOverlay').classList.remove('is-open')"></div>
-  <section class="absen-filter-modal">
-    <div class="absen-filter-handle"></div>
+<!-- ======================================================
+     FILTER OVERLAY — identik dengan index.html asli
+     Semua id=, data-*, aria-* sesuai yang dipakai JS
+     ====================================================== -->
+<div class="absen-filter-overlay" id="absenFilterOverlay" aria-hidden="true">
+  <div class="absen-filter-backdrop" data-absen-close-filter></div>
+  <section class="absen-filter-modal" role="dialog" aria-modal="true" aria-labelledby="absenFilterTitle">
+    <div class="absen-filter-handle" aria-hidden="true"></div>
     <header class="absen-filter-header">
       <div>
-        <h2>Filter Data</h2>
+        <h2 id="absenFilterTitle">Filter Data</h2>
         <p>Buka kategori, cari pilihan, lalu terapkan.</p>
       </div>
-      <button class="absen-filter-close" onclick="document.getElementById('absenFilterOverlay').classList.remove('is-open')">
+      <button class="absen-filter-close" type="button" data-absen-close-filter aria-label="Tutup filter">
         <i class="ri-close-line"></i>
       </button>
     </header>
+
     <div class="absen-filter-content">
-      <section class="absen-filter-section is-open">
-        <button class="absen-filter-section-head" onclick="this.closest('.absen-filter-section').classList.toggle('is-open')">
+      <!-- Bulan -->
+      <section class="absen-filter-section is-open" data-filter-section>
+        <button class="absen-filter-section-head" type="button" data-filter-toggle>
           <span class="absen-filter-icon"><i class="ri-calendar-line"></i></span>
-          <span><strong>Bulan</strong><small>Rajab 1446</small></span>
+          <span>
+            <strong>Bulan</strong>
+            <small id="absenBulanLabel">Semua Bulan</small>
+          </span>
           <i class="ri-arrow-down-s-line"></i>
         </button>
         <div class="absen-filter-section-body">
-          <label class="absen-option-search"><i class="ri-search-line"></i><input type="search" placeholder="Cari bulan..."></label>
-          <div class="absen-option-grid">
-            <button class="absen-option-btn is-active">Rajab<br><small>1446</small></button>
-            <button class="absen-option-btn">Sya'ban<br><small>1446</small></button>
-            <button class="absen-option-btn">Ramadhan<br><small>1446</small></button>
-            <button class="absen-option-btn">Syawwal<br><small>1446</small></button>
-          </div>
+          <label class="absen-option-search" for="absenBulanSearch">
+            <i class="ri-search-line"></i>
+            <input id="absenBulanSearch" type="search" placeholder="Cari bulan...">
+          </label>
+          <div class="absen-option-grid" id="absenBulanOptions"></div>
         </div>
       </section>
-      <section class="absen-filter-section">
-        <button class="absen-filter-section-head" onclick="this.closest('.absen-filter-section').classList.toggle('is-open')">
+
+      <!-- ADNA -->
+      <section class="absen-filter-section" data-filter-section>
+        <button class="absen-filter-section-head" type="button" data-filter-toggle>
           <span class="absen-filter-icon"><i class="ri-book-open-line"></i></span>
-          <span><strong>ADNA</strong><small>Semua ADNA</small></span>
+          <span>
+            <strong>ADNA</strong>
+            <small id="absenAdnaLabel">Semua ADNA</small>
+          </span>
           <i class="ri-arrow-down-s-line"></i>
         </button>
         <div class="absen-filter-section-body">
-          <label class="absen-option-search"><i class="ri-search-line"></i><input type="search" placeholder="Cari ADNA..."></label>
-          <div class="absen-option-grid">
-            <button class="absen-option-btn">A-1</button>
-            <button class="absen-option-btn">A-2</button>
-            <button class="absen-option-btn">A-3</button>
-            <button class="absen-option-btn">B-1</button>
-            <button class="absen-option-btn">B-2</button>
-            <button class="absen-option-btn is-active">C-1</button>
-          </div>
+          <label class="absen-option-search" for="absenAdnaSearch">
+            <i class="ri-search-line"></i>
+            <input id="absenAdnaSearch" type="search" placeholder="Cari ADNA...">
+          </label>
+          <div class="absen-option-grid" id="absenAdnaOptions"></div>
         </div>
       </section>
-      <section class="absen-filter-section">
-        <button class="absen-filter-section-head" onclick="this.closest('.absen-filter-section').classList.toggle('is-open')">
+
+      <!-- Status -->
+      <section class="absen-filter-section" data-filter-section>
+        <button class="absen-filter-section-head" type="button" data-filter-toggle>
           <span class="absen-filter-icon"><i class="ri-shield-check-line"></i></span>
-          <span><strong>Status Kehadiran</strong><small>Semua Status</small></span>
+          <span>
+            <strong>Status Kehadiran</strong>
+            <small id="absenStatusLabel">Semua Status</small>
+          </span>
           <i class="ri-arrow-down-s-line"></i>
         </button>
         <div class="absen-filter-section-body">
-          <div class="absen-option-grid absen-status-option-grid">
-            <button class="absen-option-btn">Semua Status<small>Semua persentase</small></button>
-            <button class="absen-option-btn">Baik<small>90% ke atas</small></button>
-            <button class="absen-option-btn">Perhatian<small>75% – 89%</small></button>
-            <button class="absen-option-btn">Tindak lanjut<small>Di bawah 75%</small></button>
-          </div>
+          <div class="absen-option-grid absen-status-option-grid" id="absenStatusOptions"></div>
         </div>
       </section>
     </div>
+
     <footer class="absen-filter-actions">
-      <button class="absen-filter-reset" onclick="document.getElementById('absenFilterOverlay').classList.remove('is-open')">Reset</button>
-      <button class="absen-filter-apply" onclick="document.getElementById('absenFilterOverlay').classList.remove('is-open')">Terapkan</button>
+      <button id="absenFilterResetModal" type="button" class="absen-filter-reset">Reset</button>
+      <button id="absenFilterApply"      type="button" class="absen-filter-apply">Terapkan</button>
     </footer>
   </section>
 </div>
 
-<!-- Footer -->
+<!-- ======================================================
+     FOOTER — identik dengan index.html asli
+     ====================================================== -->
 <footer class="footer-pro">
   <strong>MPQ Al Falah</strong>
   <span>Portal Informasi dan Layanan Digital Santri</span>
   <span>PP Al Falah Ploso Mojo Kediri</span>
-  <a class="footer-wa" href="#"><i class="ri-whatsapp-line"></i> Hubungi WA Bot MPQ</a>
+  <a class="footer-wa" target="_blank" rel="noopener" href="https://wa.me/6285126031867">
+    <i class="ri-whatsapp-line"></i>
+    Hubungi WA Bot MPQ
+  </a>
   <small>© 2026 MPQ Al Falah</small>
 </footer>
 
+<script>
+// ---- Mobile nav toggle (pengganti script.js global) ----
+const menuToggle = document.getElementById('menuToggle');
+const mainNav    = document.getElementById('mainNav');
+if (menuToggle && mainNav) {
+  menuToggle.addEventListener('click', function () {
+    mainNav.classList.toggle('is-open');
+  });
+}
+
+// ---- Row expand/collapse (preview — JS asli pakai event delegation) ----
+document.querySelectorAll('.absen-row-head').forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    btn.closest('.absen-row').classList.toggle('open');
+  });
+});
+
+// ---- Filter modal (preview) ----
+document.querySelectorAll('[data-absen-close-filter]').forEach(function (el) {
+  el.addEventListener('click', function () {
+    document.getElementById('absenFilterOverlay').classList.remove('is-open');
+    document.getElementById('absenFilterOverlay').setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('absen-filter-locked');
+  });
+});
+
+document.getElementById('absenFilterButton')?.addEventListener('click', function () {
+  const ov = document.getElementById('absenFilterOverlay');
+  ov.classList.add('is-open');
+  ov.setAttribute('aria-hidden', 'false');
+  document.body.classList.add('absen-filter-locked');
+});
+
+document.querySelectorAll('[data-filter-toggle]').forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    btn.closest('[data-filter-section]').classList.toggle('is-open');
+  });
+});
+
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'Escape') {
+    document.getElementById('absenFilterOverlay').classList.remove('is-open');
+    document.body.classList.remove('absen-filter-locked');
+  }
+});
+
+document.getElementById('absenFilterApply')?.addEventListener('click', function () {
+  document.getElementById('absenFilterOverlay').classList.remove('is-open');
+  document.body.classList.remove('absen-filter-locked');
+});
+</script>
 </body>
 </html>
+HTMLEOF
+echo "HTML done"
