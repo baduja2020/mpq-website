@@ -1,39 +1,42 @@
-/* ===================================================
-   REKAP ABSEN MUALLIM — Apple-Style Redesign
-   Font: SF Pro (system-ui), Inter fallback
-   Palette: #fff, #f5f5f7, #1d1d1f, #06c, #34c759
-   =================================================== */
+cat > /mnt/user-data/outputs/absen-muallim-apple.css << 'CSSEOF'
+/* ===============================================================
+   REKAP ABSEN MUALLIM — Apple-Style Redesign v3
+   Compatible 100% dengan absen-muallim.js — tidak ada perubahan
+   struktur HTML, ID, class, atau fungsi JS apapun.
+   =============================================================== */
 
 /* ---- Design Tokens ---- */
 :root {
-  --apple-bg: #f5f5f7;
-  --apple-surface: #ffffff;
-  --apple-surface-2: #fbfbfd;
-  --apple-text: #1d1d1f;
-  --apple-text-2: #6e6e73;
-  --apple-text-3: #86868b;
-  --apple-blue: #0071e3;
-  --apple-blue-light: #e8f2fd;
-  --apple-green: #34c759;
-  --apple-green-dark: #248a3d;
-  --apple-green-soft: #e8f9ee;
-  --apple-amber: #ff9f0a;
-  --apple-amber-soft: #fff4e0;
-  --apple-red: #ff3b30;
-  --apple-red-soft: #fff0ef;
-  --apple-line: rgba(0,0,0,.08);
-  --apple-line-strong: rgba(0,0,0,.13);
-  --apple-shadow-sm: 0 2px 8px rgba(0,0,0,.06);
-  --apple-shadow-md: 0 4px 20px rgba(0,0,0,.08);
-  --apple-shadow-lg: 0 12px 40px rgba(0,0,0,.12);
-  --apple-radius-sm: 10px;
-  --apple-radius-md: 16px;
-  --apple-radius-lg: 22px;
-  --apple-radius-xl: 28px;
-  --apple-font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Inter, sans-serif;
+  --apple-bg:           #f5f5f7;
+  --apple-surface:      #ffffff;
+  --apple-surface-2:    #fbfbfd;
+  --apple-text:         #1d1d1f;
+  --apple-text-2:       #6e6e73;
+  --apple-text-3:       #86868b;
+  --apple-blue:         #0071e3;
+  --apple-blue-light:   #e8f2fd;
+  --apple-green:        #34c759;
+  --apple-green-dark:   #248a3d;
+  --apple-green-soft:   #e8f9ee;
+  --apple-amber:        #ff9f0a;
+  --apple-amber-soft:   #fff4e0;
+  --apple-red:          #ff3b30;
+  --apple-red-soft:     #fff0ef;
+  --apple-line:         rgba(0,0,0,.08);
+  --apple-line-strong:  rgba(0,0,0,.13);
+  --apple-shadow-sm:    0 2px 8px rgba(0,0,0,.06);
+  --apple-shadow-md:    0 4px 20px rgba(0,0,0,.08);
+  --apple-r-sm:  10px;
+  --apple-r-md:  16px;
+  --apple-r-lg:  22px;
+  --apple-r-xl:  28px;
+  --apple-font:  -apple-system, BlinkMacSystemFont, "SF Pro Display",
+                 "SF Pro Text", "Helvetica Neue", Inter, sans-serif;
 }
 
-/* ---- Page Layout ---- */
+/* ================================================================
+   PAGE
+   ================================================================ */
 .absen-muallim-page {
   width: min(1100px, calc(100% - 40px));
   margin: 0 auto;
@@ -41,11 +44,13 @@
   font-family: var(--apple-font);
 }
 
-/* ---- Hero Card ---- */
+/* ================================================================
+   HERO CARD
+   ================================================================ */
 .absen-hero-card {
   position: relative;
   overflow: hidden;
-  border-radius: var(--apple-radius-xl);
+  border-radius: var(--apple-r-xl);
   padding: 44px 48px;
   margin-bottom: 24px;
   background: var(--apple-surface);
@@ -53,6 +58,7 @@
   box-shadow: var(--apple-shadow-md);
 }
 
+/* Soft gradient wash behind content */
 .absen-hero-card::before {
   content: "";
   position: absolute;
@@ -61,27 +67,27 @@
   z-index: 0;
 }
 
-/* Decorative circle top-right */
+/* Decorative radial glow */
 .absen-hero-card::after {
   content: "";
   position: absolute;
   right: -60px;
   top: -60px;
-  width: 260px;
-  height: 260px;
+  width: 280px;
+  height: 280px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(52,199,89,.12), transparent 70%);
+  background: radial-gradient(circle, rgba(52,199,89,.13), transparent 70%);
   pointer-events: none;
   z-index: 0;
 }
 
-.absen-hero-card .label,
-.absen-hero-card h1,
-.absen-hero-card p {
+/* Lift all children above pseudo-elements */
+.absen-hero-card > * {
   position: relative;
   z-index: 1;
 }
 
+/* .label.green — JS tidak menyentuh ini, hanya HTML statis */
 .absen-hero-card .label {
   display: inline-flex;
   align-items: center;
@@ -92,9 +98,9 @@
   text-transform: uppercase;
   color: var(--apple-green-dark);
   background: var(--apple-green-soft);
-  border: 1px solid rgba(52,199,89,.25);
+  border: 1px solid rgba(52,199,89,.28);
   border-radius: 999px;
-  padding: 5px 12px;
+  padding: 5px 14px;
   margin-bottom: 16px;
 }
 
@@ -116,23 +122,25 @@
   margin: 0;
 }
 
-/* ---- Toolbar ---- */
+/* ================================================================
+   TOOLBAR  (#absenSearchInput, #absenFilterButton, #absenResetButton)
+   ================================================================ */
 .absen-shell { margin-top: 0; }
 
 .absen-toolbar {
   display: grid;
-  grid-template-columns: 1fr auto auto;
+  grid-template-columns: minmax(280px, 1fr) auto auto;
   gap: 10px;
   align-items: center;
   padding: 12px;
   background: var(--apple-surface);
   border: 1px solid var(--apple-line);
-  border-radius: var(--apple-radius-lg);
+  border-radius: var(--apple-r-lg);
   box-shadow: var(--apple-shadow-sm);
   margin-bottom: 16px;
 }
 
-/* Search */
+/* --- Search field --- */
 .absen-search-field {
   position: relative;
   display: block;
@@ -152,7 +160,7 @@
   width: 100%;
   min-height: 44px;
   border: 1px solid var(--apple-line-strong);
-  border-radius: var(--apple-radius-md);
+  border-radius: var(--apple-r-md);
   background: var(--apple-bg);
   color: var(--apple-text);
   font: inherit;
@@ -172,12 +180,12 @@
   box-shadow: 0 0 0 3px rgba(0,113,227,.15);
 }
 
-/* Buttons */
+/* --- Filter & Reset buttons --- */
 .absen-filter-btn,
 .absen-reset-btn {
   min-height: 44px;
   border: none;
-  border-radius: var(--apple-radius-md);
+  border-radius: var(--apple-r-md);
   padding: 0 18px;
   font: inherit;
   font-family: var(--apple-font);
@@ -186,6 +194,7 @@
   cursor: pointer;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 7px;
   white-space: nowrap;
   transition: opacity .18s, transform .12s;
@@ -199,6 +208,7 @@
   color: #fff;
 }
 
+/* Badge — #absenActiveFilterCount */
 .absen-filter-btn span {
   min-width: 20px;
   height: 20px;
@@ -217,24 +227,34 @@
   border: 1px solid var(--apple-line-strong);
 }
 
-/* ---- Summary Strip ---- */
+.absen-reset-btn:hover { opacity: .8; }
+.absen-filter-btn:hover { opacity: .9; }
+
+/* ================================================================
+   SUMMARY STRIP  (#absenSummaryGrid → .absen-summary-card)
+   JS renders: summaryCard(label, value, note, tone)
+   tone values: "" | "good" | "warn" | "bad"
+   ================================================================ */
 .absen-summary-strip {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 10px;
   margin-bottom: 14px;
 }
 
+/* JS generates 5 cards, original used 4-col — override to 5 */
+
 .absen-summary-card {
   min-height: 90px;
   padding: 16px 18px;
-  border-radius: var(--apple-radius-lg);
+  border-radius: var(--apple-r-lg);
   background: var(--apple-surface);
   border: 1px solid var(--apple-line);
   box-shadow: var(--apple-shadow-sm);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  font-family: var(--apple-font);
 }
 
 .absen-summary-card span {
@@ -249,7 +269,7 @@
 
 .absen-summary-card strong {
   display: block;
-  font-size: 30px;
+  font-size: 28px;
   font-weight: 700;
   letter-spacing: -.04em;
   color: var(--apple-text);
@@ -283,7 +303,9 @@
 }
 .absen-summary-card.bad strong { color: #c0392b; }
 
-/* ---- Meta text ---- */
+/* ================================================================
+   META  (#absenMeta)
+   ================================================================ */
 .absen-meta {
   color: var(--apple-text-3);
   font-size: 13px;
@@ -294,14 +316,19 @@
 
 .absen-meta strong { color: var(--apple-blue); font-weight: 700; }
 
-/* ---- List rows ---- */
+/* ================================================================
+   ROW LIST  (#absenList → .absen-row)
+   JS renders .absen-row with tone class: good | warn | bad
+   Inside: .absen-row-head > .absen-indicator-dot, .absen-row-main,
+           .absen-row-side, .absen-row-toggle (i.ri-add-line)
+   ================================================================ */
 .absen-rekap-list { display: grid; gap: 8px; }
 
 .absen-row {
   position: relative;
   background: var(--apple-surface);
   border: 1px solid var(--apple-line);
-  border-radius: var(--apple-radius-lg);
+  border-radius: var(--apple-r-lg);
   box-shadow: var(--apple-shadow-sm);
   overflow: hidden;
   transition: box-shadow .2s, border-color .2s;
@@ -312,6 +339,7 @@
   border-color: var(--apple-line-strong);
 }
 
+/* Row head — the toggle button */
 .absen-row-head {
   width: 100%;
   border: none;
@@ -322,15 +350,15 @@
   cursor: pointer;
   display: grid;
   grid-template-columns: 1fr auto;
-  align-items: center;
   gap: 12px;
-  padding: 16px 20px;
+  align-items: center;
+  padding: 16px 56px 16px 20px; /* right padding reserves space for toggle icon */
   transition: background .15s;
 }
 
 .absen-row-head:hover { background: var(--apple-bg); }
 
-.absen-row-main { min-width: 0; padding-right: 32px; }
+.absen-row-main { min-width: 0; }
 
 .absen-row-name {
   display: block;
@@ -347,7 +375,7 @@
   font-weight: 400;
   color: var(--apple-text-3);
   margin-top: 3px;
-  line-height: 1.4;
+  line-height: 1.5;
 }
 
 .absen-row-side {
@@ -356,22 +384,30 @@
   gap: 8px;
 }
 
-/* Status dot */
+/* Status dot — .absen-indicator-dot (positioned absolutely by JS HTML) */
 .absen-indicator-dot {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  right: 52px;
+  right: 50px;
   width: 7px;
   height: 7px;
   border-radius: 50%;
   background: var(--apple-green);
+  box-shadow: 0 0 0 3px rgba(52,199,89,.15);
 }
 
-.absen-row.warn .absen-indicator-dot { background: var(--apple-amber); }
-.absen-row.bad  .absen-indicator-dot { background: var(--apple-red); }
+.absen-row.warn .absen-indicator-dot {
+  background: var(--apple-amber);
+  box-shadow: 0 0 0 3px rgba(255,159,10,.15);
+}
 
-/* Chevron toggle */
+.absen-row.bad .absen-indicator-dot {
+  background: var(--apple-red);
+  box-shadow: 0 0 0 3px rgba(255,59,48,.15);
+}
+
+/* Toggle icon — JS uses i.ri-add-line.absen-row-toggle */
 .absen-row-toggle {
   position: absolute;
   right: 16px;
@@ -385,16 +421,20 @@
   background: var(--apple-bg);
   color: var(--apple-text-3);
   font-size: 20px;
-  transition: transform .2s, background .15s;
+  transition: transform .22s, background .15s, color .15s;
+  pointer-events: none;
 }
 
+/* JS toggles .open on .absen-row — rotate icon */
 .absen-row.open .absen-row-toggle {
-  transform: translateY(-50%) rotate(180deg);
+  transform: translateY(-50%) rotate(45deg);
   background: var(--apple-blue-light);
   color: var(--apple-blue);
 }
 
-/* Pills */
+/* ================================================================
+   PILLS  — .absen-percent-pill  .absen-status-pill  (+tone class)
+   ================================================================ */
 .absen-percent-pill,
 .absen-status-pill {
   display: inline-flex;
@@ -427,7 +467,14 @@
   background: var(--apple-red-soft);
 }
 
-/* ---- Row Detail Panel ---- */
+/* ================================================================
+   ROW DETAIL  (.absen-row-detail  —  shown when .absen-row.open)
+   JS renders:
+     .absen-detail-title > span + small
+     .absen-detail-grid-mini > .absen-period (+ tone)
+     .absen-total-strip > span (+ danger|warning|success)
+     .absen-note (optional)
+   ================================================================ */
 .absen-row-detail {
   display: none;
   padding: 0 20px 18px;
@@ -445,6 +492,7 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
+/* Detail title */
 .absen-detail-title {
   display: flex;
   align-items: flex-start;
@@ -468,17 +516,17 @@
   line-height: 1.5;
 }
 
+/* Period grid — JS uses detailBox() → .absen-period + tone */
 .absen-detail-grid-mini {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 8px;
 }
 
-/* Period cards */
 .absen-period {
   min-height: 80px;
   padding: 12px 14px;
-  border-radius: var(--apple-radius-md);
+  border-radius: var(--apple-r-md);
   border: 1px solid var(--apple-line);
   background: var(--apple-surface);
   text-align: left;
@@ -489,19 +537,20 @@
 
 .absen-period.good {
   border-color: rgba(52,199,89,.22);
-  background: linear-gradient(160deg,#f0fbf3,#fff);
+  background: linear-gradient(160deg, #f0fbf3, #fff);
 }
 
 .absen-period.warn {
   border-color: rgba(255,159,10,.22);
-  background: linear-gradient(160deg,#fff8ec,#fff);
+  background: linear-gradient(160deg, #fff8ec, #fff);
 }
 
 .absen-period.bad {
   border-color: rgba(255,59,48,.18);
-  background: linear-gradient(160deg,#fff5f4,#fff);
+  background: linear-gradient(160deg, #fff5f4, #fff);
 }
 
+/* .absen-period-top: label + icon */
 .absen-period-top {
   display: flex;
   align-items: center;
@@ -538,12 +587,14 @@
 
 .absen-period.good em,
 .absen-period.good .absen-period-top i { color: var(--apple-green-dark); }
+
 .absen-period.warn em,
 .absen-period.warn .absen-period-top i { color: #92400e; }
-.absen-period.bad em,
-.absen-period.bad .absen-period-top i { color: #c0392b; }
 
-/* Total strip */
+.absen-period.bad em,
+.absen-period.bad .absen-period-top i  { color: #c0392b; }
+
+/* Total strip — JS uses .danger / .warning / .success */
 .absen-total-strip {
   display: flex;
   flex-wrap: wrap;
@@ -554,7 +605,7 @@
 .absen-total-strip span {
   flex: 1 1 140px;
   padding: 10px 14px;
-  border-radius: var(--apple-radius-sm);
+  border-radius: var(--apple-r-sm);
   background: var(--apple-bg);
   color: var(--apple-text-2);
   font-size: 12px;
@@ -564,15 +615,15 @@
 
 .absen-total-strip strong { color: var(--apple-blue); font-weight: 700; }
 
-.absen-total-strip .danger  { background: var(--apple-red-soft);   color: #c0392b; }
+.absen-total-strip .danger  { background: var(--apple-red-soft);    color: #c0392b; }
 .absen-total-strip .warning { background: var(--apple-amber-soft);  color: #92400e; }
 .absen-total-strip .success { background: var(--apple-green-soft);  color: var(--apple-green-dark); }
 
-/* Note */
+/* Note — .absen-note */
 .absen-note {
   margin-top: 10px;
   padding: 12px 14px;
-  border-radius: var(--apple-radius-sm);
+  border-radius: var(--apple-r-sm);
   background: var(--apple-bg);
   color: var(--apple-text-3);
   font-size: 12px;
@@ -581,14 +632,17 @@
   font-family: var(--apple-font);
 }
 
-/* ---- Empty / Error / Loading ---- */
+/* ================================================================
+   EMPTY / ERROR / LOADING CARDS
+   JS renders these into #absenList and #absenSummaryGrid
+   ================================================================ */
 .absen-empty-card,
 .absen-error-card,
 .absen-loading-card {
   text-align: center;
   padding: 48px 24px;
   border: 1px dashed var(--apple-line-strong);
-  border-radius: var(--apple-radius-xl);
+  border-radius: var(--apple-r-xl);
   background: var(--apple-surface);
   color: var(--apple-text-3);
   font-family: var(--apple-font);
@@ -640,20 +694,40 @@
   font-size: 12px;
 }
 
-/* ---- Skeleton ---- */
+/* ================================================================
+   SKELETON  (.absen-skeleton-list > .absen-skeleton-row)
+   ================================================================ */
 .absen-skeleton-list { display: grid; gap: 8px; }
 
 .absen-skeleton-row {
   min-height: 70px;
-  border-radius: var(--apple-radius-lg);
-  background: linear-gradient(90deg,#f5f5f7 25%,#fafafa 50%,#f5f5f7 75%);
+  border-radius: var(--apple-r-lg);
+  background: linear-gradient(90deg, #f5f5f7 25%, #fafafa 50%, #f5f5f7 75%);
   background-size: 200% 100%;
   animation: absenShimmer 1.3s infinite linear;
 }
 
 @keyframes absenShimmer { to { background-position: -200% 0; } }
 
-/* ---- Filter Overlay ---- */
+/* ================================================================
+   FILTER OVERLAY
+   #absenFilterOverlay (.absen-filter-overlay)
+     .absen-filter-backdrop  [data-absen-close-filter]
+     .absen-filter-modal
+       .absen-filter-handle
+       .absen-filter-header
+         h2#absenFilterTitle + p
+         button.absen-filter-close [data-absen-close-filter]
+       .absen-filter-content
+         section.absen-filter-section [data-filter-section]
+           button.absen-filter-section-head [data-filter-toggle]
+           .absen-filter-section-body
+             .absen-option-search > input#absenBulanSearch|absenAdnaSearch
+             .absen-option-grid#absenBulanOptions|absenAdnaOptions
+                                |absenStatusOptions
+       .absen-filter-actions
+         #absenFilterResetModal  #absenFilterApply
+   ================================================================ */
 .absen-filter-overlay {
   position: fixed;
   inset: 0;
@@ -669,7 +743,7 @@
 .absen-filter-backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,.35);
+  background: rgba(0,0,0,.36);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
@@ -681,25 +755,28 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  border-radius: var(--apple-radius-xl);
+  border-radius: var(--apple-r-xl);
   background: var(--apple-surface);
   box-shadow: 0 32px 80px rgba(0,0,0,.24), 0 0 0 1px var(--apple-line);
   animation: filterModalIn .22s ease;
 }
 
 @keyframes filterModalIn {
-  from { opacity: 0; transform: scale(.97) translateY(6px); }
-  to   { opacity: 1; transform: scale(1) translateY(0); }
+  from { opacity: 0; transform: scale(.97) translateY(8px); }
+  to   { opacity: 1; transform: scale(1)   translateY(0); }
 }
 
+/* Drag handle (visual only) */
 .absen-filter-handle {
   width: 40px;
   height: 4px;
   border-radius: 999px;
   background: var(--apple-line-strong);
   margin: 12px auto 0;
+  flex-shrink: 0;
 }
 
+/* Header */
 .absen-filter-header {
   display: flex;
   align-items: flex-start;
@@ -707,6 +784,7 @@
   gap: 16px;
   padding: 20px 24px 16px;
   border-bottom: 1px solid var(--apple-line);
+  flex-shrink: 0;
 }
 
 .absen-filter-header h2 {
@@ -726,6 +804,7 @@
   font-family: var(--apple-font);
 }
 
+/* Close button — .absen-filter-close [data-absen-close-filter] */
 .absen-filter-close {
   width: 32px;
   height: 32px;
@@ -743,17 +822,20 @@
 
 .absen-filter-close:hover { background: var(--apple-line-strong); }
 
+/* Filter content grid */
 .absen-filter-content {
   overflow: auto;
   padding: 16px 24px;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
+  flex: 1;
 }
 
+/* Each section — [data-filter-section] */
 .absen-filter-section {
   border: 1px solid var(--apple-line);
-  border-radius: var(--apple-radius-lg);
+  border-radius: var(--apple-r-lg);
   background: var(--apple-surface);
   overflow: hidden;
   transition: border-color .18s, box-shadow .18s;
@@ -764,6 +846,7 @@
   box-shadow: 0 4px 16px rgba(0,0,0,.06);
 }
 
+/* Section head — [data-filter-toggle] */
 .absen-filter-section-head {
   width: 100%;
   border: none;
@@ -779,6 +862,7 @@
   font-family: var(--apple-font);
 }
 
+/* Icon badge */
 .absen-filter-icon {
   width: 34px;
   height: 34px;
@@ -788,6 +872,7 @@
   background: var(--apple-blue-light);
   color: var(--apple-blue);
   font-size: 17px;
+  flex-shrink: 0;
 }
 
 .absen-filter-section-head strong {
@@ -798,6 +883,7 @@
   letter-spacing: -.01em;
 }
 
+/* #absenBulanLabel, #absenAdnaLabel, #absenStatusLabel */
 .absen-filter-section-head small {
   display: block;
   color: var(--apple-text-3);
@@ -806,6 +892,7 @@
   margin-top: 2px;
 }
 
+/* Chevron */
 .absen-filter-section-head > i {
   width: 28px;
   height: 28px;
@@ -816,6 +903,7 @@
   color: var(--apple-text-3);
   font-size: 18px;
   transition: transform .2s, color .15s;
+  flex-shrink: 0;
 }
 
 .absen-filter-section.is-open .absen-filter-section-head > i {
@@ -823,6 +911,7 @@
   color: var(--apple-blue);
 }
 
+/* Section body — hidden until .is-open */
 .absen-filter-section-body {
   display: none;
   padding: 0 14px 14px;
@@ -830,8 +919,10 @@
 
 .absen-filter-section.is-open .absen-filter-section-body { display: block; }
 
-.absen-filter-section:first-child { grid-column: 1/-1; }
+/* First section (Bulan) spans full width */
+.absen-filter-section:first-child { grid-column: 1 / -1; }
 
+/* Search inside section */
 .absen-option-search {
   position: relative;
   display: block;
@@ -852,7 +943,7 @@
   width: 100%;
   min-height: 40px;
   border: 1px solid var(--apple-line-strong);
-  border-radius: var(--apple-radius-sm);
+  border-radius: var(--apple-r-sm);
   background: var(--apple-bg);
   font: inherit;
   font-family: var(--apple-font);
@@ -864,30 +955,35 @@
   transition: border-color .15s, box-shadow .15s;
 }
 
+.absen-option-search input::placeholder { color: var(--apple-text-3); }
+
 .absen-option-search input:focus {
   border-color: var(--apple-blue);
   background: var(--apple-surface);
   box-shadow: 0 0 0 3px rgba(0,113,227,.12);
 }
 
+/* Option grid — JS renders .absen-option-btn here */
 .absen-option-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 7px;
   max-height: 230px;
   overflow: auto;
   padding-right: 2px;
 }
 
+/* Status uses single-column layout */
 .absen-status-option-grid {
   grid-template-columns: 1fr;
   max-height: none;
 }
 
+/* .absen-option-btn — rendered by JS renderChipOptions() */
 .absen-option-btn {
   min-height: 38px;
   border: 1px solid var(--apple-line);
-  border-radius: var(--apple-radius-sm);
+  border-radius: var(--apple-r-sm);
   background: var(--apple-bg);
   color: var(--apple-text);
   padding: 7px 10px;
@@ -904,6 +1000,14 @@
   transition: border-color .15s, background .15s;
 }
 
+/* Status option has <span> wrapper with <small> inside */
+.absen-option-btn span {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--apple-text);
+}
+
 .absen-option-btn small {
   display: block;
   color: var(--apple-text-3);
@@ -912,6 +1016,7 @@
   margin-top: 2px;
 }
 
+/* Radio dot via ::after */
 .absen-option-btn::after {
   content: "";
   width: 16px;
@@ -922,32 +1027,39 @@
   transition: background .15s, border-color .15s;
 }
 
-.absen-option-btn:hover { border-color: var(--apple-blue); background: var(--apple-blue-light); }
+.absen-option-btn:hover {
+  border-color: var(--apple-blue);
+  background: var(--apple-blue-light);
+}
 
+/* .is-active — set by JS renderChipOptions() */
 .absen-option-btn.is-active {
   border-color: var(--apple-blue);
   background: var(--apple-blue-light);
   color: var(--apple-blue);
 }
 
+.absen-option-btn.is-active span { color: var(--apple-blue); }
+
 .absen-option-btn.is-active::after {
   background: var(--apple-blue);
   border-color: var(--apple-blue);
 }
 
-/* Filter actions */
+/* Filter actions footer */
 .absen-filter-actions {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
   padding: 14px 24px 18px;
   border-top: 1px solid var(--apple-line);
+  flex-shrink: 0;
 }
 
 .absen-filter-actions button {
   min-height: 46px;
   border: none;
-  border-radius: var(--apple-radius-md);
+  border-radius: var(--apple-r-md);
   font: inherit;
   font-family: var(--apple-font);
   font-size: 15px;
@@ -958,37 +1070,53 @@
 
 .absen-filter-actions button:active { transform: scale(.98); }
 
+/* #absenFilterResetModal */
 .absen-filter-reset {
   background: var(--apple-bg);
   color: var(--apple-text-2);
   border: 1px solid var(--apple-line-strong) !important;
 }
 
+/* #absenFilterApply */
 .absen-filter-apply {
   background: var(--apple-blue);
   color: #fff;
 }
 
-.absen-filter-apply:hover { opacity: .92; }
+.absen-filter-apply:hover { opacity: .9; }
 
+/* body.absen-filter-locked — added by JS openAbsenFilterModal() */
 body.absen-filter-locked { overflow: hidden; }
 
-/* ======= RESPONSIVE ======= */
+/* ================================================================
+   RESPONSIVE BREAKPOINTS
+   ================================================================ */
+
+/* Tablet landscape */
 @media (max-width: 1050px) {
-  .absen-summary-strip { grid-template-columns: repeat(2, 1fr); }
-  .absen-filter-content { grid-template-columns: 1fr; }
-  .absen-filter-section:first-child { grid-column: auto; }
+  .absen-summary-strip {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .absen-filter-content {
+    grid-template-columns: 1fr;
+  }
+
+  .absen-filter-section:first-child {
+    grid-column: auto;
+  }
 }
 
+/* Tablet portrait / large phone */
 @media (max-width: 720px) {
   .absen-muallim-page {
-    width: calc(100% - 24px);
+    width: min(100% - 24px, 1100px);
     padding: 28px 0 56px;
   }
 
   .absen-hero-card {
     padding: 28px 24px;
-    border-radius: var(--apple-radius-lg);
+    border-radius: var(--apple-r-lg);
     margin-bottom: 16px;
   }
 
@@ -997,28 +1125,29 @@ body.absen-filter-locked { overflow: hidden; }
 
   .absen-toolbar {
     grid-template-columns: 1fr auto;
-    border-radius: var(--apple-radius-lg);
+    border-radius: var(--apple-r-lg);
     padding: 10px;
   }
 
-  .absen-search-field { grid-column: 1/-1; }
+  .absen-search-field { grid-column: 1 / -1; }
 
   .absen-filter-btn,
-  .absen-reset-btn { width: 100%; justify-content: center; }
+  .absen-reset-btn { width: 100%; }
 
   .absen-summary-strip {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 8px;
   }
 
   .absen-summary-card {
     min-height: 76px;
-    border-radius: var(--apple-radius-md);
+    border-radius: var(--apple-r-md);
     padding: 12px 14px;
   }
 
-  .absen-summary-card strong { font-size: 24px; }
+  .absen-summary-card strong { font-size: 22px; }
 
+  /* JS hides .absen-status-pill on small — keep consistent */
   .absen-row-side .absen-status-pill { display: none; }
 
   .absen-detail-title { display: block; }
@@ -1026,6 +1155,7 @@ body.absen-filter-locked { overflow: hidden; }
 
   .absen-detail-grid-mini { grid-template-columns: 1fr 1fr; }
 
+  /* Filter slides up from bottom on mobile */
   .absen-filter-overlay {
     align-items: flex-end;
     padding: 0;
@@ -1039,25 +1169,26 @@ body.absen-filter-locked { overflow: hidden; }
   }
 
   @keyframes filterModalInMobile {
-    from { opacity: 0; transform: translateY(16px); }
+    from { opacity: 0; transform: translateY(20px); }
     to   { opacity: 1; transform: translateY(0); }
   }
 
   .absen-filter-header { padding: 20px 18px 14px; }
   .absen-filter-content { padding: 14px 16px; }
   .absen-filter-actions { padding: 12px 16px 16px; }
-  .absen-option-grid { grid-template-columns: repeat(2, 1fr); }
+  .absen-option-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
+/* Small phone */
 @media (max-width: 430px) {
-  .absen-summary-strip { grid-template-columns: 1fr 1fr; }
+  .absen-summary-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .absen-toolbar { grid-template-columns: 1fr 1fr; }
   .absen-detail-grid-mini { grid-template-columns: 1fr; }
 }
 
-/* Reduced motion */
+/* Respect user preference for reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  .absen-skeleton-row { animation: none; background: #f5f5f7; }
+  .absen-skeleton-row    { animation: none; background: #f5f5f7; }
   .absen-row.open .absen-row-detail { animation: none; }
-  .absen-filter-modal { animation: none; }
+  .absen-filter-modal    { animation: none; }
 }
