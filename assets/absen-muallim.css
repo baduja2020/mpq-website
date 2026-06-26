@@ -1007,79 +1007,120 @@ body.absen-filter-locked{
 
 
 
-/* ===== Apple UI Refactor Patch ===== */
+/* ===== MPQ APPLE REDESIGN v5 ===== */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
 :root{
-  --apple-bg:#f5f5f7;
-  --apple-card:#ffffff;
-  --apple-shadow:0 4px 20px rgba(0,0,0,.06);
-  --apple-shadow-hover:0 10px 30px rgba(0,0,0,.10);
-  --apple-radius:22px;
+  --bg:#f5f5f7;
+  --card:#ffffff;
+  --radius:24px;
+  --shadow:0 4px 24px rgba(0,0,0,.06);
+  --shadow-hover:0 12px 36px rgba(0,0,0,.10);
+  --green:#007a3d;
 }
 
-body{
-  background:var(--apple-bg)!important;
+html,body{
+  background:var(--bg)!important;
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,'SF Pro Display',
+              'Segoe UI',sans-serif!important;
   -webkit-font-smoothing:antialiased;
 }
 
-[class*="hero"], [class*="banner"], .hero, .dashboard-hero{
+.dashboard-hero,
+.hero,
+[class*="hero"]{
+  min-height:170px!important;
+  padding:34px 40px!important;
   border-radius:32px!important;
-  min-height:220px!important;
-  box-shadow:0 12px 40px rgba(0,40,20,.18)!important;
+  box-shadow:0 18px 40px rgba(0,50,20,.18)!important;
 }
 
-[class*="card"], .card{
+.dashboard-hero h1,
+.hero h1,
+[class*="hero"] h1{
+  line-height:1.05!important;
+  letter-spacing:-0.04em!important;
+}
+
+.card,
+.accordion-item,
+[class*="card"],
+[class*="row-card"]{
   border:none!important;
-  border-radius:var(--apple-radius)!important;
-  box-shadow:var(--apple-shadow)!important;
-  transition:transform .35s cubic-bezier(.22,1,.36,1),
-             box-shadow .35s cubic-bezier(.22,1,.36,1)!important;
+  border-radius:var(--radius)!important;
+  box-shadow:var(--shadow)!important;
+  transition:all .3s cubic-bezier(.22,1,.36,1)!important;
 }
 
-[class*="card"]:hover, .card:hover{
-  transform:translateY(-3px);
-  box-shadow:var(--apple-shadow-hover)!important;
+.card:hover,
+.accordion-item:hover,
+[class*="card"]:hover{
+  transform:translateY(-2px)!important;
+  box-shadow:var(--shadow-hover)!important;
 }
 
-button,
-[class*="btn"],
-[class*="filter"],
-[class*="reset"]{
-  border-radius:16px!important;
-  transition:all .25s ease!important;
+input[type="text"],
+input[type="search"]{
+  height:58px!important;
+  border-radius:20px!important;
+  background:#fff!important;
 }
 
-button:hover,
-[class*="btn"]:hover{
-  transform:translateY(-1px);
+button,.btn{
+  border-radius:18px!important;
+  min-height:48px!important;
 }
 
-[class*="badge"],
-[class*="pill"],
-[class*="status"]{
-  border-radius:999px!important;
-  padding:6px 12px!important;
-  display:inline-flex!important;
+/* Header kanan card */
+.absen-row-header,
+[class*="row-header"]{
+  display:grid!important;
+  grid-template-columns:1fr auto auto auto!important;
   align-items:center!important;
-  justify-content:center!important;
-  gap:8px!important;
+  column-gap:12px!important;
 }
 
-[class*="accordion"],
-[class*="toggle"],
-[class*="expand"]{
+/* Hapus absolute positioning tombol expand */
+.absen-row-toggle{
+  position:relative!important;
+  right:auto!important;
+  top:auto!important;
+  transform:none!important;
   width:38px!important;
   height:38px!important;
+  border-radius:50%!important;
   display:flex!important;
   align-items:center!important;
   justify-content:center!important;
-  border-radius:50%!important;
 }
 
-[class*="summary"],
-[class*="stat"]{
-  min-height:90px!important;
+/* Badge */
+.absen-row-score,
+.absen-row-status,
+.badge,
+[class*="pill"]{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  border-radius:999px!important;
+  padding:6px 12px!important;
+  white-space:nowrap!important;
 }
 
-input[type="search"], input[type="text"]{
+/* Detail card */
+[class*="detail"] [class*="card"],
+[class*="detail"] > div{
+  border:none!important;
   border-radius:18px!important;
+  box-shadow:0 1px 8px rgba(0,0,0,.04)!important;
+}
+
+/* Jangan tampilkan menu toggle di desktop */
+@media (min-width: 769px){
+  .navbar-toggler,
+  .menu-toggle,
+  button[aria-label*="menu"],
+  button[aria-label*="Menu"]{
+    display:none!important;
+  }
 }
