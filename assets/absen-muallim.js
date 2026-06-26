@@ -2,7 +2,7 @@
   MPQ - Rekap Absen Muallim V2
   PENTING: ganti ABSEN_MUALLIM_API_URL dengan URL Web App Apps Script panjenengan.
 */
-const ABSEN_MUALLIM_API_URL = "PASTE_APPS_SCRIPT_WEB_APP_URL_HERE";
+const ABSEN_MUALLIM_API_URL = "https://script.google.com/macros/s/AKfycbzAgrbS8PxxqGF1qPC2ibcQ-hOF939cvJbczv75j73xQx13TRvhXUdT5yPA2eW5ebw/exec";
 const ABSEN_MUALLIM_API_MODE = "absenMuallim";
 
 const HIJRI_MONTH_ORDER = [
