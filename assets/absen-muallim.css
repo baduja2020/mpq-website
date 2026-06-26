@@ -1,1194 +1,1006 @@
-cat > /mnt/user-data/outputs/absen-muallim-apple.css << 'CSSEOF'
-/* ===============================================================
-   REKAP ABSEN MUALLIM — Apple-Style Redesign v3
-   Compatible 100% dengan absen-muallim.js — tidak ada perubahan
-   struktur HTML, ID, class, atau fungsi JS apapun.
-   =============================================================== */
-
-/* ---- Design Tokens ---- */
-:root {
-  --apple-bg:           #f5f5f7;
-  --apple-surface:      #ffffff;
-  --apple-surface-2:    #fbfbfd;
-  --apple-text:         #1d1d1f;
-  --apple-text-2:       #6e6e73;
-  --apple-text-3:       #86868b;
-  --apple-blue:         #0071e3;
-  --apple-blue-light:   #e8f2fd;
-  --apple-green:        #34c759;
-  --apple-green-dark:   #248a3d;
-  --apple-green-soft:   #e8f9ee;
-  --apple-amber:        #ff9f0a;
-  --apple-amber-soft:   #fff4e0;
-  --apple-red:          #ff3b30;
-  --apple-red-soft:     #fff0ef;
-  --apple-line:         rgba(0,0,0,.08);
-  --apple-line-strong:  rgba(0,0,0,.13);
-  --apple-shadow-sm:    0 2px 8px rgba(0,0,0,.06);
-  --apple-shadow-md:    0 4px 20px rgba(0,0,0,.08);
-  --apple-r-sm:  10px;
-  --apple-r-md:  16px;
-  --apple-r-lg:  22px;
-  --apple-r-xl:  28px;
-  --apple-font:  -apple-system, BlinkMacSystemFont, "SF Pro Display",
-                 "SF Pro Text", "Helvetica Neue", Inter, sans-serif;
+/* ================= REKAP ABSEN MUALLIM - STYLE V2 ================= */
+.absen-muallim-page{
+  width:min(1180px, calc(100% - 32px));
+  margin:0 auto;
+  padding:46px 0 74px;
 }
 
-/* ================================================================
-   PAGE
-   ================================================================ */
-.absen-muallim-page {
-  width: min(1100px, calc(100% - 40px));
-  margin: 0 auto;
-  padding: 52px 0 80px;
-  font-family: var(--apple-font);
+.absen-hero-card{
+  position:relative;
+  overflow:hidden;
+  border-radius:28px;
+  padding:30px;
+  margin-bottom:22px;
+  color:#fff;
+  background:linear-gradient(135deg,#0d1f14,#166534);
+  box-shadow:var(--shadow, 0 18px 50px rgba(16,32,22,.12));
 }
 
-/* ================================================================
-   HERO CARD
-   ================================================================ */
-.absen-hero-card {
-  position: relative;
-  overflow: hidden;
-  border-radius: var(--apple-r-xl);
-  padding: 44px 48px;
-  margin-bottom: 24px;
-  background: var(--apple-surface);
-  border: 1px solid var(--apple-line);
-  box-shadow: var(--apple-shadow-md);
+.absen-hero-card::after{
+  content:"";
+  position:absolute;
+  right:-80px;
+  top:-80px;
+  width:220px;
+  height:220px;
+  border-radius:50%;
+  background:rgba(255,255,255,.10);
+  pointer-events:none;
 }
 
-/* Soft gradient wash behind content */
-.absen-hero-card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, #f0faf4 0%, #e8f5fe 60%, #f5f5f7 100%);
-  z-index: 0;
+.absen-hero-card .label{
+  position:relative;
+  color:#bde8c9;
 }
 
-/* Decorative radial glow */
-.absen-hero-card::after {
-  content: "";
-  position: absolute;
-  right: -60px;
-  top: -60px;
-  width: 280px;
-  height: 280px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(52,199,89,.13), transparent 70%);
-  pointer-events: none;
-  z-index: 0;
+.absen-hero-card h1{
+  position:relative;
+  max-width:680px;
+  font-size:clamp(32px,4vw,54px);
+  line-height:1.05;
+  letter-spacing:-.055em;
+  margin:10px 0 12px;
 }
 
-/* Lift all children above pseudo-elements */
-.absen-hero-card > * {
-  position: relative;
-  z-index: 1;
+.absen-hero-card p{
+  position:relative;
+  max-width:780px;
+  color:#e4f3e9;
+  line-height:1.75;
+  font-weight:600;
 }
 
-/* .label.green — JS tidak menyentuh ini, hanya HTML statis */
-.absen-hero-card .label {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  color: var(--apple-green-dark);
-  background: var(--apple-green-soft);
-  border: 1px solid rgba(52,199,89,.28);
-  border-radius: 999px;
-  padding: 5px 14px;
-  margin-bottom: 16px;
+.absen-shell{
+  margin-top:0;
 }
 
-.absen-hero-card h1 {
-  font-size: clamp(28px, 4vw, 48px);
-  font-weight: 700;
-  letter-spacing: -.045em;
-  line-height: 1.06;
-  color: var(--apple-text);
-  margin: 0 0 14px;
+.absen-toolbar{
+  display:grid;
+  grid-template-columns:minmax(280px,1fr) auto auto;
+  gap:12px;
+  align-items:center;
+  padding:14px;
+  border:1px solid var(--line);
+  border-radius:24px;
+  background:var(--surface, #fff);
+  box-shadow:0 12px 30px rgba(16,32,22,.06);
+  margin-bottom:16px;
 }
 
-.absen-hero-card p {
-  max-width: 600px;
-  color: var(--apple-text-2);
-  font-size: 17px;
-  font-weight: 400;
-  line-height: 1.65;
-  margin: 0;
+.absen-search-field{
+  position:relative;
+  display:block;
 }
 
-/* ================================================================
-   TOOLBAR  (#absenSearchInput, #absenFilterButton, #absenResetButton)
-   ================================================================ */
-.absen-shell { margin-top: 0; }
-
-.absen-toolbar {
-  display: grid;
-  grid-template-columns: minmax(280px, 1fr) auto auto;
-  gap: 10px;
-  align-items: center;
-  padding: 12px;
-  background: var(--apple-surface);
-  border: 1px solid var(--apple-line);
-  border-radius: var(--apple-r-lg);
-  box-shadow: var(--apple-shadow-sm);
-  margin-bottom: 16px;
+.absen-search-field i{
+  position:absolute;
+  left:16px;
+  top:50%;
+  transform:translateY(-50%);
+  color:var(--muted);
+  font-size:18px;
+  pointer-events:none;
 }
 
-/* --- Search field --- */
-.absen-search-field {
-  position: relative;
-  display: block;
+.absen-search-field input{
+  width:100%;
+  min-height:46px;
+  border:1px solid var(--line);
+  border-radius:17px;
+  background:#fbfdfb;
+  color:var(--text);
+  outline:none;
+  padding:0 16px 0 44px;
+  font:inherit;
+  font-size:14px;
+  font-weight:700;
 }
 
-.absen-search-field i {
-  position: absolute;
-  left: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--apple-text-3);
-  font-size: 17px;
-  pointer-events: none;
+.absen-search-field input:focus{
+  border-color:rgba(22,101,52,.5);
+  box-shadow:0 0 0 4px rgba(22,101,52,.09);
 }
 
-.absen-search-field input {
-  width: 100%;
-  min-height: 44px;
-  border: 1px solid var(--apple-line-strong);
-  border-radius: var(--apple-r-md);
-  background: var(--apple-bg);
-  color: var(--apple-text);
-  font: inherit;
-  font-family: var(--apple-font);
-  font-size: 15px;
-  font-weight: 400;
-  padding: 0 16px 0 42px;
-  outline: none;
-  transition: border-color .18s, box-shadow .18s, background .18s;
-}
-
-.absen-search-field input::placeholder { color: var(--apple-text-3); }
-
-.absen-search-field input:focus {
-  border-color: var(--apple-blue);
-  background: var(--apple-surface);
-  box-shadow: 0 0 0 3px rgba(0,113,227,.15);
-}
-
-/* --- Filter & Reset buttons --- */
 .absen-filter-btn,
-.absen-reset-btn {
-  min-height: 44px;
-  border: none;
-  border-radius: var(--apple-r-md);
-  padding: 0 18px;
-  font: inherit;
-  font-family: var(--apple-font);
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  white-space: nowrap;
-  transition: opacity .18s, transform .12s;
+.absen-reset-btn{
+  min-height:46px;
+  border:0;
+  border-radius:17px;
+  padding:0 16px;
+  font:inherit;
+  font-size:14px;
+  font-weight:900;
+  cursor:pointer;
+  white-space:nowrap;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  transition:transform .18s ease, background .18s ease, box-shadow .18s ease;
 }
 
-.absen-filter-btn:active,
-.absen-reset-btn:active { transform: scale(.97); }
-
-.absen-filter-btn {
-  background: var(--apple-blue);
-  color: #fff;
+.absen-filter-btn{
+  background:var(--primary-soft);
+  color:var(--primary);
 }
 
-/* Badge — #absenActiveFilterCount */
-.absen-filter-btn span {
-  min-width: 20px;
-  height: 20px;
-  border-radius: 999px;
-  display: inline-grid;
-  place-items: center;
-  background: rgba(255,255,255,.28);
-  font-size: 11px;
-  font-weight: 700;
-  color: #fff;
+.absen-filter-btn span{
+  min-width:22px;
+  height:22px;
+  border-radius:999px;
+  display:inline-grid;
+  place-items:center;
+  color:#fff;
+  background:var(--primary);
+  font-size:12px;
+  line-height:1;
 }
 
-.absen-reset-btn {
-  background: var(--apple-bg);
-  color: var(--apple-text-2);
-  border: 1px solid var(--apple-line-strong);
+.absen-filter-btn:hover,
+.absen-reset-btn:hover{
+  transform:translateY(-1px);
 }
 
-.absen-reset-btn:hover { opacity: .8; }
-.absen-filter-btn:hover { opacity: .9; }
-
-/* ================================================================
-   SUMMARY STRIP  (#absenSummaryGrid → .absen-summary-card)
-   JS renders: summaryCard(label, value, note, tone)
-   tone values: "" | "good" | "warn" | "bad"
-   ================================================================ */
-.absen-summary-strip {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 10px;
-  margin-bottom: 14px;
+.absen-reset-btn{
+  background:#f2f7f4;
+  color:var(--primary);
 }
 
-/* JS generates 5 cards, original used 4-col — override to 5 */
-
-.absen-summary-card {
-  min-height: 90px;
-  padding: 16px 18px;
-  border-radius: var(--apple-r-lg);
-  background: var(--apple-surface);
-  border: 1px solid var(--apple-line);
-  box-shadow: var(--apple-shadow-sm);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  font-family: var(--apple-font);
+.absen-summary-strip{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:10px;
+  margin:0 0 14px;
 }
 
-.absen-summary-card span {
-  display: block;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: .04em;
-  text-transform: uppercase;
-  color: var(--apple-text-3);
-  margin-bottom: 6px;
+.absen-summary-card{
+  min-height:84px;
+  border:1px solid var(--line);
+  border-radius:22px;
+  background:linear-gradient(180deg,#fff,rgba(255,255,255,.9));
+  padding:14px 16px;
+  box-shadow:0 10px 24px rgba(16,32,22,.045);
 }
 
-.absen-summary-card strong {
-  display: block;
-  font-size: 28px;
-  font-weight: 700;
-  letter-spacing: -.04em;
-  color: var(--apple-text);
-  line-height: 1;
+.absen-summary-card span{
+  display:block;
+  color:var(--muted);
+  font-size:12px;
+  font-weight:900;
+  margin-bottom:5px;
+  line-height:1.25;
 }
 
-.absen-summary-card em {
-  display: block;
-  font-size: 11px;
-  font-style: normal;
-  font-weight: 500;
-  color: var(--apple-text-3);
-  margin-top: 5px;
+.absen-summary-card strong{
+  display:block;
+  color:var(--text);
+  font-size:28px;
+  letter-spacing:-.05em;
+  line-height:1;
 }
 
-.absen-summary-card.good {
-  border-color: rgba(52,199,89,.22);
-  background: linear-gradient(160deg, #f0fbf3, var(--apple-surface));
-}
-.absen-summary-card.good strong { color: var(--apple-green-dark); }
-
-.absen-summary-card.warn {
-  border-color: rgba(255,159,10,.22);
-  background: linear-gradient(160deg, #fff8ec, var(--apple-surface));
-}
-.absen-summary-card.warn strong { color: #b45309; }
-
-.absen-summary-card.bad {
-  border-color: rgba(255,59,48,.18);
-  background: linear-gradient(160deg, #fff5f4, var(--apple-surface));
-}
-.absen-summary-card.bad strong { color: #c0392b; }
-
-/* ================================================================
-   META  (#absenMeta)
-   ================================================================ */
-.absen-meta {
-  color: var(--apple-text-3);
-  font-size: 13px;
-  font-weight: 500;
-  margin: 2px 4px 14px;
-  font-family: var(--apple-font);
+.absen-summary-card em{
+  display:block;
+  color:var(--muted);
+  font-size:11px;
+  font-style:normal;
+  font-weight:700;
+  margin-top:6px;
 }
 
-.absen-meta strong { color: var(--apple-blue); font-weight: 700; }
+.absen-summary-card.good{
+  border-color:#cfead6;
+  background:#f1fbf4;
+}
+.absen-summary-card.good strong{color:#15803d;}
 
-/* ================================================================
-   ROW LIST  (#absenList → .absen-row)
-   JS renders .absen-row with tone class: good | warn | bad
-   Inside: .absen-row-head > .absen-indicator-dot, .absen-row-main,
-           .absen-row-side, .absen-row-toggle (i.ri-add-line)
-   ================================================================ */
-.absen-rekap-list { display: grid; gap: 8px; }
+.absen-summary-card.warn{
+  border-color:#f3d397;
+  background:#fff8e6;
+}
+.absen-summary-card.warn strong{color:#b45309;}
 
-.absen-row {
-  position: relative;
-  background: var(--apple-surface);
-  border: 1px solid var(--apple-line);
-  border-radius: var(--apple-r-lg);
-  box-shadow: var(--apple-shadow-sm);
-  overflow: hidden;
-  transition: box-shadow .2s, border-color .2s;
+.absen-summary-card.bad{
+  border-color:#fecaca;
+  background:#fff1f1;
+}
+.absen-summary-card.bad strong{color:#b91c1c;}
+
+.absen-meta{
+  color:var(--muted);
+  font-size:13px;
+  font-weight:800;
+  margin:2px 2px 14px;
 }
 
-.absen-row:hover {
-  box-shadow: var(--apple-shadow-md);
-  border-color: var(--apple-line-strong);
+.absen-meta strong{
+  color:var(--primary);
 }
 
-/* Row head — the toggle button */
-.absen-row-head {
-  width: 100%;
-  border: none;
-  background: transparent;
-  text-align: left;
-  font: inherit;
-  font-family: var(--apple-font);
-  cursor: pointer;
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 12px;
-  align-items: center;
-  padding: 16px 56px 16px 20px; /* right padding reserves space for toggle icon */
-  transition: background .15s;
+.absen-rekap-list{
+  display:grid;
+  gap:10px;
 }
 
-.absen-row-head:hover { background: var(--apple-bg); }
-
-.absen-row-main { min-width: 0; }
-
-.absen-row-name {
-  display: block;
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--apple-text);
-  letter-spacing: -.013em;
-  line-height: 1.35;
+.absen-row{
+  position:relative;
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:var(--surface, #fff);
+  box-shadow:0 10px 24px rgba(16,32,22,.055);
+  overflow:hidden;
 }
 
-.absen-row-meta {
-  display: block;
-  font-size: 12px;
-  font-weight: 400;
-  color: var(--apple-text-3);
-  margin-top: 3px;
-  line-height: 1.5;
+.absen-row-head{
+  width:100%;
+  position:relative;
+  border:0;
+  background:transparent;
+  text-align:left;
+  font:inherit;
+  cursor:pointer;
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:12px;
+  align-items:center;
+  padding:13px 16px;
 }
 
-.absen-row-side {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.absen-row-head:hover{
+  background:#fbfdfb;
 }
 
-/* Status dot — .absen-indicator-dot (positioned absolutely by JS HTML) */
-.absen-indicator-dot {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  right: 50px;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--apple-green);
-  box-shadow: 0 0 0 3px rgba(52,199,89,.15);
+.absen-row-main{
+  min-width:0;
+  padding-right:36px;
 }
 
-.absen-row.warn .absen-indicator-dot {
-  background: var(--apple-amber);
-  box-shadow: 0 0 0 3px rgba(255,159,10,.15);
+.absen-row-name{
+  display:block;
+  color:var(--text);
+  font-size:14px;
+  font-weight:900;
+  line-height:1.35;
+  letter-spacing:-.012em;
 }
 
-.absen-row.bad .absen-indicator-dot {
-  background: var(--apple-red);
-  box-shadow: 0 0 0 3px rgba(255,59,48,.15);
+.absen-row-meta{
+  display:block;
+  color:var(--muted);
+  font-size:12px;
+  font-weight:700;
+  margin-top:4px;
+  line-height:1.45;
 }
 
-/* Toggle icon — JS uses i.ri-add-line.absen-row-toggle */
-.absen-row-toggle {
-  position: absolute;
-  right: 16px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 28px;
-  height: 28px;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  background: var(--apple-bg);
-  color: var(--apple-text-3);
-  font-size: 20px;
-  transition: transform .22s, background .15s, color .15s;
-  pointer-events: none;
+.absen-row-side{
+  display:flex;
+  align-items:center;
+  gap:8px;
 }
 
-/* JS toggles .open on .absen-row — rotate icon */
-.absen-row.open .absen-row-toggle {
-  transform: translateY(-50%) rotate(45deg);
-  background: var(--apple-blue-light);
-  color: var(--apple-blue);
+.absen-indicator-dot{
+  position:absolute;
+  top:15px;
+  right:48px;
+  width:6px;
+  height:6px;
+  border-radius:999px;
+  background:#15803d;
+  box-shadow:0 0 0 4px rgba(22,163,74,.08);
 }
 
-/* ================================================================
-   PILLS  — .absen-percent-pill  .absen-status-pill  (+tone class)
-   ================================================================ */
+.absen-row.warn .absen-indicator-dot{
+  background:#d97706;
+  box-shadow:0 0 0 4px rgba(217,119,6,.09);
+}
+
+.absen-row.bad .absen-indicator-dot{
+  background:#dc2626;
+  box-shadow:0 0 0 4px rgba(220,38,38,.10);
+}
+
+.absen-row-toggle{
+  position:absolute;
+  right:13px;
+  top:50%;
+  transform:translateY(-50%);
+  width:30px;
+  height:30px;
+  display:grid;
+  place-items:center;
+  border-radius:12px;
+  background:var(--primary-soft);
+  color:var(--primary);
+  font-size:22px;
+  transition:.2s ease;
+}
+
+.absen-row.open .absen-row-toggle{
+  transform:translateY(-50%) rotate(180deg);
+}
+
 .absen-percent-pill,
-.absen-status-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  border-radius: 999px;
-  padding: 5px 11px;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: -.01em;
-  white-space: nowrap;
-  font-family: var(--apple-font);
+.absen-status-pill{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  border-radius:999px;
+  padding:7px 10px;
+  font-size:12px;
+  font-weight:900;
+  white-space:nowrap;
 }
 
 .absen-percent-pill.good,
-.absen-status-pill.good {
-  color: var(--apple-green-dark);
-  background: var(--apple-green-soft);
+.absen-status-pill.good{
+  color:#166534;
+  background:#e8f6ed;
 }
 
 .absen-percent-pill.warn,
-.absen-status-pill.warn {
-  color: #92400e;
-  background: var(--apple-amber-soft);
+.absen-status-pill.warn{
+  color:#92400e;
+  background:#fff7dd;
 }
 
 .absen-percent-pill.bad,
-.absen-status-pill.bad {
-  color: #c0392b;
-  background: var(--apple-red-soft);
+.absen-status-pill.bad{
+  color:#991b1b;
+  background:#fee2e2;
 }
 
-/* ================================================================
-   ROW DETAIL  (.absen-row-detail  —  shown when .absen-row.open)
-   JS renders:
-     .absen-detail-title > span + small
-     .absen-detail-grid-mini > .absen-period (+ tone)
-     .absen-total-strip > span (+ danger|warning|success)
-     .absen-note (optional)
-   ================================================================ */
-.absen-row-detail {
-  display: none;
-  padding: 0 20px 18px;
-  border-top: 1px solid var(--apple-line);
-  background: var(--apple-surface-2);
+.absen-row-detail{
+  display:none;
+  padding:0 14px 14px;
+  border-top:1px solid var(--line);
+  background:linear-gradient(180deg,#fbfdfb,#ffffff);
 }
 
-.absen-row.open .absen-row-detail {
-  display: block;
-  animation: absenDetailIn .2s ease;
+.absen-row.open .absen-row-detail{
+  display:block;
+  animation:absenDetailIn .22s ease;
 }
 
-@keyframes absenDetailIn {
-  from { opacity: 0; transform: translateY(-6px); }
-  to   { opacity: 1; transform: translateY(0); }
+@keyframes absenDetailIn{
+  from{opacity:0;transform:translateY(-6px)}
+  to{opacity:1;transform:translateY(0)}
 }
 
-/* Detail title */
-.absen-detail-title {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-  padding-top: 15px;
-  margin-bottom: 12px;
+.absen-detail-title{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  padding-top:13px;
+  margin-bottom:10px;
 }
 
-.absen-detail-title span {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--apple-text);
+.absen-detail-title span{
+  color:var(--text);
+  font-size:13px;
+  font-weight:900;
 }
 
-.absen-detail-title small {
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--apple-text-3);
-  text-align: right;
-  line-height: 1.5;
+.absen-detail-title small{
+  color:var(--muted);
+  font-size:11px;
+  font-weight:700;
+  text-align:right;
+  line-height:1.45;
 }
 
-/* Period grid — JS uses detailBox() → .absen-period + tone */
-.absen-detail-grid-mini {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 8px;
+.absen-detail-grid-mini{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:8px;
 }
 
-.absen-period {
-  min-height: 80px;
-  padding: 12px 14px;
-  border-radius: var(--apple-r-md);
-  border: 1px solid var(--apple-line);
-  background: var(--apple-surface);
-  text-align: left;
-  transition: box-shadow .15s;
+.absen-period{
+  min-height:76px;
+  padding:10px 11px;
+  border:1px solid #e5ece7;
+  border-radius:16px;
+  background:#f7faf7;
+  text-align:left;
 }
 
-.absen-period:hover { box-shadow: var(--apple-shadow-sm); }
-
-.absen-period.good {
-  border-color: rgba(52,199,89,.22);
-  background: linear-gradient(160deg, #f0fbf3, #fff);
+.absen-period.good{
+  border-color:#b8e2c3;
+  background:linear-gradient(180deg,#f1fbf3,#e8f8ee);
 }
 
-.absen-period.warn {
-  border-color: rgba(255,159,10,.22);
-  background: linear-gradient(160deg, #fff8ec, #fff);
+.absen-period.warn{
+  border-color:#f3c77a;
+  background:linear-gradient(180deg,#fff8e6,#fff3cd);
 }
 
-.absen-period.bad {
-  border-color: rgba(255,59,48,.18);
-  background: linear-gradient(160deg, #fff5f4, #fff);
+.absen-period.bad{
+  border-color:#fecaca;
+  background:linear-gradient(180deg,#fff7f7,#feecec);
 }
 
-/* .absen-period-top: label + icon */
-.absen-period-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 6px;
+.absen-period-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
 }
 
-.absen-period span {
-  display: block;
-  font-size: 10.5px;
-  font-weight: 600;
-  letter-spacing: .04em;
-  text-transform: uppercase;
-  color: var(--apple-text-3);
+.absen-period span{
+  display:block;
+  color:var(--muted);
+  font-size:11px;
+  font-weight:900;
 }
 
-.absen-period strong {
-  display: block;
-  font-size: 26px;
-  font-weight: 700;
-  letter-spacing: -.04em;
-  line-height: 1;
-  color: var(--apple-text);
-  margin: 7px 0 4px;
+.absen-period strong{
+  display:block;
+  color:var(--text);
+  font-size:24px;
+  line-height:1;
+  margin:8px 0 4px;
 }
 
-.absen-period em {
-  display: block;
-  font-size: 11px;
-  font-style: normal;
-  font-weight: 500;
-  color: var(--apple-text-3);
+.absen-period em{
+  display:block;
+  color:var(--muted);
+  font-size:11px;
+  font-style:normal;
+  font-weight:700;
 }
 
 .absen-period.good em,
-.absen-period.good .absen-period-top i { color: var(--apple-green-dark); }
-
+.absen-period.good .absen-period-top i{color:#0f7a3b;}
 .absen-period.warn em,
-.absen-period.warn .absen-period-top i { color: #92400e; }
-
+.absen-period.warn .absen-period-top i{color:#a15c00;}
 .absen-period.bad em,
-.absen-period.bad .absen-period-top i  { color: #c0392b; }
+.absen-period.bad .absen-period-top i{color:#b42318;}
 
-/* Total strip — JS uses .danger / .warning / .success */
-.absen-total-strip {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 12px;
+.absen-total-strip{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:10px;
 }
 
-.absen-total-strip span {
-  flex: 1 1 140px;
-  padding: 10px 14px;
-  border-radius: var(--apple-r-sm);
-  background: var(--apple-bg);
-  color: var(--apple-text-2);
-  font-size: 12px;
-  font-weight: 500;
-  font-family: var(--apple-font);
+.absen-total-strip span{
+  flex:1 1 140px;
+  padding:10px 12px;
+  border-radius:14px;
+  background:var(--soft,#f5f8f6);
+  color:var(--muted);
+  font-size:12px;
+  font-weight:800;
 }
 
-.absen-total-strip strong { color: var(--apple-blue); font-weight: 700; }
-
-.absen-total-strip .danger  { background: var(--apple-red-soft);    color: #c0392b; }
-.absen-total-strip .warning { background: var(--apple-amber-soft);  color: #92400e; }
-.absen-total-strip .success { background: var(--apple-green-soft);  color: var(--apple-green-dark); }
-
-/* Note — .absen-note */
-.absen-note {
-  margin-top: 10px;
-  padding: 12px 14px;
-  border-radius: var(--apple-r-sm);
-  background: var(--apple-bg);
-  color: var(--apple-text-3);
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 1.65;
-  font-family: var(--apple-font);
+.absen-total-strip strong{
+  color:var(--primary);
 }
 
-/* ================================================================
-   EMPTY / ERROR / LOADING CARDS
-   JS renders these into #absenList and #absenSummaryGrid
-   ================================================================ */
+.absen-total-strip .danger{
+  background:#fff1f0;
+  color:#b42318;
+}
+
+.absen-total-strip .warning{
+  background:#fff5d9;
+  color:#8a5a00;
+}
+
+.absen-total-strip .success{
+  background:#eaf8ee;
+  color:#0f7a3b;
+}
+
+.absen-note{
+  margin-top:10px;
+  padding:11px 12px;
+  border-radius:14px;
+  background:#f8faf8;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.6;
+  font-weight:700;
+}
+
 .absen-empty-card,
 .absen-error-card,
-.absen-loading-card {
-  text-align: center;
-  padding: 48px 24px;
-  border: 1px dashed var(--apple-line-strong);
-  border-radius: var(--apple-r-xl);
-  background: var(--apple-surface);
-  color: var(--apple-text-3);
-  font-family: var(--apple-font);
+.absen-loading-card{
+  text-align:center;
+  padding:30px 20px;
+  border:1px dashed var(--line);
+  border-radius:24px;
+  background:var(--surface,#fff);
+  color:var(--muted);
 }
 
 .absen-empty-card i,
 .absen-error-card i,
-.absen-loading-card i {
-  width: 56px;
-  height: 56px;
-  display: grid;
-  place-items: center;
-  margin: 0 auto 16px;
-  border-radius: 18px;
-  background: var(--apple-blue-light);
-  color: var(--apple-blue);
-  font-size: 26px;
+.absen-loading-card i{
+  width:56px;
+  height:56px;
+  display:grid;
+  place-items:center;
+  margin:0 auto 12px;
+  border-radius:18px;
+  background:var(--primary-soft);
+  color:var(--primary);
+  font-size:28px;
 }
 
-.absen-error-card {
-  border-color: rgba(255,59,48,.22);
-  background: var(--apple-red-soft);
-  color: #7f1d1d;
+.absen-error-card{
+  border-color:#fecaca;
+  background:#fff7f7;
+  color:#7f1d1d;
 }
 
-.absen-error-card i {
-  background: var(--apple-red-soft);
-  color: var(--apple-red);
+.absen-error-card i{
+  background:#fee2e2;
+  color:#b91c1c;
 }
 
 .absen-error-card strong,
 .absen-empty-card strong,
-.absen-loading-card strong {
-  display: block;
-  font-size: 17px;
-  font-weight: 600;
-  color: var(--apple-text);
-  margin-bottom: 6px;
+.absen-loading-card strong{
+  display:block;
+  color:var(--text);
+  font-size:18px;
+  margin-bottom:8px;
 }
 
-.absen-error-card code {
-  display: inline-block;
-  margin-top: 8px;
-  background: #fff;
-  border: 1px solid rgba(255,59,48,.2);
-  padding: 5px 10px;
-  border-radius: 8px;
-  color: var(--apple-red);
-  font-size: 12px;
+.absen-error-card code{
+  display:inline-block;
+  margin-top:8px;
+  background:#fff;
+  border:1px solid #fecaca;
+  padding:5px 8px;
+  border-radius:8px;
+  color:#991b1b;
 }
 
-/* ================================================================
-   SKELETON  (.absen-skeleton-list > .absen-skeleton-row)
-   ================================================================ */
-.absen-skeleton-list { display: grid; gap: 8px; }
-
-.absen-skeleton-row {
-  min-height: 70px;
-  border-radius: var(--apple-r-lg);
-  background: linear-gradient(90deg, #f5f5f7 25%, #fafafa 50%, #f5f5f7 75%);
-  background-size: 200% 100%;
-  animation: absenShimmer 1.3s infinite linear;
+.absen-skeleton-list{
+  display:grid;
+  gap:10px;
 }
 
-@keyframes absenShimmer { to { background-position: -200% 0; } }
-
-/* ================================================================
-   FILTER OVERLAY
-   #absenFilterOverlay (.absen-filter-overlay)
-     .absen-filter-backdrop  [data-absen-close-filter]
-     .absen-filter-modal
-       .absen-filter-handle
-       .absen-filter-header
-         h2#absenFilterTitle + p
-         button.absen-filter-close [data-absen-close-filter]
-       .absen-filter-content
-         section.absen-filter-section [data-filter-section]
-           button.absen-filter-section-head [data-filter-toggle]
-           .absen-filter-section-body
-             .absen-option-search > input#absenBulanSearch|absenAdnaSearch
-             .absen-option-grid#absenBulanOptions|absenAdnaOptions
-                                |absenStatusOptions
-       .absen-filter-actions
-         #absenFilterResetModal  #absenFilterApply
-   ================================================================ */
-.absen-filter-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
+.absen-skeleton-row{
+  min-height:70px;
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:linear-gradient(90deg,#f5f8f6 25%,#fff 50%,#f5f8f6 75%);
+  background-size:200% 100%;
+  animation:absenShimmer 1.1s infinite linear;
 }
 
-.absen-filter-overlay.is-open { display: flex; }
-
-.absen-filter-backdrop {
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,.36);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+@keyframes absenShimmer{
+  to{background-position:-200% 0;}
 }
 
-.absen-filter-modal {
-  position: relative;
-  width: min(740px, 100%);
-  max-height: min(82vh, 760px);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  border-radius: var(--apple-r-xl);
-  background: var(--apple-surface);
-  box-shadow: 0 32px 80px rgba(0,0,0,.24), 0 0 0 1px var(--apple-line);
-  animation: filterModalIn .22s ease;
+/* Filter modal */
+.absen-filter-overlay{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:22px;
 }
 
-@keyframes filterModalIn {
-  from { opacity: 0; transform: scale(.97) translateY(8px); }
-  to   { opacity: 1; transform: scale(1)   translateY(0); }
+.absen-filter-overlay.is-open{
+  display:flex;
 }
 
-/* Drag handle (visual only) */
-.absen-filter-handle {
-  width: 40px;
-  height: 4px;
-  border-radius: 999px;
-  background: var(--apple-line-strong);
-  margin: 12px auto 0;
-  flex-shrink: 0;
+.absen-filter-backdrop{
+  position:absolute;
+  inset:0;
+  background:rgba(15,23,42,.42);
+  backdrop-filter:blur(7px);
 }
 
-/* Header */
-.absen-filter-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 20px 24px 16px;
-  border-bottom: 1px solid var(--apple-line);
-  flex-shrink: 0;
+.absen-filter-modal{
+  position:relative;
+  width:min(760px,100%);
+  max-height:min(82vh,780px);
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  border-radius:28px;
+  background:#fff;
+  box-shadow:0 30px 90px rgba(15,23,42,.26);
 }
 
-.absen-filter-header h2 {
-  margin: 0;
-  font-size: 19px;
-  font-weight: 700;
-  letter-spacing: -.03em;
-  color: var(--apple-text);
-  font-family: var(--apple-font);
+.absen-filter-handle{
+  width:52px;
+  height:5px;
+  border-radius:999px;
+  background:#dbe9df;
+  margin:12px auto 0;
 }
 
-.absen-filter-header p {
-  margin: 3px 0 0;
-  color: var(--apple-text-3);
-  font-size: 13px;
-  font-weight: 400;
-  font-family: var(--apple-font);
+.absen-filter-header{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:16px;
+  padding:22px 24px 14px;
+  border-bottom:1px solid var(--line);
 }
 
-/* Close button — .absen-filter-close [data-absen-close-filter] */
-.absen-filter-close {
-  width: 32px;
-  height: 32px;
-  border: none;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  background: var(--apple-bg);
-  color: var(--apple-text-2);
-  font-size: 20px;
-  cursor: pointer;
-  flex-shrink: 0;
-  transition: background .15s;
+.absen-filter-header h2{
+  margin:0;
+  font-size:20px;
+  letter-spacing:-.03em;
 }
 
-.absen-filter-close:hover { background: var(--apple-line-strong); }
-
-/* Filter content grid */
-.absen-filter-content {
-  overflow: auto;
-  padding: 16px 24px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  flex: 1;
+.absen-filter-header p{
+  margin:3px 0 0;
+  color:var(--muted);
+  font-size:13px;
+  font-weight:600;
 }
 
-/* Each section — [data-filter-section] */
-.absen-filter-section {
-  border: 1px solid var(--apple-line);
-  border-radius: var(--apple-r-lg);
-  background: var(--apple-surface);
-  overflow: hidden;
-  transition: border-color .18s, box-shadow .18s;
+.absen-filter-close{
+  width:42px;
+  height:42px;
+  border:0;
+  border-radius:16px;
+  display:grid;
+  place-items:center;
+  background:var(--primary-soft);
+  color:var(--primary);
+  font-size:22px;
+  cursor:pointer;
 }
 
-.absen-filter-section.is-open {
-  border-color: rgba(0,113,227,.25);
-  box-shadow: 0 4px 16px rgba(0,0,0,.06);
+.absen-filter-content{
+  overflow:auto;
+  padding:16px 24px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
 }
 
-/* Section head — [data-filter-toggle] */
-.absen-filter-section-head {
-  width: 100%;
-  border: none;
-  background: transparent;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: 12px;
-  text-align: left;
-  padding: 14px 16px;
-  cursor: pointer;
-  font: inherit;
-  font-family: var(--apple-font);
+.absen-filter-section{
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:#fff;
+  overflow:hidden;
 }
 
-/* Icon badge */
-.absen-filter-icon {
-  width: 34px;
-  height: 34px;
-  display: grid;
-  place-items: center;
-  border-radius: 10px;
-  background: var(--apple-blue-light);
-  color: var(--apple-blue);
-  font-size: 17px;
-  flex-shrink: 0;
+.absen-filter-section.is-open{
+  border-color:rgba(22,101,52,.28);
+  box-shadow:0 10px 24px rgba(16,32,22,.045);
 }
 
-.absen-filter-section-head strong {
-  display: block;
-  color: var(--apple-text);
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: -.01em;
+.absen-filter-section-head{
+  width:100%;
+  border:0;
+  background:transparent;
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  align-items:center;
+  gap:12px;
+  text-align:left;
+  padding:14px;
+  cursor:pointer;
+  font:inherit;
 }
 
-/* #absenBulanLabel, #absenAdnaLabel, #absenStatusLabel */
-.absen-filter-section-head small {
-  display: block;
-  color: var(--apple-text-3);
-  font-size: 12px;
-  font-weight: 400;
-  margin-top: 2px;
+.absen-filter-icon{
+  width:36px;
+  height:36px;
+  display:grid;
+  place-items:center;
+  border-radius:14px;
+  background:var(--primary-soft);
+  color:var(--primary);
+  font-size:18px;
 }
 
-/* Chevron */
-.absen-filter-section-head > i {
-  width: 28px;
-  height: 28px;
-  display: grid;
-  place-items: center;
-  border-radius: 8px;
-  background: var(--apple-bg);
-  color: var(--apple-text-3);
-  font-size: 18px;
-  transition: transform .2s, color .15s;
-  flex-shrink: 0;
+.absen-filter-section-head strong{
+  display:block;
+  color:var(--text);
+  font-size:14px;
+  font-weight:900;
 }
 
-.absen-filter-section.is-open .absen-filter-section-head > i {
-  transform: rotate(180deg);
-  color: var(--apple-blue);
+.absen-filter-section-head small{
+  display:block;
+  color:var(--muted);
+  font-size:12px;
+  font-weight:700;
+  margin-top:3px;
 }
 
-/* Section body — hidden until .is-open */
-.absen-filter-section-body {
-  display: none;
-  padding: 0 14px 14px;
+.absen-filter-section-head > i{
+  width:30px;
+  height:30px;
+  display:grid;
+  place-items:center;
+  border-radius:12px;
+  background:#eef6f1;
+  color:var(--primary);
+  font-size:20px;
+  transition:.2s ease;
 }
 
-.absen-filter-section.is-open .absen-filter-section-body { display: block; }
-
-/* First section (Bulan) spans full width */
-.absen-filter-section:first-child { grid-column: 1 / -1; }
-
-/* Search inside section */
-.absen-option-search {
-  position: relative;
-  display: block;
-  margin-bottom: 10px;
+.absen-filter-section.is-open .absen-filter-section-head > i{
+  transform:rotate(180deg);
 }
 
-.absen-option-search i {
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--apple-text-3);
-  font-size: 16px;
-  pointer-events: none;
+.absen-filter-section-body{
+  display:none;
+  padding:0 14px 14px;
 }
 
-.absen-option-search input {
-  width: 100%;
-  min-height: 40px;
-  border: 1px solid var(--apple-line-strong);
-  border-radius: var(--apple-r-sm);
-  background: var(--apple-bg);
-  font: inherit;
-  font-family: var(--apple-font);
-  font-size: 13px;
-  font-weight: 400;
-  padding: 0 13px 0 38px;
-  outline: none;
-  color: var(--apple-text);
-  transition: border-color .15s, box-shadow .15s;
+.absen-filter-section.is-open .absen-filter-section-body{
+  display:block;
 }
 
-.absen-option-search input::placeholder { color: var(--apple-text-3); }
-
-.absen-option-search input:focus {
-  border-color: var(--apple-blue);
-  background: var(--apple-surface);
-  box-shadow: 0 0 0 3px rgba(0,113,227,.12);
+.absen-filter-section:first-child{
+  grid-column:1/-1;
 }
 
-/* Option grid — JS renders .absen-option-btn here */
-.absen-option-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 7px;
-  max-height: 230px;
-  overflow: auto;
-  padding-right: 2px;
+.absen-option-search{
+  position:relative;
+  display:block;
+  margin-bottom:10px;
 }
 
-/* Status uses single-column layout */
-.absen-status-option-grid {
-  grid-template-columns: 1fr;
-  max-height: none;
+.absen-option-search i{
+  position:absolute;
+  left:13px;
+  top:50%;
+  transform:translateY(-50%);
+  color:var(--muted);
+  font-size:17px;
 }
 
-/* .absen-option-btn — rendered by JS renderChipOptions() */
-.absen-option-btn {
-  min-height: 38px;
-  border: 1px solid var(--apple-line);
-  border-radius: var(--apple-r-sm);
-  background: var(--apple-bg);
-  color: var(--apple-text);
-  padding: 7px 10px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 6px;
-  font: inherit;
-  font-family: var(--apple-font);
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  text-align: left;
-  transition: border-color .15s, background .15s;
+.absen-option-search input{
+  width:100%;
+  min-height:42px;
+  border:1px solid var(--line);
+  border-radius:15px;
+  background:#fbfdfb;
+  padding:0 13px 0 40px;
+  font:inherit;
+  font-size:13px;
+  font-weight:700;
+  outline:none;
 }
 
-/* Status option has <span> wrapper with <small> inside */
-.absen-option-btn span {
-  display: block;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--apple-text);
+.absen-option-search input:focus{
+  border-color:rgba(22,101,52,.5);
+  box-shadow:0 0 0 4px rgba(22,101,52,.09);
 }
 
-.absen-option-btn small {
-  display: block;
-  color: var(--apple-text-3);
-  font-size: 11px;
-  font-weight: 400;
-  margin-top: 2px;
+.absen-option-grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:9px;
+  max-height:238px;
+  overflow:auto;
+  padding-right:3px;
 }
 
-/* Radio dot via ::after */
-.absen-option-btn::after {
-  content: "";
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  border: 1.5px solid var(--apple-line-strong);
-  flex-shrink: 0;
-  transition: background .15s, border-color .15s;
+.absen-status-option-grid{
+  grid-template-columns:1fr;
+  max-height:none;
 }
 
-.absen-option-btn:hover {
-  border-color: var(--apple-blue);
-  background: var(--apple-blue-light);
+.absen-option-btn{
+  min-height:40px;
+  border:1px solid var(--line);
+  border-radius:15px;
+  background:#fbfdfb;
+  color:var(--text);
+  padding:7px 10px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  font:inherit;
+  font-size:13px;
+  font-weight:900;
+  cursor:pointer;
+  text-align:left;
 }
 
-/* .is-active — set by JS renderChipOptions() */
-.absen-option-btn.is-active {
-  border-color: var(--apple-blue);
-  background: var(--apple-blue-light);
-  color: var(--apple-blue);
+.absen-option-btn small{
+  display:block;
+  color:var(--muted);
+  font-size:11px;
+  font-weight:700;
+  margin-top:3px;
 }
 
-.absen-option-btn.is-active span { color: var(--apple-blue); }
-
-.absen-option-btn.is-active::after {
-  background: var(--apple-blue);
-  border-color: var(--apple-blue);
+.absen-option-btn::after{
+  content:"";
+  width:16px;
+  height:16px;
+  border-radius:999px;
+  background:#edf5ef;
+  flex:0 0 auto;
 }
 
-/* Filter actions footer */
-.absen-filter-actions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  padding: 14px 24px 18px;
-  border-top: 1px solid var(--apple-line);
-  flex-shrink: 0;
+.absen-option-btn.is-active{
+  border-color:#8ed6a4;
+  background:#eefaf2;
+  color:#0f7a3b;
 }
 
-.absen-filter-actions button {
-  min-height: 46px;
-  border: none;
-  border-radius: var(--apple-r-md);
-  font: inherit;
-  font-family: var(--apple-font);
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: opacity .15s, transform .12s;
+.absen-option-btn.is-active::after{
+  background:#15803d;
+  box-shadow:inset 0 0 0 4px #15803d;
 }
 
-.absen-filter-actions button:active { transform: scale(.98); }
-
-/* #absenFilterResetModal */
-.absen-filter-reset {
-  background: var(--apple-bg);
-  color: var(--apple-text-2);
-  border: 1px solid var(--apple-line-strong) !important;
+.absen-filter-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  padding:14px 24px 18px;
+  border-top:1px solid var(--line);
 }
 
-/* #absenFilterApply */
-.absen-filter-apply {
-  background: var(--apple-blue);
-  color: #fff;
+.absen-filter-actions button{
+  min-height:48px;
+  border:0;
+  border-radius:17px;
+  font:inherit;
+  font-size:14px;
+  font-weight:900;
+  cursor:pointer;
 }
 
-.absen-filter-apply:hover { opacity: .9; }
+.absen-filter-reset{
+  background:#f2f7f4;
+  color:var(--muted);
+}
 
-/* body.absen-filter-locked — added by JS openAbsenFilterModal() */
-body.absen-filter-locked { overflow: hidden; }
+.absen-filter-apply{
+  background:var(--primary);
+  color:#fff;
+}
 
-/* ================================================================
-   RESPONSIVE BREAKPOINTS
-   ================================================================ */
+body.absen-filter-locked{
+  overflow:hidden;
+}
 
-/* Tablet landscape */
-@media (max-width: 1050px) {
-  .absen-summary-strip {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+@media (max-width:1050px){
+  .absen-summary-strip{
+    grid-template-columns:repeat(2,minmax(0,1fr));
   }
 
-  .absen-filter-content {
-    grid-template-columns: 1fr;
+  .absen-filter-content{
+    grid-template-columns:1fr;
   }
 
-  .absen-filter-section:first-child {
-    grid-column: auto;
+  .absen-filter-section:first-child{
+    grid-column:auto;
   }
 }
 
-/* Tablet portrait / large phone */
-@media (max-width: 720px) {
-  .absen-muallim-page {
-    width: min(100% - 24px, 1100px);
-    padding: 28px 0 56px;
+@media (max-width:720px){
+  .absen-muallim-page{
+    width:min(100% - 24px, 1180px);
+    padding:28px 0 56px;
   }
 
-  .absen-hero-card {
-    padding: 28px 24px;
-    border-radius: var(--apple-r-lg);
-    margin-bottom: 16px;
+  .absen-hero-card{
+    padding:22px 20px;
+    border-radius:24px;
+    margin-bottom:18px;
   }
 
-  .absen-hero-card h1 { font-size: 26px; }
-  .absen-hero-card p  { font-size: 15px; }
-
-  .absen-toolbar {
-    grid-template-columns: 1fr auto;
-    border-radius: var(--apple-r-lg);
-    padding: 10px;
+  .absen-hero-card h1{
+    font-size:28px;
   }
 
-  .absen-search-field { grid-column: 1 / -1; }
+  .absen-toolbar{
+    grid-template-columns:1fr auto;
+    border-radius:22px;
+    padding:12px;
+  }
+
+  .absen-search-field{
+    grid-column:1/-1;
+  }
 
   .absen-filter-btn,
-  .absen-reset-btn { width: 100%; }
-
-  .absen-summary-strip {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 8px;
+  .absen-reset-btn{
+    width:100%;
   }
 
-  .absen-summary-card {
-    min-height: 76px;
-    border-radius: var(--apple-r-md);
-    padding: 12px 14px;
+  .absen-summary-strip{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:8px;
   }
 
-  .absen-summary-card strong { font-size: 22px; }
-
-  /* JS hides .absen-status-pill on small — keep consistent */
-  .absen-row-side .absen-status-pill { display: none; }
-
-  .absen-detail-title { display: block; }
-  .absen-detail-title small { text-align: left; margin-top: 4px; }
-
-  .absen-detail-grid-mini { grid-template-columns: 1fr 1fr; }
-
-  /* Filter slides up from bottom on mobile */
-  .absen-filter-overlay {
-    align-items: flex-end;
-    padding: 0;
+  .absen-summary-card{
+    min-height:74px;
+    border-radius:18px;
+    padding:12px;
   }
 
-  .absen-filter-modal {
-    width: 100%;
-    max-height: 88vh;
-    border-radius: 24px 24px 0 0;
-    animation: filterModalInMobile .22s ease;
+  .absen-summary-card span{
+    font-size:10.5px;
   }
 
-  @keyframes filterModalInMobile {
-    from { opacity: 0; transform: translateY(20px); }
-    to   { opacity: 1; transform: translateY(0); }
+  .absen-summary-card strong{
+    font-size:22px;
   }
 
-  .absen-filter-header { padding: 20px 18px 14px; }
-  .absen-filter-content { padding: 14px 16px; }
-  .absen-filter-actions { padding: 12px 16px 16px; }
-  .absen-option-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .absen-row-head{
+    padding:12px 14px;
+  }
+
+  .absen-row-name{
+    font-size:13.5px;
+  }
+
+  .absen-row-meta{
+    font-size:11.5px;
+  }
+
+  .absen-row-side .absen-status-pill{
+    display:none;
+  }
+
+  .absen-detail-title{
+    display:block;
+  }
+
+  .absen-detail-title small{
+    display:block;
+    text-align:left;
+    margin-top:4px;
+  }
+
+  .absen-detail-grid-mini{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .absen-filter-overlay{
+    align-items:flex-end;
+    padding:0;
+  }
+
+  .absen-filter-modal{
+    width:100%;
+    max-height:88vh;
+    border-radius:26px 26px 0 0;
+  }
+
+  .absen-filter-header{
+    padding:20px 18px 13px;
+  }
+
+  .absen-filter-content{
+    padding:14px 16px;
+  }
+
+  .absen-filter-actions{
+    padding:13px 16px 16px;
+  }
+
+  .absen-option-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
 }
 
-/* Small phone */
-@media (max-width: 430px) {
-  .absen-summary-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .absen-toolbar { grid-template-columns: 1fr 1fr; }
-  .absen-detail-grid-mini { grid-template-columns: 1fr; }
-}
+@media (max-width:430px){
+  .absen-summary-strip{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
 
-/* Respect user preference for reduced motion */
-@media (prefers-reduced-motion: reduce) {
-  .absen-skeleton-row    { animation: none; background: #f5f5f7; }
-  .absen-row.open .absen-row-detail { animation: none; }
-  .absen-filter-modal    { animation: none; }
+  .absen-toolbar{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .absen-detail-grid-mini{
+    grid-template-columns:1fr;
+  }
 }
