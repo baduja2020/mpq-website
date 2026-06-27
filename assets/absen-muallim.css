@@ -1244,3 +1244,78 @@ input[type="search"]{
     max-height .3s cubic-bezier(.22,1,.36,1),
     opacity .25s ease !important;
 }
+
+
+/* ===== MPQ APPLE UI v7 OVERRIDE ===== */
+
+/* Typography */
+html,body{
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI",sans-serif !important;
+  background:#f5f5f7 !important;
+  letter-spacing:-0.01em;
+}
+
+/* Global cards */
+[class*="card"], .card{
+  border-radius:26px !important;
+  box-shadow:0 6px 24px rgba(0,0,0,.06) !important;
+}
+
+/* Summary cards */
+[class*="summary"], [class*="stat"]{
+  background:#fff !important;
+  border:none !important;
+  padding:20px !important;
+}
+
+/* Header area */
+[class*="header"]{
+  align-items:center !important;
+}
+
+/* Status badge and alert dot */
+[class*="status"]{
+  position:relative !important;
+}
+[class*="status"]::after{
+  content:"";
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:#ff9500;
+  position:absolute;
+  top:4px;
+  right:6px;
+}
+
+/* Minimal accordion button */
+[class*="toggle"], [class*="expand"], button[aria-expanded]{
+  width:28px !important;
+  height:28px !important;
+  min-height:28px !important;
+  border:none !important;
+  background:transparent !important;
+  border-radius:50% !important;
+  box-shadow:none !important;
+  opacity:.7;
+  transition:all .25s cubic-bezier(.22,1,.36,1) !important;
+}
+[class*="toggle"]:hover,
+[class*="expand"]:hover,
+button[aria-expanded]:hover{
+  opacity:1;
+  transform:scale(1.08);
+}
+
+/* Expand animation feel */
+[class*="content"], [class*="body"]{
+  transition:all .28s cubic-bezier(.22,1,.36,1) !important;
+}
+
+/* Search */
+input[type="text"], input[type="search"]{
+  background:#fff !important;
+  border:none !important;
+  border-radius:20px !important;
+  box-shadow:0 2px 8px rgba(0,0,0,.04);
+}
