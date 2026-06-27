@@ -1321,57 +1321,111 @@ input[type="text"], input[type="search"]{
 }
 
 
-/* ===== MPQ Mobile UX v8 ===== */
+/* ===== MPQ APPLE MOBILE REFACTOR v9 ===== */
+.absen-row{
+  border-radius:24px !important;
+  overflow:hidden;
+}
+
+.absen-row-head{
+  padding:18px !important;
+  grid-template-columns:1fr auto !important;
+  align-items:start !important;
+}
+
+.absen-row-main{
+  padding-right:0 !important;
+}
+
+.absen-row-name{
+  font-size:15px !important;
+  letter-spacing:-.02em !important;
+}
+
+.absen-row-meta{
+  margin-top:6px !important;
+  line-height:1.55 !important;
+}
+
+.absen-row-side{
+  display:flex !important;
+  align-items:center !important;
+  gap:8px !important;
+  flex-wrap:nowrap !important;
+}
+
+/* dot dipindah ke badge status */
+.absen-indicator-dot{
+  top:14px !important;
+  right:16px !important;
+  width:7px !important;
+  height:7px !important;
+  border-radius:50% !important;
+}
+
+/* tombol accordion minimalis ala iOS */
+.absen-row-toggle{
+  width:24px !important;
+  height:24px !important;
+  border:none !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  font-size:0 !important;
+  position:relative !important;
+}
+
+.absen-row-toggle::before{
+  content:"⌄";
+  font-size:18px;
+  color:#6b7280;
+  transition:transform .28s cubic-bezier(.22,1,.36,1);
+}
+
+.absen-row.open .absen-row-toggle::before{
+  transform:rotate(180deg);
+}
+
+/* animasi card */
+.absen-row-content{
+  transition:max-height .35s cubic-bezier(.22,1,.36,1),
+             opacity .25s ease;
+}
+
+.absen-row.open{
+  box-shadow:0 14px 32px rgba(0,0,0,.08) !important;
+}
+
 @media (max-width:768px){
-  .card,[class*="card"]{
-    border-radius:22px!important;
-    margin-bottom:14px!important;
+
+  .absen-hero-card{
+    padding:24px !important;
+    border-radius:28px !important;
   }
 
-  .absen-row-header,
-  [class*="row-header"]{
-    display:grid!important;
-    grid-template-columns:1fr auto!important;
-    gap:10px!important;
+  .absen-hero-card h1{
+    font-size:42px !important;
+    line-height:1.02 !important;
   }
 
-  .absen-row-meta,
-  [class*="meta"]{
-    display:flex!important;
-    flex-direction:column!important;
-    gap:2px!important;
+  .absen-summary-strip{
+    grid-template-columns:1fr 1fr !important;
   }
 
-  .absen-row-status,
-  [class*="status"]{
-    position:relative!important;
-    padding-right:14px!important;
+  .absen-row-head{
+    padding:18px 16px !important;
   }
 
-  .absen-row-status::after,
-  [class*="status"]::after{
-    content:"";
-    width:6px;
-    height:6px;
-    border-radius:50%;
-    background:#ff9500;
-    position:absolute;
-    top:4px;
-    right:3px;
+  .absen-row-side{
+    margin-top:6px;
   }
 
-  .absen-row-toggle,
-  [class*="toggle"]{
-    width:24px!important;
-    height:24px!important;
-    font-size:18px!important;
-    border:none!important;
-    background:transparent!important;
+  .absen-row-meta{
+    display:flex;
+    flex-direction:column;
+    gap:2px;
   }
 
-  input[type="search"],
-  input[type="text"]{
-    min-height:52px!important;
-    border-radius:18px!important;
+  .absen-detail-grid{
+    grid-template-columns:1fr !important;
   }
 }
