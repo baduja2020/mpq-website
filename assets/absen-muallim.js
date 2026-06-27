@@ -91,13 +91,16 @@ function setupAbsenMuallimPage() {
     if (event.key === "Escape") closeAbsenFilterModal();
   });
 
-  document.addEventListener("click", function (event) {
-    const head = event.target.closest(".absen-row-head");
-    if (!head) return;
-    const row = head.closest(".absen-row");
-    if (!row) return;
-    row.classList.toggle("open");
-  });
+  const absenList = document.getElementById("absenList");
+  if (absenList) {
+    absenList.addEventListener("click", function (event) {
+      const head = event.target.closest(".absen-row-head");
+      if (!head) return;
+      const row = head.closest(".absen-row");
+      if (!row) return;
+      toggleAbsenRow(row);
+    });
+  }
 
   loadAbsenMuallimData();
 }
@@ -248,9 +251,9 @@ function updateAbsenMuallimMeta() {
   const { bulan, adna, status } = absenMuallimState.filters;
   const count = absenMuallimState.filtered.length;
   const statusLabel = getStatusFilterLabel(status) || "Semua Status";
-  const generated = absenMuallimState.generatedAt ? ` • Update: ${formatAbsenDate(absenMuallimState.generatedAt)}` : "";
+  const generatedMarkup = absenMuallimState.generatedAt ? ` &bull; Update: ${escapeHtml(formatAbsenDate(absenMuallimState.generatedAt))}` : "";
 
-  meta.innerHTML = `Menampilkan <strong>${count}</strong> muallim • Bulan ${escapeHtml(bulan || "Semua Bulan")} • ${escapeHtml(adna || "Semua ADNA")} • ${escapeHtml(statusLabel)}${escapeHtml(generated)}`;
+  meta.innerHTML = `Menampilkan <strong>${count}</strong> muallim &bull; Bulan ${escapeHtml(bulan || "Semua Bulan")} &bull; ${escapeHtml(adna || "Semua ADNA")} &bull; ${escapeHtml(statusLabel)}${generatedMarkup}`;
 }
 
 function renderAbsenMuallimSummary() {
@@ -262,23 +265,22 @@ function renderAbsenMuallimSummary() {
   const avgPercent = total ? data.reduce((sum, item) => sum + item.persentase, 0) / total : 0;
   const totalAlpa = data.reduce((sum, item) => sum + item.alpa, 0);
   const totalIzin = data.reduce((sum, item) => sum + item.izin, 0);
-  const perhatian = data.filter((item) => item.persentase < 0.75).length;
 
   container.innerHTML = [
-    summaryCard("Menampilkan", total, "muallim", ""),
-    summaryCard("Rata-rata", formatPercent(avgPercent), "kehadiran", getTone(avgPercent)),
-    summaryCard("Izin", totalIzin, "total I", totalIzin > 0 ? "warn" : "good"),
-    summaryCard("Alpa", totalAlpa, "total A", totalAlpa > 0 ? "bad" : "good"),
-    summaryCard("Perhatian", perhatian, "di bawah 75%", perhatian > 0 ? "bad" : "good"),
+    summaryCard({ label: "Muallim", value: total, note: "Total aktif", tone: "", icon: "ri-user-star-line" }),
+    summaryCard({ label: "Kehadiran", value: formatPercent(avgPercent), note: "Rata-rata", tone: getTone(avgPercent), icon: "ri-heart-pulse-line" }),
+    summaryCard({ label: "Izin", value: totalIzin, note: "Rekap izin", tone: totalIzin > 0 ? "warn" : "good", icon: "ri-calendar-event-line" }),
+    summaryCard({ label: "Alpa", value: totalAlpa, note: "Perlu pantau", tone: totalAlpa > 0 ? "bad" : "good", icon: "ri-error-warning-line" }),
   ].join("");
 }
 
-function summaryCard(label, value, note, tone) {
+function summaryCard({ label, value, note, tone, icon }) {
   return `
     <article class="absen-summary-card ${tone || ""}">
-      <span>${escapeHtml(label)}</span>
-      <strong>${escapeHtml(String(value))}</strong>
-      <em>${escapeHtml(note)}</em>
+      <span class="absen-summary-icon" aria-hidden="true"><i class="${escapeHtml(icon || "ri-bar-chart-line")}"></i></span>
+      <strong class="absen-summary-value">${escapeHtml(String(value))}</strong>
+      <span class="absen-summary-label">${escapeHtml(label)}</span>
+      <em class="absen-summary-note">${escapeHtml(note)}</em>
     </article>
   `;
 }
@@ -305,61 +307,80 @@ function renderAbsenMuallimRows() {
 function renderAbsenRow(item, index) {
   const tone = getTone(item.persentase);
   const statusLabel = getStatusLabel(item.persentase);
-  const alpaTone = item.alpa > 0 ? "bad" : "good";
-  const izinTone = item.izin > 0 ? "warn" : "good";
-  const hadirTone = tone;
+  const detailId = `absen-row-detail-${escapeHtml(item.id || String(index))}`;
 
   return `
     <article class="absen-row ${tone}">
-      <button class="absen-row-head" type="button" aria-label="Buka detail absen ${escapeHtml(item.muallim || "muallim")}">
-        <span class="absen-indicator-dot" aria-hidden="true"></span>
-        <span class="absen-row-main">
+      <button class="absen-row-head" type="button" aria-expanded="false" aria-controls="${detailId}" aria-label="Buka detail absen ${escapeHtml(item.muallim || "muallim")}">
+        <div class="absen-row-left">
           <strong class="absen-row-name">${escapeHtml(item.muallim || "-")}</strong>
-          <span class="absen-row-meta">${escapeHtml(item.adna || "-")} • Bulan ${escapeHtml(item.bulan || "-")} • Hadir ${formatNumber(item.jumlahHadir)}/${formatNumber(item.jumlahHari)} • S/I/A ${formatNumber(item.sakit)}/${formatNumber(item.izin)}/${formatNumber(item.alpa)}</span>
-        </span>
-        <span class="absen-row-side">
-          <span class="absen-percent-pill ${tone}">${formatPercent(item.persentase)}</span>
-          <span class="absen-status-pill ${tone}">${escapeHtml(statusLabel)}</span>
-        </span>
-        <i class="ri-add-line absen-row-toggle" aria-hidden="true"></i>
+          <span class="absen-row-sub">${escapeHtml(item.adna || "-")} &bull; ${escapeHtml(item.bulan || "-")}</span>
+          <span class="absen-row-hadir">Hadir ${formatNumber(item.jumlahHadir)}/${formatNumber(item.jumlahHari)}</span>
+        </div>
+
+        <div class="absen-row-right">
+          <span class="absen-percent-value">${formatPercent(item.persentase)}</span>
+          <span class="absen-status-pill ${tone}"><span class="absen-status-dot" aria-hidden="true"></span><span class="absen-status-text">${escapeHtml(statusLabel)}</span></span>
+          <span class="absen-row-toggle" aria-hidden="true">${chevronDownIcon()}</span>
+        </div>
       </button>
 
-      <div class="absen-row-detail">
-        <div class="absen-detail-title">
-          <span>Detail Kehadiran</span>
-          <small>Data dihitung dari rekap absen muallim pada bulan terpilih.</small>
+      <div class="absen-row-detail" id="${detailId}" aria-hidden="true">
+        <div class="absen-row-detail-inner">
+          <div class="absen-detail-card" aria-label="Detail kehadiran ${escapeHtml(item.muallim || "muallim")}">
+            ${detailBox("Jumlah Hari", item.jumlahHari, "")}
+            ${detailBox("Hadir", item.jumlahHadir, tone)}
+            ${detailBox("Izin", item.izin, item.izin > 0 ? "warn" : "good")}
+            ${detailBox("Alpa", item.alpa, item.alpa > 0 ? "bad" : "good")}
+          </div>
         </div>
-
-        <div class="absen-detail-grid-mini">
-          ${detailBox("Jumlah Hari", item.jumlahHari, "hari aktif", "", "ri-calendar-check-line")}
-          ${detailBox("Hadir", item.jumlahHadir, "jumlah hadir", hadirTone, "ri-user-follow-line")}
-          ${detailBox("Izin", item.izin, "total I", izinTone, "ri-flag-line")}
-          ${detailBox("Alpa", item.alpa, "total A", alpaTone, "ri-error-warning-line")}
-        </div>
-
-        <div class="absen-total-strip">
-          <span class="success">ADNA: <strong>${escapeHtml(item.adna || "-")}</strong></span>
-          <span class="${tone === "bad" ? "danger" : tone === "warn" ? "warning" : "success"}">Persentase: <strong>${formatPercent(item.persentase)}</strong></span>
-          <span>Status: <strong>${escapeHtml(statusLabel)}</strong></span>
-          <span>No: <strong>${index + 1}</strong></span>
-        </div>
-
-        ${item.catatan ? `<div class="absen-note">Catatan: ${escapeHtml(item.catatan)}</div>` : ""}
       </div>
     </article>
   `;
 }
 
-function detailBox(label, value, note, tone, icon) {
+function detailBox(label, value, tone) {
   return `
-    <div class="absen-period ${tone || ""}">
-      <div class="absen-period-top">
-        <span>${escapeHtml(label)}</span>
-        <i class="${escapeHtml(icon || "ri-information-line")}"></i>
-      </div>
+    <div class="absen-detail-metric ${tone || ""}">
       <strong>${escapeHtml(String(formatNumber(value)))}</strong>
-      <em>${escapeHtml(note)}</em>
+      <span>${escapeHtml(label)}</span>
     </div>
+  `;
+}
+
+function closeAllAbsenRows() {
+  document.querySelectorAll(".absen-row.open").forEach((row) => {
+    row.classList.remove("open");
+    const head = row.querySelector(".absen-row-head");
+    if (head) head.setAttribute("aria-expanded", "false");
+    const detail = row.querySelector(".absen-row-detail");
+    if (detail) detail.setAttribute("aria-hidden", "true");
+  });
+}
+
+function toggleAbsenRow(row) {
+  const isOpen = row.classList.contains("open");
+  if (isOpen) {
+    row.classList.remove("open");
+    row.querySelector(".absen-row-head")?.setAttribute("aria-expanded", "false");
+    row.querySelector(".absen-row-detail")?.setAttribute("aria-hidden", "true");
+    return;
+  }
+
+  closeAllAbsenRows();
+  row.classList.add("open");
+  row.querySelector(".absen-row-head")?.setAttribute("aria-expanded", "true");
+  row.querySelector(".absen-row-detail")?.setAttribute("aria-hidden", "false");
+  window.requestAnimationFrame(() => {
+    row.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+}
+
+function chevronDownIcon() {
+  return `
+    <svg viewBox="0 0 20 20" focusable="false" aria-hidden="true">
+      <path d="M5.25 7.75 10 12.5l4.75-4.75" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
   `;
 }
 

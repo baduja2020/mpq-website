@@ -8,23 +8,23 @@
   <link rel="canonical" href="https://www.mpq.my.id/absen-muallim/">
   <meta property="og:title" content="Rekap Absen Muallim - MPQ Al Falah">
   <meta property="og:description" content="Pantau rekap kehadiran muallim MPQ Al Falah secara ringkas dan mobile friendly.">
-  <meta property="og:image" content="https://www.mpq.my.id/assets/og-image.png">
+  <meta property="og:image" content="../assets/og-image.png">
   <meta property="og:url" content="https://www.mpq.my.id/absen-muallim/">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="MPQ Al Falah">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="theme-color" content="#f5f5f7">
-  <link rel="icon" href="/assets/favicon.png">
-  <link rel="stylesheet" href="/assets/style.css">
-  <link rel="stylesheet" href="/assets/absen-muallim.css">
-  <script src="/assets/script.js" defer></script>
-  <script src="/assets/absen-muallim.js" defer></script>
+  <link rel="icon" href="../assets/favicon.png">
+  <link rel="stylesheet" href="../assets/style.css">
+  <link rel="stylesheet" href="../assets/absen-muallim.css">
+  <script src="../assets/script.js" defer></script>
+  <script src="../assets/absen-muallim.js" defer></script>
   <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
 </head>
 <body>
 <header class="navbar">
   <a href="/" class="brand">
-    <img src="/assets/logo-mpq.png" alt="Logo MPQ">
+    <img src="../assets/logo-mpq.png" alt="Logo MPQ">
     <div>
       <strong>MPQ Al Falah</strong>
       <span>Ploso Mojo Kediri</span>
@@ -47,12 +47,13 @@
 
 <main class="page absen-muallim-page" id="absenMuallimApp">
   <section class="absen-hero-card">
-    <div class="label green">Rekap Absen Muallim</div>
-    <h1>Dashboard Kehadiran Muallim</h1>
-    <p>
-      Pantau rekap kehadiran muallim MPQ per bulan. Gunakan pencarian dan filter
-      untuk melihat data berdasarkan ADNA, bulan, atau status kehadiran.
-    </p>
+    <div class="absen-hero-top">
+      <div>
+        <p class="label green">Rekap Absen Muallim</p>
+        <h1>Dashboard Kehadiran<br>Muallim</h1>
+        <p class="absen-hero-copy">Pantau rekap kehadiran muallim MPQ.</p>
+      </div>
+    </div>
   </section>
 
   <section class="absen-shell" aria-label="Data rekap absen muallim">
@@ -62,13 +63,15 @@
         <input id="absenSearchInput" type="search" placeholder="Cari nama muallim atau ADNA..." autocomplete="off">
       </label>
 
-      <button id="absenFilterButton" class="absen-filter-btn" type="button" aria-haspopup="dialog" aria-controls="absenFilterOverlay">
-        <i class="ri-equalizer-2-line"></i>
-        Filter
-        <span id="absenActiveFilterCount">0</span>
-      </button>
+      <div class="absen-toolbar-actions">
+        <button id="absenFilterButton" class="absen-filter-btn" type="button" aria-haspopup="dialog" aria-controls="absenFilterOverlay">
+          <i class="ri-equalizer-2-line"></i>
+          Filter
+          <span id="absenActiveFilterCount">0</span>
+        </button>
 
-      <button id="absenResetButton" class="absen-reset-btn" type="button">Reset</button>
+        <button id="absenResetButton" class="absen-reset-btn" type="button">Reset</button>
+      </div>
     </div>
 
     <div class="absen-summary-strip" id="absenSummaryGrid" aria-live="polite"></div>
