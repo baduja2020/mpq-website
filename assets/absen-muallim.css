@@ -1319,3 +1319,59 @@ input[type="text"], input[type="search"]{
   border-radius:20px !important;
   box-shadow:0 2px 8px rgba(0,0,0,.04);
 }
+
+
+/* ===== MPQ Mobile UX v8 ===== */
+@media (max-width:768px){
+  .card,[class*="card"]{
+    border-radius:22px!important;
+    margin-bottom:14px!important;
+  }
+
+  .absen-row-header,
+  [class*="row-header"]{
+    display:grid!important;
+    grid-template-columns:1fr auto!important;
+    gap:10px!important;
+  }
+
+  .absen-row-meta,
+  [class*="meta"]{
+    display:flex!important;
+    flex-direction:column!important;
+    gap:2px!important;
+  }
+
+  .absen-row-status,
+  [class*="status"]{
+    position:relative!important;
+    padding-right:14px!important;
+  }
+
+  .absen-row-status::after,
+  [class*="status"]::after{
+    content:"";
+    width:6px;
+    height:6px;
+    border-radius:50%;
+    background:#ff9500;
+    position:absolute;
+    top:4px;
+    right:3px;
+  }
+
+  .absen-row-toggle,
+  [class*="toggle"]{
+    width:24px!important;
+    height:24px!important;
+    font-size:18px!important;
+    border:none!important;
+    background:transparent!important;
+  }
+
+  input[type="search"],
+  input[type="text"]{
+    min-height:52px!important;
+    border-radius:18px!important;
+  }
+}
