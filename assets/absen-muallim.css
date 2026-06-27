@@ -1124,3 +1124,123 @@ button,.btn{
     display:none!important;
   }
 }
+
+
+
+/* ===== MPQ APPLE REFINEMENT v6 ===== */
+
+/* Typography ala Apple */
+html,body{
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",
+              "SF Pro Text","Segoe UI",sans-serif !important;
+  letter-spacing:-0.01em;
+  background:#f5f5f7 !important;
+}
+
+h1,h2,h3{
+  letter-spacing:-0.05em !important;
+  font-weight:700 !important;
+}
+
+/* Hero lebih minimal */
+.dashboard-hero,
+.hero,
+[class*="hero"]{
+  min-height:150px !important;
+  padding:30px 34px !important;
+  border-radius:34px !important;
+}
+
+/* Card seperti Apple Wallet */
+.card,
+.accordion-item,
+[class*="card"]{
+  border-radius:28px !important;
+  box-shadow:
+    0 2px 8px rgba(0,0,0,.03),
+    0 12px 30px rgba(0,0,0,.05) !important;
+  overflow:hidden;
+}
+
+/* Header card muallim */
+.absen-row-header,
+[class*="row-header"]{
+  display:grid !important;
+  grid-template-columns:1fr auto auto auto !important;
+  align-items:center !important;
+  gap:10px !important;
+  padding-bottom:10px !important;
+}
+
+/* Badge dibuat ringan */
+.absen-row-score,
+.absen-row-status,
+.badge,
+[class*="pill"]{
+  min-height:28px;
+  padding:0 12px !important;
+  font-size:13px !important;
+  font-weight:600 !important;
+  border-radius:999px !important;
+}
+
+/* Dot alert di pojok kanan badge */
+.absen-row-status{
+  position:relative !important;
+}
+
+.absen-row-status::after{
+  content:"";
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:#ff9500;
+  position:absolute;
+  top:-3px;
+  right:-2px;
+  box-shadow:0 0 0 3px rgba(255,149,0,.15);
+}
+
+/* Tombol accordion minimalis */
+.absen-row-toggle{
+  width:28px !important;
+  height:28px !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  border:none !important;
+  border-radius:50% !important;
+  font-size:18px !important;
+  opacity:.65;
+  transition:
+    transform .28s cubic-bezier(.22,1,.36,1),
+    opacity .2s ease !important;
+}
+
+.absen-row-toggle:hover{
+  opacity:1;
+  transform:scale(1.08);
+}
+
+/* Detail card lebih lega */
+[class*="detail"] > div,
+[class*="detail"] [class*="card"]{
+  padding:16px !important;
+  border-radius:20px !important;
+}
+
+/* Search ala Apple */
+input[type="text"],
+input[type="search"]{
+  background:rgba(255,255,255,.9) !important;
+  backdrop-filter:blur(20px);
+  border:none !important;
+  box-shadow:0 1px 4px rgba(0,0,0,.04);
+}
+
+/* Animasi buka card */
+.absen-row-content,
+.accordion-body{
+  transition:
+    max-height .3s cubic-bezier(.22,1,.36,1),
+    opacity .25s ease !important;
+}
